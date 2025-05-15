@@ -8,6 +8,9 @@
     },
     {
       "path": "./apps/weather"
+    },
+    {
+      "path": "./apps/email"
     }
   ]
 }
