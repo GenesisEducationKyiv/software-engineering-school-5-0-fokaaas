@@ -4,10 +4,13 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/gateway-e2e"
+      "path": "./apps/gateway"
     },
     {
-      "path": "./apps/gateway"
+      "path": "./apps/weather-e2e"
+    },
+    {
+      "path": "./apps/weather"
     }
   ]
 }
