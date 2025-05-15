@@ -1839,7 +1839,7 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
-"@prisma/client@6.8.0":
+"@prisma/client@^6.8.0":
   version "6.8.0"
   resolved "https://registry.yarnpkg.com/@prisma/client/-/client-6.8.0.tgz#a7d2acac1f9054f417cba0b6f23c79a67c348abc"
   integrity sha512-t29bmo2VUOBIlinu0tRHXhj3r8+IwA7azetNOGqK9sQDVq/zwbSWq075P2kDjLhxpIe0L/g06bI22c307Tt4vA==
