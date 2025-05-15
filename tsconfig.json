@@ -11,6 +11,9 @@
     },
     {
       "path": "./apps/email"
+    },
+    {
+      "path": "./apps/subscription"
     }
   ]
 }
