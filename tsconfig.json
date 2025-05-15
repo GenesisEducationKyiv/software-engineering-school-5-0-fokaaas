@@ -7,9 +7,6 @@
       "path": "./apps/gateway"
     },
     {
-      "path": "./apps/weather-e2e"
-    },
-    {
       "path": "./apps/weather"
     }
   ]
