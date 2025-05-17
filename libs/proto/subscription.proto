@@ -16,10 +16,11 @@ message FindByFrequencyRequest {
 
 message FindByFrequencyResponse {
   string email = 1;
+  string city = 2;
 }
 
 message FindByFrequencyListResponse {
-  repeated FindByFrequencyResponse emails = 1;
+  repeated FindByFrequencyResponse subscriptions = 1;
 }
 
 message EmailExistsRequest {
@@ -33,6 +34,7 @@ message EmailExistsResponse {
 message CreateRequest {
   string email = 1;
   string frequency = 2;
+  string city = 3;
 }
 
 message CreateResponse {

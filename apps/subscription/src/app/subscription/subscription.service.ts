@@ -23,10 +23,10 @@ export class SubscriptionService implements ISubscriptionService {
   ) {}
 
   async findByFrequency(request: FrequencyRequest): Promise<FindByFrequencyListResponse> {
-    const emails = await this.repo
+    const subscriptions = await this.repo
       .find({ frequency: request.frequency as Frequency, })
-      .then(items => items.map(item => ({ email: item.email })));
-    return { emails };
+      .then(items => items.map(item => ({ email: item.email, city: item.city })));
+    return { subscriptions };
   }
 
   async emailExists(request: EmailRequest): Promise<ExistsResponse> {
@@ -51,6 +51,7 @@ export class SubscriptionService implements ISubscriptionService {
     await this.repo.create({
       email: data.email,
       frequency: data.frequency as Frequency,
+      city: data.city,
     });
     await this.redis.delete(request.token);
     return { message: 'Subscription confirmed successfully' };

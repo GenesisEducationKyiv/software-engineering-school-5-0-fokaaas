@@ -20,7 +20,7 @@ async function bootstrap() {
   });
   await app.listen();
   Logger.log(
-    `🌧️ Weather microservice is running on: http://127.0.0.1:${port}`,
+    `🔔 Subscription microservice is running on: http://127.0.0.1:${port}`,
   );
 }
 

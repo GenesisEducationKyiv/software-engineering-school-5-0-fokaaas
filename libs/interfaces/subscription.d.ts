@@ -24,13 +24,16 @@ export interface TokenResponse {
 
 export interface FindByFrequencyResponse {
   email: string;
+  city: string;
 }
 
 export interface FindByFrequencyListResponse {
-  emails: FindByFrequencyResponse[];
+  subscriptions: FindByFrequencyResponse[];
 }
 
-export interface CreateRequest extends EmailRequest, FrequencyRequest {}
+export interface CreateRequest extends EmailRequest, FrequencyRequest {
+  city: string;
+}
 
 export interface ISubscriptionService {
   findByFrequency(request: FrequencyRequest): Promise<FindByFrequencyListResponse>;

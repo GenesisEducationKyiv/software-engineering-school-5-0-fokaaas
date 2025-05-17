@@ -21,6 +21,7 @@ enum Frequency {
 model Subscription {
   id        String    @id @default(uuid())
   email     String    @unique
+  city      String
   frequency Frequency
 
   @@map("subscriptions")
