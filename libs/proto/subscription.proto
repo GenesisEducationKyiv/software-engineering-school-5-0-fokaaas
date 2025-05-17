@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package subscription;
+
+service SubscriptionService {
+  rpc FindByFrequency (FindByFrequencyRequest) returns (FindByFrequencyListResponse) {}
+  rpc EmailExists (EmailExistsRequest) returns (EmailExistsResponse) {}
+  rpc Create (CreateRequest) returns (CreateResponse) {}
+  rpc TokenExists (TokenExistsRequest) returns (TokenExistsResponse) {}
+  rpc Confirm (ConfirmRequest) returns (ConfirmResponse) {}
+}
+
+message FindByFrequencyRequest {
+  string frequency = 1;
+}
+
+message FindByFrequencyResponse {
+  string email = 1;
+}
+
+message FindByFrequencyListResponse {
+  repeated FindByFrequencyResponse emails = 1;
+}
+
+message EmailExistsRequest {
+  string email = 1;
+}
+
+message EmailExistsResponse {
+  bool exists = 1;
+}
+
+message CreateRequest {
+  string email = 1;
+  string frequency = 2;
+}
+
+message CreateResponse {
+  string token = 1;
+}
+
+message TokenExistsRequest {
+  string token = 1;
+}
+
+message TokenExistsResponse {
+  bool exists = 1;
+}
+
+message ConfirmRequest {
+  string token = 1;
+}
+
+message ConfirmResponse {
+  string message = 1;
+}
