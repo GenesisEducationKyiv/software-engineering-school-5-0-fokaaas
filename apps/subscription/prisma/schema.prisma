@@ -13,10 +13,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Frequency {
+  HOURLY
+  DAILY
+}
+
 model Subscription {
-  id         String  @id @default(uuid())
-  email      String  @unique
-  isApproved Boolean @default(false) @map("is_approved")
+  id        String    @id @default(uuid())
+  email     String    @unique
+  frequency Frequency
 
   @@map("subscriptions")
 }
