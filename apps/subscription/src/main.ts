@@ -14,7 +14,7 @@ async function bootstrap() {
     transport: Transport.GRPC,
     options: {
       package: 'subscription',
-      protoPath: '../../libs/proto/subscription.proto',
+      protoPath: 'libs/proto/subscription.proto',
       url: `127.0.0.1:${port}`,
     },
   });
