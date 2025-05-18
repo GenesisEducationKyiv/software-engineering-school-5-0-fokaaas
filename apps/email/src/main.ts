@@ -15,7 +15,7 @@ async function bootstrap() {
     options: {
       package: 'email',
       protoPath: 'libs/proto/email.proto',
-      url: `127.0.0.1:${port}`,
+      url: `0.0.0.0:${port}`,
     },
   });
   await app.listen();

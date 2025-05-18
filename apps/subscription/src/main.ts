@@ -15,7 +15,7 @@ async function bootstrap() {
     options: {
       package: 'subscription',
       protoPath: 'libs/proto/subscription.proto',
-      url: `127.0.0.1:${port}`,
+      url: `0.0.0.0:${port}`,
     },
   });
   await app.listen();

@@ -1,0 +1,73 @@
+version: "3.9"
+name: weather-api
+
+services:
+  gateway:
+    image: stbasarab/gateway-micro:latest
+    restart: always
+    container_name: gateway
+    ports:
+      - "3000:4558"
+    depends_on:
+      - weather
+      - subscription
+      - email
+    networks:
+      - weather-api-net
+    env_file:
+      - ~/.env.gateway
+  weather:
+    image: stbasarab/weather-micro:latest
+    restart: always
+    container_name: weather
+    networks:
+      - weather-api-net
+    env_file:
+      - ~/.env.weather
+  subscription:
+    image: stbasarab/subscription-micro:latest
+    restart: always
+    container_name: subscription
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - weather-api-net
+    env_file:
+      - ~/.env.subscription
+  email:
+    image: stbasarab/email-micro:latest
+    restart: always
+    container_name: email
+    networks:
+      - weather-api-net
+    env_file:
+      - ~/.env.email
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    volumes:
+      - ~/postgres/data:/var/lib/postgresql/data
+    ports:
+      - "5430:5432"
+    env_file:
+      - ~/.env.postgres
+    networks:
+      - weather-api-net
+  redis:
+    image: redis:latest
+    container_name: redis
+    networks:
+      - weather-api-net
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30
+
+networks:
+  weather-api-net:
+    driver: bridge

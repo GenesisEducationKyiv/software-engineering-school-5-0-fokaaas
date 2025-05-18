@@ -15,7 +15,7 @@ async function bootstrap() {
     options: {
       package: 'weather',
       protoPath: 'libs/proto/weather.proto',
-      url: `127.0.0.1:${port}`,
+      url: `0.0.0.0:${port}`,
     },
   });
   await app.listen();

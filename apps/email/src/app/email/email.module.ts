@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { EmailController } from './email.controller';
 import { EmailService } from './email.service';
+import { join } from 'path';
 
 @Module({
   controllers: [EmailController],
@@ -23,7 +24,7 @@ import { EmailService } from './email.service';
           from: '"No Reply" <noreply@weathersub.com>',
         },
         template: {
-          dir: 'apps/email/templates',
+          dir: join(__dirname, '..', 'templates'),
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
