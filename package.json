@@ -2,7 +2,18 @@
   "name": "@weather-api/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start": "nx run-many --target=serve --projects=weather,subscription,email,gateway",
+    "build": "nx run-many --target=build --all",
+    "start:weather": "nx serve weather",
+    "start:subscription": "nx serve subscription",
+    "start:email": "nx serve email",
+    "start:gateway": "nx serve gateway",
+    "build:weather": "nx build weather",
+    "build:subscription": "nx build subscription",
+    "build:email": "nx build email",
+    "build:gateway": "nx build gateway"
+  },
   "private": true,
   "dependencies": {
     "@grpc/grpc-js": "^1.13.3",

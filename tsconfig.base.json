@@ -3,6 +3,7 @@
     "composite": true,
     "declarationMap": true,
     "emitDeclarationOnly": true,
+    "strictPropertyInitialization": false,
     "baseUrl": "./",
     "importHelpers": true,
     "isolatedModules": true,

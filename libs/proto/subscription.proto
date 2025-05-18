@@ -8,6 +8,7 @@ service SubscriptionService {
   rpc Create (CreateRequest) returns (CreateResponse) {}
   rpc TokenExists (TokenExistsRequest) returns (TokenExistsResponse) {}
   rpc Confirm (ConfirmRequest) returns (ConfirmResponse) {}
+  rpc Unsubscribe (UnsubscribeRequest) returns (UnsubscribeResponse) {}
 }
 
 message FindByFrequencyRequest {
@@ -54,5 +55,13 @@ message ConfirmRequest {
 }
 
 message ConfirmResponse {
+  string message = 1;
+}
+
+message UnsubscribeRequest {
+  string email = 1;
+}
+
+message UnsubscribeResponse {
   string message = 1;
 }

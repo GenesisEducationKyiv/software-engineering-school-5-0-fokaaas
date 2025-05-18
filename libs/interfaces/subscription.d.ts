@@ -41,6 +41,7 @@ export interface ISubscriptionService {
   create(request: CreateRequest): Promise<TokenResponse>;
   tokenExists(request: TokenRequest): Promise<ExistsResponse>;
   confirm(request: TokenRequest): Promise<MessageResponse>;
+  unsubscribe(request: EmailRequest): Promise<MessageResponse>;
 }
 
 export interface ISubscriptionController extends ISubscriptionService {}

@@ -56,4 +56,9 @@ export class SubscriptionService implements ISubscriptionService {
     await this.redis.delete(request.token);
     return { message: 'Subscription confirmed successfully' };
   }
+
+  async unsubscribe(request: EmailRequest): Promise<MessageResponse> {
+    await this.repo.deleteByEmail(request.email);
+    return { message: 'Unsubscribed successfully' };
+  }
 }

@@ -40,4 +40,9 @@ export class SubscriptionController implements ISubscriptionController {
   confirm(request: TokenRequest): Promise<MessageResponse> {
     return this.subscriptionService.confirm(request);
   }
+
+  @GrpcMethod('SubscriptionService', 'Unsubscribe')
+  unsubscribe(request: EmailRequest): Promise<MessageResponse> {
+    return this.subscriptionService.unsubscribe(request);
+  }
 }
