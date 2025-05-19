@@ -8,8 +8,7 @@ import { EmailClientService } from '../email-client/email-client.service';
 import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
 import { SubscribeBody } from './body/subscribe.body';
 import { TokenPath } from './path/token.path';
-import { UnsubscribeBody } from './body/unsubscribe.body';
-import * as console from 'node:console';
+import { UnsubscribePath } from './path/unsubscribe.path';
 
 @Injectable()
 export class SubscriptionService {
@@ -23,7 +22,6 @@ export class SubscriptionService {
     const { exists } = await this.subscriptionClient.emailExists({
       email: body.email,
     });
-    console.dir(exists)
     if (exists) {
       throw new ConflictException('Email already subscribed');
     }
@@ -45,11 +43,11 @@ export class SubscriptionService {
     return this.subscriptionClient.confirm({ token });
   }
 
-  async unsubscribe({ email }: UnsubscribeBody): Promise<{ message: string }> {
-    const { exists } = await this.subscriptionClient.emailExists({ email });
+  async unsubscribe({ token }: UnsubscribePath): Promise<{ message: string }> {
+    const { exists } = await this.subscriptionClient.tokenExists({ token });
     if (!exists) {
-      throw new NotFoundException('Email not found');
+      throw new NotFoundException('Token not found');
     }
-    return this.subscriptionClient.unsubscribe({ email });
+    return this.subscriptionClient.unsubscribe({ token });
   }
 }

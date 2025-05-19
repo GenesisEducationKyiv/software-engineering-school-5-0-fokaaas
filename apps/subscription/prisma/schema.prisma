@@ -23,6 +23,7 @@ model Subscription {
   email     String    @unique
   city      String
   frequency Frequency
+  token     String    @unique
 
   @@map("subscriptions")
 }

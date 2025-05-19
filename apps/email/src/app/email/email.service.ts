@@ -20,25 +20,25 @@ export class EmailService implements IEmailService {
     this.frontBaseUrl = this.config.get<string>('frontBaseUrl') ?? '';
   }
 
-  async sendConfirmation({ email, token}: SendConfirmationRequest): Promise<Empty> {
+  async sendConfirmation({ email, token }: SendConfirmationRequest): Promise<Empty> {
     await this.mailer.sendMail({
       to: email,
       subject: '🍃 Confirm your email',
       template: 'confirmation.hbs',
       context: {
-        link: `${this.frontBaseUrl}/confirm?token=${token}`,
+        link: `${this.frontBaseUrl}/confirm/${token}`,
       },
     });
     return {};
   }
 
-  async sendForecast({ email, ...context }: SendForecastRequest): Promise<Empty> {
+  async sendForecast({ email, token, ...context }: SendForecastRequest): Promise<Empty> {
     await this.mailer.sendMail({
       to: email,
       subject: '🚀 Your forecast is ready!',
       template: 'forecast.hbs',
       context: {
-        unsubscribeLink: `${this.frontBaseUrl}/unsubscribe?email=${email}`,
+        unsubscribeLink: `${this.frontBaseUrl}/unsubscribe/${token}`,
         mainLink: `${this.frontBaseUrl}`,
         ...context,
       },

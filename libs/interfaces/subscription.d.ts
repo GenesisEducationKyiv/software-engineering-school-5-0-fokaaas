@@ -25,6 +25,7 @@ export interface TokenResponse {
 export interface FindByFrequencyResponse {
   email: string;
   city: string;
+  token: string;
 }
 
 export interface FindByFrequencyListResponse {
@@ -41,7 +42,7 @@ export interface ISubscriptionService {
   create(request: CreateRequest): Promise<TokenResponse>;
   tokenExists(request: TokenRequest): Promise<ExistsResponse>;
   confirm(request: TokenRequest): Promise<MessageResponse>;
-  unsubscribe(request: EmailRequest): Promise<MessageResponse>;
+  unsubscribe(request: TokenRequest): Promise<MessageResponse>;
 }
 
 export interface ISubscriptionController extends ISubscriptionService {}

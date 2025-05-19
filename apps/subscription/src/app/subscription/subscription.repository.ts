@@ -14,9 +14,9 @@ export class SubscriptionRepository {
     return this.prisma.subscription.create({ data });
   }
 
-  async deleteByEmail(email: string): Promise<Subscription> {
+  async deleteByToken(token: string): Promise<Subscription> {
     return this.prisma.subscription.delete({
-      where: { email },
+      where: { token },
     });
   }
 }

@@ -25,7 +25,11 @@ export class SubscriptionService implements ISubscriptionService {
   async findByFrequency(request: FrequencyRequest): Promise<FindByFrequencyListResponse> {
     const subscriptions = await this.repo
       .find({ frequency: request.frequency as Frequency, })
-      .then(items => items.map(item => ({ email: item.email, city: item.city })));
+      .then(items => items.map(item => ({
+        email: item.email,
+        city: item.city,
+        token: item.token
+      })));
     return { subscriptions };
   }
 
@@ -42,8 +46,11 @@ export class SubscriptionService implements ISubscriptionService {
   }
 
   async tokenExists(request: TokenRequest): Promise<ExistsResponse> {
-    const exists = await this.redis.exists(request.token);
-    return { exists }
+    const fromRedis = await this.redis.exists(request.token);
+    const fromDb = await this.repo
+      .find({ token: request.token })
+      .then(items => items.length > 0);
+    return { exists: fromRedis || fromDb };
   }
 
   async confirm(request: TokenRequest): Promise<MessageResponse> {
@@ -52,13 +59,14 @@ export class SubscriptionService implements ISubscriptionService {
       email: data.email,
       frequency: data.frequency as Frequency,
       city: data.city,
+      token: request.token,
     });
     await this.redis.delete(request.token);
     return { message: 'Subscription confirmed successfully' };
   }
 
-  async unsubscribe(request: EmailRequest): Promise<MessageResponse> {
-    await this.repo.deleteByEmail(request.email);
+  async unsubscribe(request: TokenRequest): Promise<MessageResponse> {
+    await this.repo.deleteByToken(request.token);
     return { message: 'Unsubscribed successfully' };
   }
 }

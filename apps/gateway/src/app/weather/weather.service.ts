@@ -43,9 +43,9 @@ export class WeatherService {
   }
 
   private async sendEmails({ subscriptions }: FindByFrequencyListResponse) {
-    for (const { email, city } of subscriptions) {
+    for (const { email, city, token } of subscriptions) {
       const forecast = await this.weatherClient.get({ city }) as GetResponse;
-      await this.emailClient.sendForecast({ email: email, ...forecast });
+      await this.emailClient.sendForecast({ email: email, token, ...forecast });
     }
   }
 }

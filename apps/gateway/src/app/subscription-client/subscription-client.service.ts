@@ -47,7 +47,7 @@ export class SubscriptionClientService
     return this.clientService.confirm(request).toPromise();
   }
 
-  async unsubscribe(request: EmailRequest): Promise<MessageResponse> {
+  async unsubscribe(request: TokenRequest): Promise<MessageResponse> {
     return this.clientService.unsubscribe(request).toPromise();
   }
 }

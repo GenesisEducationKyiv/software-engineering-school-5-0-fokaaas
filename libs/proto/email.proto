@@ -24,8 +24,9 @@ message SendDayRequest {
 
 message SendForecastRequest {
   string email = 1;
-  SendDayRequest current = 2;
-  repeated SendDayRequest forecast = 3;
+  string token = 2;
+  SendDayRequest current = 3;
+  repeated SendDayRequest forecast = 4;
 }
 
 

@@ -18,6 +18,7 @@ message FindByFrequencyRequest {
 message FindByFrequencyResponse {
   string email = 1;
   string city = 2;
+  string token = 3;
 }
 
 message FindByFrequencyListResponse {
@@ -59,7 +60,7 @@ message ConfirmResponse {
 }
 
 message UnsubscribeRequest {
-  string email = 1;
+  string token = 1;
 }
 
 message UnsubscribeResponse {

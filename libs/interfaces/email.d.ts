@@ -15,6 +15,7 @@ export interface DayRequest {
 
 export interface SendForecastRequest {
   email: string;
+  token: string;
   current: DayRequest;
   forecast: DayRequest[];
 }

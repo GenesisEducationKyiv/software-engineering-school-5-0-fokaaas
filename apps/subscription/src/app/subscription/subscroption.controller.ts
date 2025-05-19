@@ -42,7 +42,7 @@ export class SubscriptionController implements ISubscriptionController {
   }
 
   @GrpcMethod('SubscriptionService', 'Unsubscribe')
-  unsubscribe(request: EmailRequest): Promise<MessageResponse> {
+  unsubscribe(request: TokenRequest): Promise<MessageResponse> {
     return this.subscriptionService.unsubscribe(request);
   }
 }
