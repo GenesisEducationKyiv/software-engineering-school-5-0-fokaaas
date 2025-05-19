@@ -1,82 +1,153 @@
 # WeatherApi
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+This is a simple weather API that provides current weather data for any location and subscriptions to weather updates.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+## Tech Stack
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/node?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+- TypeScript
+- NestJS (Application, Microservices)
+- gRPC
+- Prima ORM
+- Jest
+- Docker
+- PostgreSQL
+- Redis
 
-## Finish your CI setup
+## Structure
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/AFZSvDePBu)
+Project contains:
+- 3 microservices (Weather, Subscription, Email)
+- 1 application (Gateway)
+- 1 database (PostgreSQL)
+- 1 in-memory database (Redis)
 
+**Gateway** is responsible for routing requests to the appropriate microservice. It also communicates with microservices using gRPC.
+**Weather** is responsible for fetching current weather data from WeatherMap API.
+**Subscription** microservice is responsible for managing subscriptions to weather updates. It communicates with PostgreSQL database to store subscription data and Redis to manage confirmation tokens.
+**Email** microservice is responsible for sending emails to users.
 
-## Run tasks
+## Getting Started
 
-To run the dev server for your app, use:
-
-```sh
-npx nx serve gateway
+1. Clone the repository
+```bash
+git clone git@github.com:fokaaas/weather-api.git
 ```
 
-To create a production bundle:
-
-```sh
-npx nx build gateway
+2. Install dependencies
+```bash
+yarn install
 ```
 
-To see all available targets to run for a project, run:
+3. Create a `.env` files in each app directory and fill them with the required environment variables. You can use `.env.sample` as a reference.
 
-```sh
-npx nx show project gateway
+For `apps/gateway`:
+```dotenv
+# common
+PORT=
+
+# weather
+WEATHER_HOST=
+WEATHER_PORT=
+
+# email
+EMAIL_HOST=
+EMAIL_PORT=
+
+# subscription
+SUBSCRIPTION_HOST=
+SUBSCRIPTION_PORT=
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+For `apps/weather`:
+```dotenv
+# common
+PORT=
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/node:app demo
+# Weather API
+WEATHER_API_KEY=
+WEATHER_API_URL=
 ```
 
-To generate a new library, use:
+For `apps/subscription`:
+```dotenv
+# common
+PORT=
+DATABASE_URL=
 
-```sh
-npx nx g @nx/node:lib mylib
+# redis
+REDIS_HOST=
+REDIS_PORT=
+REDIS_TTL=
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+For `apps/email`:
+```dotenv
+# common
+PORT=
+FRONT_BASE_URL=
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+# smtp
+SMTP_HOST=
+SMTP_USERNAME=
+SMTP_PASSWORD=
+```
 
+4. Start applications
+```bash
+yarn start
+```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Testing
 
-## Install Nx Console
+Tests were written for the weather service using Jest.
+You can see the tests in the `apps/gateway/src/app/weather/weatcher.service.spec.ts` file.
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+## Docker
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Dockerfiles are provided for each microservice and the gateway.
+For example, Gateway multi-stage Dockerfile:
+```dockerfile
+# =============================
+# Stage 1: Build
+# =============================
+FROM node:20.19-alpine3.20 AS builder
 
-## Useful links
+WORKDIR src
 
-Learn more:
+COPY tsconfig.base.json yarn.lock package.json nx.json ./
+COPY apps/email/package.json ./apps/email/package.json
+RUN yarn install --frozen-lockfile
 
-- [Learn more about this workspace setup](https://nx.dev/nx-api/node?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+COPY libs/interfaces ./libs/interfaces
+COPY apps/email ./apps/email
+RUN npx nx build email
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+# =============================
+# Stage 2: Production
+# =============================
+FROM node:20.19-alpine3.20 AS production
+
+WORKDIR /app
+
+COPY --from=builder /src/apps/email/dist/package.json ./dist/package.json
+COPY --from=builder /src/apps/email/dist/yarn.lock ./dist/yarn.lock
+RUN yarn --cwd ./dist install --frozen-lockfile --production
+
+COPY --from=builder /src/apps/email/dist/main.js ./dist/main.js
+COPY --from=builder /src/apps/email/templates ./templates
+COPY libs/proto/email.proto ./libs/proto/email.proto
+
+EXPOSE 4557
+
+CMD ["node", "dist/main.js"]
+```
+
+Also, docker-compose file is provided for running all microservices, gateway, PostgreSQL, Redis. Prepare environment variables in `.env` file and run:
+```bash
+docker-compose up -d
+```
+
+## Deployment
+This project is deployed on Azure VM. 
+
+Base API URL: `http://20.251.160.167:3000/api/`
