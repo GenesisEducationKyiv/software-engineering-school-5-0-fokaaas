@@ -26,6 +26,8 @@ Project contains:
 **Subscription** microservice is responsible for managing subscriptions to weather updates. It communicates with PostgreSQL database to store subscription data and Redis to manage confirmation tokens.
 **Email** microservice is responsible for sending emails to users.
 
+![image](https://github.com/user-attachments/assets/35ac63a1-438f-4ce4-a204-9de8a6e58c14)
+
 ## Getting Started
 
 1. Clone the repository
@@ -148,6 +150,6 @@ docker-compose up -d
 ```
 
 ## Deployment
-This project is deployed on Azure VM. 
+This project is deployed on Azure VM.
 
-Base API URL: `http://20.251.160.167:3000/api/`
+![image](https://github.com/user-attachments/assets/1d84d78a-a3c0-4985-8bbb-350d4a3c591a)
