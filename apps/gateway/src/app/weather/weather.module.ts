@@ -11,7 +11,7 @@ import { WeatherService } from './weather.service';
     ScheduleModule.forRoot(),
     WeatherClientModule,
     SubscriptionClientModule,
-    EmailClientModule
+    EmailClientModule,
   ],
   controllers: [WeatherController],
   providers: [WeatherService],

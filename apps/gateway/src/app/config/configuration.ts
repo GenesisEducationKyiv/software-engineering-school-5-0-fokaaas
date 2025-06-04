@@ -11,5 +11,5 @@ export default () => ({
   subscription: {
     host: process.env.SUBSCRIPTION_HOST,
     port: process.env.SUBSCRIPTION_PORT && parseInt(process.env.SUBSCRIPTION_PORT, 10),
-  }
+  },
 });

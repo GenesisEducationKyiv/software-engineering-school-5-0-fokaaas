@@ -18,7 +18,7 @@ import { WeatherClientService } from './weather-client.service';
               package: 'weather',
               protoPath: 'libs/proto/weather.proto',
             },
-          }
+          };
         },
         inject: [ConfigService],
       },

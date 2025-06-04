@@ -12,11 +12,11 @@ describe('WeatherService', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [WeatherService],
       imports: [WeatherClientModule],
-    }).compile()
+    }).compile();
 
     service = moduleRef.get(WeatherService);
     weatherClient = moduleRef.get(WeatherClientService);
-  })
+  });
 
   describe('getWeather', () => {
     it('should return weather data for a valid city', async () => {
@@ -32,7 +32,7 @@ describe('WeatherService', () => {
       jest.spyOn(weatherClient, 'cityExists')
         .mockImplementation(async () => ({ exists: true }));
 
-      jest.spyOn(weatherClient, 'get').mockImplementation(async () =>({
+      jest.spyOn(weatherClient, 'get').mockImplementation(async () => ({
         current: {
           temperature: '20',
           humidity: '50',

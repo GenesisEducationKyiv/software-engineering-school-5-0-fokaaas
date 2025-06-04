@@ -4,10 +4,10 @@ import { WeatherQuery } from './query/weather.query';
 
 @Controller()
 export class WeatherController {
-  constructor(private weatherService: WeatherService) {}
+  constructor (private weatherService: WeatherService) {}
 
   @Get('/weather')
-  getWeather(@Query() query: WeatherQuery) {
+  getWeather (@Query() query: WeatherQuery) {
     return this.weatherService.getWeather(query);
   }
 }

@@ -1,5 +1,5 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import {
+import type {
   CreateRequest,
   EmailRequest,
   ExistsResponse,
@@ -9,45 +9,46 @@ import {
   MessageResponse,
   TokenRequest,
   TokenResponse,
-  GrpcToObservable
-} from '@weather-api/interfaces';
+  GrpcToObservable,
+} from '@types';
 import type { ClientGrpc } from '@nestjs/microservices';
 
 @Injectable()
 export class SubscriptionClientService
-  implements ISubscriptionService, OnModuleInit
-{
+  implements ISubscriptionService, OnModuleInit {
   private clientService: GrpcToObservable<ISubscriptionService>;
 
-  constructor(@Inject('SUBSCRIPTION_PACKAGE') private client: ClientGrpc) {}
+  constructor (@Inject('SUBSCRIPTION_PACKAGE') private client: ClientGrpc) {}
 
-  onModuleInit() {
-    this.clientService = this.client.getService<GrpcToObservable<ISubscriptionService>>(
-      'SubscriptionService'
-    );
+  onModuleInit () {
+    this.clientService = this.client.getService<
+      GrpcToObservable<ISubscriptionService>
+    >('SubscriptionService');
   }
 
-  async findByFrequency(request: FrequencyRequest): Promise<FindByFrequencyListResponse> {
+  async findByFrequency (
+    request: FrequencyRequest,
+  ): Promise<FindByFrequencyListResponse> {
     return this.clientService.findByFrequency(request).toPromise();
   }
 
-  async emailExists(request: EmailRequest): Promise<ExistsResponse> {
+  async emailExists (request: EmailRequest): Promise<ExistsResponse> {
     return this.clientService.emailExists(request).toPromise();
   }
 
-  async create(request: CreateRequest): Promise<TokenResponse> {
+  async create (request: CreateRequest): Promise<TokenResponse> {
     return this.clientService.create(request).toPromise();
   }
 
-  async tokenExists(request: TokenRequest): Promise<ExistsResponse> {
+  async tokenExists (request: TokenRequest): Promise<ExistsResponse> {
     return this.clientService.tokenExists(request).toPromise();
   }
 
-  async confirm(request: TokenRequest): Promise<MessageResponse> {
+  async confirm (request: TokenRequest): Promise<MessageResponse> {
     return this.clientService.confirm(request).toPromise();
   }
 
-  async unsubscribe(request: TokenRequest): Promise<MessageResponse> {
+  async unsubscribe (request: TokenRequest): Promise<MessageResponse> {
     return this.clientService.unsubscribe(request).toPromise();
   }
 }

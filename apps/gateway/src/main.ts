@@ -5,7 +5,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { HttpExceptionFilter } from './app/utils/http-exception.filter';
 
-async function bootstrap() {
+async function bootstrap () {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
 
@@ -20,7 +20,7 @@ async function bootstrap() {
     }),
   );
 
-  const configService = app.get<ConfigService>(ConfigService)
+  const configService = app.get<ConfigService>(ConfigService);
   const port = configService.get<number>('port') ?? 4558;
 
   await app.listen(port);

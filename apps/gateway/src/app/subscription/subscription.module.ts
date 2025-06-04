@@ -9,7 +9,7 @@ import { SubscriptionService } from './subscription.service';
   imports: [
     WeatherClientModule,
     SubscriptionClientModule,
-    EmailClientModule
+    EmailClientModule,
   ],
   controllers: [SubscriptionController],
   providers: [SubscriptionService],
