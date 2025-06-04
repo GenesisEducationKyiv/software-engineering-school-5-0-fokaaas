@@ -1,43 +1,45 @@
-export interface EmailRequest {
+export type EmailRequest = {
   email: string;
-}
+};
 
-export interface TokenRequest {
+export type TokenRequest = {
   token: string;
-}
+};
 
-export interface FrequencyRequest {
+export type FrequencyRequest = {
   frequency: string;
-}
+};
 
-export interface ExistsResponse {
+export type ExistsResponse = {
   exists: boolean;
-}
+};
 
-export interface MessageResponse {
+export type MessageResponse = {
   message: string;
-}
+};
 
-export interface TokenResponse {
+export type TokenResponse = {
   token: string;
-}
+};
 
-export interface FindByFrequencyResponse {
+export type FindByFrequencyResponse = {
   email: string;
   city: string;
   token: string;
-}
+};
 
-export interface FindByFrequencyListResponse {
+export type FindByFrequencyListResponse = {
   subscriptions: FindByFrequencyResponse[];
-}
+};
 
-export interface CreateRequest extends EmailRequest, FrequencyRequest {
+export type CreateRequest = EmailRequest & FrequencyRequest & {
   city: string;
-}
+};
 
 export interface ISubscriptionService {
-  findByFrequency(request: FrequencyRequest): Promise<FindByFrequencyListResponse>;
+  findByFrequency(
+    request: FrequencyRequest
+  ): Promise<FindByFrequencyListResponse>;
   emailExists(request: EmailRequest): Promise<ExistsResponse>;
   create(request: CreateRequest): Promise<TokenResponse>;
   tokenExists(request: TokenRequest): Promise<ExistsResponse>;
@@ -45,4 +47,4 @@ export interface ISubscriptionService {
   unsubscribe(request: TokenRequest): Promise<MessageResponse>;
 }
 
-export interface ISubscriptionController extends ISubscriptionService {}
+export type ISubscriptionController = ISubscriptionService;
