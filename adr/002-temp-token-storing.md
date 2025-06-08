@@ -61,7 +61,7 @@ Additionally, the system should support concurrent token generation and verifica
 
 ## Decision
 
-We chose **Redis** with key expiration (TTL) to store confirmation tokens temporarily.
+We chose **Redis** with TTL for its speed, simplicity, and built-in support for automatic expiration. It offers an ideal solution for short-lived token storage with minimal overhead. The only trade-off is the need to maintain a Redis instance.
 
 ## Consequences
 

@@ -64,7 +64,7 @@ We evaluated multiple protocols to determine the best fit for our architecture.
 
 ## Decision
 
-We chose **gRPC** as the communication protocol between our microservices.
+We chose **gRPC** as it offers high-performance, strongly typed communication with excellent NestJS support. Its Protobuf-based contracts ensure consistency across services and make the system scalable for future streaming use cases.
 
 ## Consequences
 
