@@ -13,20 +13,20 @@ import type { ClientGrpc } from '@nestjs/microservices';
 export class WeatherClientService implements IWeatherService, OnModuleInit {
   private clientService: GrpcToObservable<IWeatherService>;
 
-  constructor (@Inject('WEATHER_PACKAGE') private client: ClientGrpc) {}
+  constructor(@Inject('WEATHER_PACKAGE') private client: ClientGrpc) {}
 
-  onModuleInit () {
+  onModuleInit() {
     this.clientService =
       this.client.getService<GrpcToObservable<IWeatherService>>(
-        'WeatherService',
+        'WeatherService'
       );
   }
 
-  async cityExists (request: CityExistsRequest): Promise<CityExistsResponse> {
+  async cityExists(request: CityExistsRequest): Promise<CityExistsResponse> {
     return this.clientService.cityExists(request).toPromise();
   }
 
-  async get (request: GetRequest): Promise<GetResponse | null> {
+  async get(request: GetRequest): Promise<GetResponse> {
     return this.clientService.get(request).toPromise();
   }
 }

@@ -14,37 +14,37 @@ import { SubscriptionService } from './subscription.service';
 
 @GrpcService()
 export class SubscriptionController implements ISubscriptionController {
-  constructor (private readonly subscriptionService: SubscriptionService) {}
+  constructor(private readonly subscriptionService: SubscriptionService) {}
 
   @GrpcMethod('SubscriptionService', 'FindByFrequency')
-  findByFrequency (
-    request: FrequencyRequest,
+  findByFrequency(
+    request: FrequencyRequest
   ): Promise<FindByFrequencyListResponse> {
     return this.subscriptionService.findByFrequency(request);
   }
 
   @GrpcMethod('SubscriptionService', 'EmailExists')
-  emailExists (request: EmailRequest): Promise<ExistsResponse> {
+  emailExists(request: EmailRequest): Promise<ExistsResponse> {
     return this.subscriptionService.emailExists(request);
   }
 
   @GrpcMethod('SubscriptionService', 'Create')
-  create (request: CreateRequest): Promise<TokenResponse> {
+  create(request: CreateRequest): Promise<TokenResponse> {
     return this.subscriptionService.create(request);
   }
 
   @GrpcMethod('SubscriptionService', 'TokenExists')
-  tokenExists (request: TokenRequest): Promise<ExistsResponse> {
+  tokenExists(request: TokenRequest): Promise<ExistsResponse> {
     return this.subscriptionService.tokenExists(request);
   }
 
   @GrpcMethod('SubscriptionService', 'Confirm')
-  confirm (request: TokenRequest): Promise<MessageResponse> {
+  confirm(request: TokenRequest): Promise<MessageResponse> {
     return this.subscriptionService.confirm(request);
   }
 
   @GrpcMethod('SubscriptionService', 'Unsubscribe')
-  unsubscribe (request: TokenRequest): Promise<MessageResponse> {
+  unsubscribe(request: TokenRequest): Promise<MessageResponse> {
     return this.subscriptionService.unsubscribe(request);
   }
 }

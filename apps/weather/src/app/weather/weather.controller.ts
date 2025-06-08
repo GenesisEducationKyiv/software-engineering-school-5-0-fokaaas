@@ -10,15 +10,15 @@ import { WeatherService } from './weather.service';
 
 @GrpcService()
 export class WeatherController implements IWeatherController {
-  constructor (private readonly service: WeatherService) {}
+  constructor(private readonly service: WeatherService) {}
 
   @GrpcMethod('WeatherService', 'CityExists')
-  cityExists (request: CityExistsRequest): Promise<CityExistsResponse> {
+  cityExists(request: CityExistsRequest): Promise<CityExistsResponse> {
     return this.service.cityExists(request);
   }
 
   @GrpcMethod('WeatherService', 'Get')
-  get (request: GetRequest): Promise<GetResponse | null> {
+  get(request: GetRequest): Promise<GetResponse> {
     return this.service.get(request);
   }
 }

@@ -14,7 +14,9 @@ import { RedisService } from './redis.service';
         });
 
         client.on('connect', () => Logger.log('✅ Connected to Redis'));
-        client.on('error', (err) => Logger.error('❌ Redis connection error:', err));
+        client.on('error', (err) =>
+          Logger.error('❌ Redis connection error:', err)
+        );
 
         return client;
       },

@@ -12,13 +12,13 @@ import { UnsubscribePath } from './path/unsubscribe.path';
 
 @Injectable()
 export class SubscriptionService {
-  constructor (
+  constructor(
     private readonly subscriptionClient: SubscriptionClientService,
     private readonly weatherClient: WeatherClientService,
-    private readonly emailClient: EmailClientService,
+    private readonly emailClient: EmailClientService
   ) {}
 
-  async subscribe (body: SubscribeBody): Promise<{ message: string }> {
+  async subscribe(body: SubscribeBody): Promise<{ message: string }> {
     const { exists } = await this.subscriptionClient.emailExists({
       email: body.email,
     });
@@ -35,7 +35,7 @@ export class SubscriptionService {
     return { message: 'Subscription successful. Confirmation email sent.' };
   }
 
-  async confirm ({ token }: TokenPath): Promise<{ message: string }> {
+  async confirm({ token }: TokenPath): Promise<{ message: string }> {
     const { exists } = await this.subscriptionClient.tokenExists({ token });
     if (!exists) {
       throw new NotFoundException('Token not found');
@@ -43,7 +43,7 @@ export class SubscriptionService {
     return this.subscriptionClient.confirm({ token });
   }
 
-  async unsubscribe ({ token }: UnsubscribePath): Promise<{ message: string }> {
+  async unsubscribe({ token }: UnsubscribePath): Promise<{ message: string }> {
     const { exists } = await this.subscriptionClient.tokenExists({ token });
     if (!exists) {
       throw new NotFoundException('Token not found');

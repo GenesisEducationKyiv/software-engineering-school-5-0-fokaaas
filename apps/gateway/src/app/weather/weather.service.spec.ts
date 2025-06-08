@@ -29,7 +29,8 @@ describe('WeatherService', () => {
         },
       };
 
-      jest.spyOn(weatherClient, 'cityExists')
+      jest
+        .spyOn(weatherClient, 'cityExists')
         .mockImplementation(async () => ({ exists: true }));
 
       jest.spyOn(weatherClient, 'get').mockImplementation(async () => ({
@@ -51,8 +52,12 @@ describe('WeatherService', () => {
 
     it('should throw NotFoundException for an invalid city', async () => {
       const city = 'InvalidCity';
-      jest.spyOn(weatherClient, 'cityExists').mockResolvedValue({ exists: false });
-      await expect(service.getWeather({ city })).rejects.toThrow(NotFoundException);
+      jest
+        .spyOn(weatherClient, 'cityExists')
+        .mockResolvedValue({ exists: false });
+      await expect(service.getWeather({ city })).rejects.toThrow(
+        NotFoundException
+      );
       expect(weatherClient.cityExists).toHaveBeenCalledWith({ city });
     });
   });

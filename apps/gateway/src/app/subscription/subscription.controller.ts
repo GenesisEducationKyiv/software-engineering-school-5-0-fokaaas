@@ -6,20 +6,20 @@ import { TokenPath } from './path/token.path';
 
 @Controller()
 export class SubscriptionController {
-  constructor (private subscriptionService: SubscriptionService) {}
+  constructor(private subscriptionService: SubscriptionService) {}
 
   @Post('/subscribe')
-  subscribe (@Body() body: SubscribeBody) {
+  subscribe(@Body() body: SubscribeBody) {
     return this.subscriptionService.subscribe(body);
   }
 
   @Get('/confirm/:token')
-  confirm (@Param() param: TokenPath) {
+  confirm(@Param() param: TokenPath) {
     return this.subscriptionService.confirm(param);
   }
 
   @Get('/unsubscribe/:token')
-  unsubscribe (@Param() param: UnsubscribePath) {
+  unsubscribe(@Param() param: UnsubscribePath) {
     return this.subscriptionService.unsubscribe(param);
   }
 }

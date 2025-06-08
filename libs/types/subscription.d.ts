@@ -7,7 +7,7 @@ export type TokenRequest = {
 };
 
 export type FrequencyRequest = {
-  frequency: string;
+  frequency: 'HOURLY' | 'DAILY';
 };
 
 export type ExistsResponse = {
@@ -32,9 +32,10 @@ export type FindByFrequencyListResponse = {
   subscriptions: FindByFrequencyResponse[];
 };
 
-export type CreateRequest = EmailRequest & FrequencyRequest & {
-  city: string;
-};
+export type CreateRequest = EmailRequest &
+  FrequencyRequest & {
+    city: string;
+  };
 
 export interface ISubscriptionService {
   findByFrequency(

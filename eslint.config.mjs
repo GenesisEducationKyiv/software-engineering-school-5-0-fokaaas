@@ -1,4 +1,6 @@
 import nx from '@nx/eslint-plugin';
+import eslintPluginPrettier from 'eslint-plugin-prettier';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
   // ref: https://github.com/nrwl/nx/tree/master/packages/eslint-plugin/src/flat-configs
@@ -11,14 +13,17 @@ export default [
   // common rules
   {
     files: ['**/*.ts', '**/*.js'],
+    plugins: {
+      prettier: eslintPluginPrettier,
+    },
     rules: {
+      'prettier/prettier': 'error',
       // symbols, indents, quotes
       'comma-dangle': ['error', 'always-multiline'],
       'comma-spacing': 'error',
       'key-spacing': 'error',
       'keyword-spacing': 'error',
       'space-before-blocks': 'error',
-      'space-before-function-paren': 'error',
       'space-in-parens': 'error',
       quotes: ['error', 'single'],
       semi: ['error', 'always'],
@@ -38,4 +43,9 @@ export default [
       eqeqeq: ['error', 'always'],
     },
   },
+  {
+    rules: {
+      ...prettierConfig.rules,
+    }
+  }
 ];

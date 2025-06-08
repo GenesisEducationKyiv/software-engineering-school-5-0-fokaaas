@@ -12,18 +12,18 @@ import type { ClientGrpc } from '@nestjs/microservices';
 export class EmailClientService implements IEmailService, OnModuleInit {
   private clientService: GrpcToObservable<IEmailService>;
 
-  constructor (@Inject('EMAIL_PACKAGE') private client: ClientGrpc) {}
+  constructor(@Inject('EMAIL_PACKAGE') private client: ClientGrpc) {}
 
-  onModuleInit () {
+  onModuleInit() {
     this.clientService =
       this.client.getService<GrpcToObservable<IEmailService>>('EmailService');
   }
 
-  async sendConfirmation (request: SendConfirmationRequest): Promise<Empty> {
+  async sendConfirmation(request: SendConfirmationRequest): Promise<Empty> {
     return this.clientService.sendConfirmation(request).toPromise();
   }
 
-  async sendForecast (request: SendForecastRequest): Promise<Empty> {
+  async sendForecast(request: SendForecastRequest): Promise<Empty> {
     return this.clientService.sendForecast(request).toPromise();
   }
 }

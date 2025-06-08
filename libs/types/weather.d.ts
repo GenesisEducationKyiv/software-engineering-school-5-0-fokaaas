@@ -25,7 +25,7 @@ export type GetResponse = {
 
 export interface IWeatherService {
   cityExists(request: CityExistsRequest): Promise<CityExistsResponse>;
-  get(request: GetRequest): Promise<GetResponse | null>;
+  get(request: GetRequest): Promise<GetResponse>;
 }
 
 export type IWeatherController = IWeatherService;
