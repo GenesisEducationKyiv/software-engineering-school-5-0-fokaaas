@@ -36,7 +36,7 @@
 
 ### Users and bandwidth
 
-- **Active users:** Up to 10,000 concurrent users.
+- **Active users:** Up to 10,000 concurrent users (of these ~4,500 simply use API).
 - **API requests:** Up to 1000 requests per second.
 - **Email notifications:** Up to 100,000 emails per day (hourly and daily updates).
 - **Subscriptions per user:** only one.
