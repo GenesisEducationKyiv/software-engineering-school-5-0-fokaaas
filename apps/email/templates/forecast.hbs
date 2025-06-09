@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Forecast</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f8fc;
+      color: #333;
+      padding: 0;
+      margin: 0;
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .email-container {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 700px;
+      margin: 40px auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1, h2 {
+      color: #444;
+    }
+
+    .current-weather {
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .forecast-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .forecast-item {
+      width: 48%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      text-align: left;
+    }
+
+    .weather-icon {
+      vertical-align: middle;
+      width: 48px;
+      height: 48px;
+      margin-right: 10px;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #888;
+    }
+
+    .unsubscribe-link {
+      color: #888;
+      text-decoration: none;
+    }
+
+    .unsubscribe-link:hover {
+      text-decoration: underline;
+    }
+
+    .main-btn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #ffffff;
+      background-color: #4CAF50;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .main-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+<div class="email-container">
+  <h1>Current Weather</h1>
+  <div class="current-weather">
+    <img src="https://{{current.icon}}" alt="weather icon" class="weather-icon">
+    <strong>{{current.date}}</strong>: {{current.temperature}}°C, {{current.description}}, Humidity: {{current.humidity}}%
+  </div>
+
+  <h2>Upcoming Forecast</h2>
+  <div class="forecast-container">
+    {{#each forecast}}
+      <div class="forecast-item">
+        <img src="https://{{this.icon}}" alt="weather icon" class="weather-icon">
+        <strong>{{this.date}}</strong><br>
+        Temperature: {{this.temperature}}°C<br>
+        Humidity: {{this.humidity}}%<br>
+        {{this.description}}
+      </div>
+    {{/each}}
+  </div>
+
+  <a href="{{mainLink}}" class="main-btn">Visit Website</a>
+
+  <div class="footer">
+    <p>If you no longer wish to receive these emails, you may <a href="{{unsubscribeLink}}" class="unsubscribe-link">unsubscribe here</a>.</p>
+  </div>
+</div>
+</body>
+</html>
