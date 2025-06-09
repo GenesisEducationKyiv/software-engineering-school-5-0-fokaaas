@@ -9,7 +9,7 @@ COPY tsconfig.base.json yarn.lock package.json nx.json ./
 COPY apps/gateway/package.json ./apps/gateway/package.json
 RUN yarn install --frozen-lockfile
 
-COPY libs/interfaces ./libs/interfaces
+COPY libs/types ./libs/types
 COPY apps/gateway ./apps/gateway
 RUN npx nx build gateway
 

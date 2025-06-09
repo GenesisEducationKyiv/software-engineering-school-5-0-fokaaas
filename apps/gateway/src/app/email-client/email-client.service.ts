@@ -1,11 +1,11 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import {
+import type {
   Empty,
   IEmailService,
   SendConfirmationRequest,
   SendForecastRequest,
-  GrpcToObservable
-} from '@weather-api/interfaces';
+  GrpcToObservable,
+} from '@types';
 import type { ClientGrpc } from '@nestjs/microservices';
 
 @Injectable()
@@ -15,7 +15,8 @@ export class EmailClientService implements IEmailService, OnModuleInit {
   constructor(@Inject('EMAIL_PACKAGE') private client: ClientGrpc) {}
 
   onModuleInit() {
-    this.clientService = this.client.getService<GrpcToObservable<IEmailService>>('EmailService');
+    this.clientService =
+      this.client.getService<GrpcToObservable<IEmailService>>('EmailService');
   }
 
   async sendConfirmation(request: SendConfirmationRequest): Promise<Empty> {

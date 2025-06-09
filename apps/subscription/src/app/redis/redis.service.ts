@@ -8,7 +8,7 @@ export class RedisService {
   constructor(
     @Inject('REDIS_CLIENT')
     private readonly client: Redis,
-    private readonly config: ConfigService,
+    private readonly config: ConfigService
   ) {}
 
   async setObj<T>(key: string, value: T): Promise<void> {
@@ -18,7 +18,7 @@ export class RedisService {
   }
 
   async getObj<T>(key: string): Promise<T> {
-    const json = await this.client.get(key) ?? '';
+    const json = (await this.client.get(key)) ?? '';
     return JSON.parse(json);
   }
 

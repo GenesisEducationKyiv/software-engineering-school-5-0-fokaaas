@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Frequency } from '@prisma/client';
 import { SubscriptionRepository } from './subscription.repository';
-import {
+import type {
   CreateRequest,
   EmailRequest,
   ExistsResponse,
@@ -11,7 +11,7 @@ import {
   MessageResponse,
   TokenRequest,
   TokenResponse,
-} from '@weather-api/interfaces';
+} from '@types';
 import { RedisService } from '../redis/redis.service';
 import { randomUUID } from 'node:crypto';
 
@@ -19,24 +19,28 @@ import { randomUUID } from 'node:crypto';
 export class SubscriptionService implements ISubscriptionService {
   constructor(
     private readonly repo: SubscriptionRepository,
-    private readonly redis: RedisService,
+    private readonly redis: RedisService
   ) {}
 
-  async findByFrequency(request: FrequencyRequest): Promise<FindByFrequencyListResponse> {
+  async findByFrequency(
+    request: FrequencyRequest
+  ): Promise<FindByFrequencyListResponse> {
     const subscriptions = await this.repo
-      .find({ frequency: request.frequency as Frequency, })
-      .then(items => items.map(item => ({
-        email: item.email,
-        city: item.city,
-        token: item.token
-      })));
+      .find({ frequency: request.frequency })
+      .then((items) =>
+        items.map((item) => ({
+          email: item.email,
+          city: item.city,
+          token: item.token,
+        }))
+      );
     return { subscriptions };
   }
 
   async emailExists(request: EmailRequest): Promise<ExistsResponse> {
     return this.repo
       .find({ email: request.email })
-      .then(items => ({ exists: items.length > 0 }));
+      .then((items) => ({ exists: items.length > 0 }));
   }
 
   async create(request: CreateRequest): Promise<TokenResponse> {
@@ -49,7 +53,7 @@ export class SubscriptionService implements ISubscriptionService {
     const fromRedis = await this.redis.exists(request.token);
     const fromDb = await this.repo
       .find({ token: request.token })
-      .then(items => items.length > 0);
+      .then((items) => items.length > 0);
     return { exists: fromRedis || fromDb };
   }
 

@@ -1,7 +1,7 @@
 import {
   ConflictException,
   Injectable,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { WeatherClientService } from '../weather-client/weather-client.service';
 import { EmailClientService } from '../email-client/email-client.service';

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { WeatherClientService } from '../weather-client/weather-client.service';
 import { WeatherQuery } from './query/weather.query';
-import { FindByFrequencyListResponse, GetResponse } from '@weather-api/interfaces';
+import type { FindByFrequencyListResponse } from '@types';
 import { Cron } from '@nestjs/schedule';
 import { EmailClientService } from '../email-client/email-client.service';
 import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
@@ -12,18 +12,18 @@ export class WeatherService {
   constructor(
     private readonly weatherClient: WeatherClientService,
     private readonly emailClient: EmailClientService,
-    private readonly subscriptionClient: SubscriptionClientService,
+    private readonly subscriptionClient: SubscriptionClientService
   ) {}
 
   async getWeather({ city }: WeatherQuery) {
     const { exists } = await this.weatherClient.cityExists({ city });
     if (!exists) throw new NotFoundException('City not found');
-    const { current } = await this.weatherClient.get({ city }) as GetResponse;
+    const { current } = await this.weatherClient.get({ city });
     return {
       temperature: current.temperature,
       humidity: current.humidity,
       description: current.description,
-    }
+    };
   }
 
   @Cron('0 * * * *')
@@ -44,7 +44,7 @@ export class WeatherService {
 
   private async sendEmails({ subscriptions }: FindByFrequencyListResponse) {
     for (const { email, city, token } of subscriptions) {
-      const forecast = await this.weatherClient.get({ city }) as GetResponse;
+      const forecast = await this.weatherClient.get({ city });
       await this.emailClient.sendForecast({ email: email, token, ...forecast });
     }
   }

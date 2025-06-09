@@ -20,8 +20,8 @@
     "target": "es2022",
     "customConditions": ["development"],
     "paths": {
-      "@weather-api/proto": ["libs/proto"],
-      "@weather-api/interfaces": ["libs/interfaces"]
+      "@proto": ["libs/proto"],
+      "@types": ["libs/types"]
     }
   }
 }

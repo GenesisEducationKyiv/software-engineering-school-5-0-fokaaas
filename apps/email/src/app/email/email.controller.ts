@@ -5,7 +5,7 @@ import type {
   IEmailController,
   SendConfirmationRequest,
   SendForecastRequest,
-} from '@weather-api/interfaces';
+} from '@types';
 
 @GrpcService()
 export class EmailController implements IEmailController {

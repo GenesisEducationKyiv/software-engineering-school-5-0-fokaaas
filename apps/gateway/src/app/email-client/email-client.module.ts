@@ -18,7 +18,7 @@ import { EmailClientService } from './email-client.service';
               package: 'email',
               protoPath: 'libs/proto/email.proto',
             },
-          }
+          };
         },
         inject: [ConfigService],
       },

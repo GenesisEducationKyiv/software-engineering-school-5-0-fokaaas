@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nx run-many --target=serve --projects=weather,subscription,email,gateway",
     "build": "nx run-many --target=build --all",
+    "lint": "yarn eslint libs/types && nx run-many --target=lint --all",
     "start:weather": "nx serve weather",
     "start:subscription": "nx serve subscription",
     "start:email": "nx serve email",
@@ -45,6 +46,7 @@
     "@types/node": "20",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
+    "eslint-plugin-prettier": "^5.4.1",
     "nx": "21.0.3",
     "prettier": "^2.6.2",
     "tslib": "^2.3.0",

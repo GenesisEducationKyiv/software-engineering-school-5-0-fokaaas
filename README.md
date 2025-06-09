@@ -31,11 +31,13 @@ Project contains:
 ## Getting Started
 
 1. Clone the repository
+
 ```bash
 git clone git@github.com:fokaaas/weather-api.git
 ```
 
 2. Install dependencies
+
 ```bash
 yarn install
 ```
@@ -43,6 +45,7 @@ yarn install
 3. Create a `.env` files in each app directory and fill them with the required environment variables. You can use `.env.sample` as a reference.
 
 For `apps/gateway`:
+
 ```dotenv
 # common
 PORT=
@@ -61,6 +64,7 @@ SUBSCRIPTION_PORT=
 ```
 
 For `apps/weather`:
+
 ```dotenv
 # common
 PORT=
@@ -71,6 +75,7 @@ WEATHER_API_URL=
 ```
 
 For `apps/subscription`:
+
 ```dotenv
 # common
 PORT=
@@ -83,6 +88,7 @@ REDIS_TTL=
 ```
 
 For `apps/email`:
+
 ```dotenv
 # common
 PORT=
@@ -95,6 +101,7 @@ SMTP_PASSWORD=
 ```
 
 4. Start applications
+
 ```bash
 yarn start
 ```
@@ -108,6 +115,7 @@ You can see the tests in the `apps/gateway/src/app/weather/weatcher.service.spec
 
 Dockerfiles are provided for each microservice and the gateway.
 For example, Gateway multi-stage Dockerfile:
+
 ```dockerfile
 # =============================
 # Stage 1: Build
@@ -120,7 +128,7 @@ COPY tsconfig.base.json yarn.lock package.json nx.json ./
 COPY apps/email/package.json ./apps/email/package.json
 RUN yarn install --frozen-lockfile
 
-COPY libs/interfaces ./libs/interfaces
+COPY libs/types ./libs/interfaces
 COPY apps/email ./apps/email
 RUN npx nx build email
 
@@ -145,11 +153,13 @@ CMD ["node", "dist/main.js"]
 ```
 
 Also, docker-compose file is provided for running all microservices, gateway, PostgreSQL, Redis. Prepare environment variables in `.env` file and run:
+
 ```bash
 docker-compose up -d
 ```
 
 ## Deployment
+
 This project is deployed on Azure VM.
 
 ![image](https://github.com/user-attachments/assets/1d84d78a-a3c0-4985-8bbb-350d4a3c591a)

@@ -6,11 +6,7 @@ import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
 
 @Module({
-  imports: [
-    WeatherClientModule,
-    SubscriptionClientModule,
-    EmailClientModule
-  ],
+  imports: [WeatherClientModule, SubscriptionClientModule, EmailClientModule],
   controllers: [SubscriptionController],
   providers: [SubscriptionService],
 })

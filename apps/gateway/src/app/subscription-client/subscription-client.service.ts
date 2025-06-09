@@ -1,5 +1,5 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import {
+import type {
   CreateRequest,
   EmailRequest,
   ExistsResponse,
@@ -9,8 +9,8 @@ import {
   MessageResponse,
   TokenRequest,
   TokenResponse,
-  GrpcToObservable
-} from '@weather-api/interfaces';
+  GrpcToObservable,
+} from '@types';
 import type { ClientGrpc } from '@nestjs/microservices';
 
 @Injectable()
@@ -22,12 +22,14 @@ export class SubscriptionClientService
   constructor(@Inject('SUBSCRIPTION_PACKAGE') private client: ClientGrpc) {}
 
   onModuleInit() {
-    this.clientService = this.client.getService<GrpcToObservable<ISubscriptionService>>(
-      'SubscriptionService'
-    );
+    this.clientService = this.client.getService<
+      GrpcToObservable<ISubscriptionService>
+    >('SubscriptionService');
   }
 
-  async findByFrequency(request: FrequencyRequest): Promise<FindByFrequencyListResponse> {
+  async findByFrequency(
+    request: FrequencyRequest
+  ): Promise<FindByFrequencyListResponse> {
     return this.clientService.findByFrequency(request).toPromise();
   }
 

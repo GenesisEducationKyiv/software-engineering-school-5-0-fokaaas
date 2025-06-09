@@ -1,12 +1,12 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import {
+import type {
   CityExistsRequest,
   CityExistsResponse,
   GetRequest,
   GetResponse,
   GrpcToObservable,
-  IWeatherService
-} from '@weather-api/interfaces';
+  IWeatherService,
+} from '@types';
 import type { ClientGrpc } from '@nestjs/microservices';
 
 @Injectable()
@@ -17,14 +17,16 @@ export class WeatherClientService implements IWeatherService, OnModuleInit {
 
   onModuleInit() {
     this.clientService =
-      this.client.getService<GrpcToObservable<IWeatherService>>('WeatherService');
+      this.client.getService<GrpcToObservable<IWeatherService>>(
+        'WeatherService'
+      );
   }
 
   async cityExists(request: CityExistsRequest): Promise<CityExistsResponse> {
     return this.clientService.cityExists(request).toPromise();
   }
 
-  async get(request: GetRequest): Promise<GetResponse | null> {
+  async get(request: GetRequest): Promise<GetResponse> {
     return this.clientService.get(request).toPromise();
   }
 }

@@ -9,7 +9,7 @@ import type {
   MessageResponse,
   TokenRequest,
   TokenResponse,
-} from '@weather-api/interfaces';
+} from '@types';
 import { SubscriptionService } from './subscription.service';
 
 @GrpcService()
@@ -17,7 +17,9 @@ export class SubscriptionController implements ISubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
   @GrpcMethod('SubscriptionService', 'FindByFrequency')
-  findByFrequency(request: FrequencyRequest): Promise<FindByFrequencyListResponse> {
+  findByFrequency(
+    request: FrequencyRequest
+  ): Promise<FindByFrequencyListResponse> {
     return this.subscriptionService.findByFrequency(request);
   }
 

@@ -1,34 +1,34 @@
-export interface CityExistsRequest {
+export type CityExistsRequest = {
   city: string;
-}
+};
 
-export interface CityExistsResponse {
+export type CityExistsResponse = {
   exists: boolean;
-}
+};
 
-export interface GetRequest {
+export type GetRequest = {
   city: string;
-}
+};
 
-export interface DayResponse {
+export type DayResponse = {
   date: string;
   temperature: string;
   humidity: string;
   icon: string;
   description: string;
-}
+};
 
-export interface GetResponse {
+export type GetResponse = {
   current: DayResponse;
   forecast: DayResponse[];
-}
+};
 
 export interface IWeatherService {
   cityExists(request: CityExistsRequest): Promise<CityExistsResponse>;
-  get(request: GetRequest): Promise<GetResponse | null>;
+  get(request: GetRequest): Promise<GetResponse>;
 }
 
-export interface IWeatherController extends IWeatherService {}
+export type IWeatherController = IWeatherService;
 
 export type WeatherApiResponse = {
   location: {
@@ -56,4 +56,4 @@ export type WeatherApiResponse = {
       };
     }[];
   };
-}
+};

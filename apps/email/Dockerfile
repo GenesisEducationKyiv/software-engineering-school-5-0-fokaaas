@@ -9,7 +9,7 @@ COPY tsconfig.base.json yarn.lock package.json nx.json ./
 COPY apps/email/package.json ./apps/email/package.json
 RUN yarn install --frozen-lockfile
 
-COPY libs/interfaces ./libs/interfaces
+COPY libs/types ./libs/types
 COPY apps/email ./apps/email
 RUN npx nx build email
 

@@ -1,28 +1,28 @@
-export interface Empty {}
+export type Empty = Record<string, never>;
 
-export interface SendConfirmationRequest {
+export type SendConfirmationRequest = {
   email: string;
   token: string;
-}
+};
 
-export interface DayRequest {
+export type DayRequest = {
   date: string;
   temperature: string;
   humidity: string;
   icon: string;
   description: string;
-}
+};
 
-export interface SendForecastRequest {
+export type SendForecastRequest = {
   email: string;
   token: string;
   current: DayRequest;
   forecast: DayRequest[];
-}
+};
 
 export interface IEmailService {
   sendConfirmation(request: SendConfirmationRequest): Promise<Empty>;
   sendForecast(request: SendForecastRequest): Promise<Empty>;
 }
 
-export interface IEmailController extends IEmailService {}
+export type IEmailController = IEmailService;

@@ -9,7 +9,7 @@ COPY tsconfig.base.json yarn.lock package.json nx.json ./
 COPY apps/subscription/package.json ./apps/subscription/package.json
 RUN yarn install --frozen-lockfile
 
-COPY libs/interfaces ./libs/interfaces
+COPY libs/types ./libs/types
 COPY apps/subscription ./apps/subscription
 RUN npx prisma generate --schema ./apps/subscription/prisma/schema.prisma && \
     npx nx build subscription

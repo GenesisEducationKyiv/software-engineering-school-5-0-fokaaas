@@ -9,7 +9,7 @@ COPY tsconfig.base.json yarn.lock package.json nx.json ./
 COPY apps/weather/package.json ./apps/weather/package.json
 RUN yarn install --frozen-lockfile
 
-COPY libs/interfaces ./libs/interfaces
+COPY libs/types ./libs/types
 COPY apps/weather ./apps/weather
 RUN npx nx build weather
 

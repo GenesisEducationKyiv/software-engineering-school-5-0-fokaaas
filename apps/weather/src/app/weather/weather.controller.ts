@@ -5,7 +5,7 @@ import type {
   GetRequest,
   GetResponse,
   IWeatherController,
-} from '@weather-api/interfaces';
+} from '@types';
 import { WeatherService } from './weather.service';
 
 @GrpcService()
@@ -18,7 +18,7 @@ export class WeatherController implements IWeatherController {
   }
 
   @GrpcMethod('WeatherService', 'Get')
-  get(request: GetRequest): Promise<GetResponse | null> {
+  get(request: GetRequest): Promise<GetResponse> {
     return this.service.get(request);
   }
 }

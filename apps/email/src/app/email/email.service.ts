@@ -1,26 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import {
+import type {
   Empty,
   IEmailService,
   SendConfirmationRequest,
   SendForecastRequest,
-} from '@weather-api/interfaces';
+} from '@types';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmailService implements IEmailService {
-
   private readonly frontBaseUrl: string;
 
-  constructor(
-    private mailer: MailerService,
-    private config: ConfigService,
-  ) {
+  constructor(private mailer: MailerService, private config: ConfigService) {
     this.frontBaseUrl = this.config.get<string>('frontBaseUrl') ?? '';
   }
 
-  async sendConfirmation({ email, token }: SendConfirmationRequest): Promise<Empty> {
+  async sendConfirmation({
+    email,
+    token,
+  }: SendConfirmationRequest): Promise<Empty> {
     await this.mailer.sendMail({
       to: email,
       subject: '🍃 Confirm your email',
@@ -32,7 +31,11 @@ export class EmailService implements IEmailService {
     return {};
   }
 
-  async sendForecast({ email, token, ...context }: SendForecastRequest): Promise<Empty> {
+  async sendForecast({
+    email,
+    token,
+    ...context
+  }: SendForecastRequest): Promise<Empty> {
     await this.mailer.sendMail({
       to: email,
       subject: '🚀 Your forecast is ready!',

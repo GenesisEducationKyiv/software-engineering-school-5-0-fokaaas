@@ -18,7 +18,7 @@ import { SubscriptionClientService } from './subscription-client.service';
               package: 'subscription',
               protoPath: 'libs/proto/subscription.proto',
             },
-          }
+          };
         },
         inject: [ConfigService],
       },
