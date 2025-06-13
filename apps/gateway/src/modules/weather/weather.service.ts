@@ -6,6 +6,7 @@ import { Cron } from '@nestjs/schedule';
 import { EmailClientService } from '../email-client/email-client.service';
 import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
 import { Frequency } from '../subscription/enum/frequency.enum';
+import { Errors } from '../../common/constants/errors.const';
 
 @Injectable()
 export class WeatherService {
@@ -17,7 +18,7 @@ export class WeatherService {
 
   async getWeather({ city }: WeatherQuery) {
     const { exists } = await this.weatherClient.cityExists({ city });
-    if (!exists) throw new NotFoundException('City not found');
+    if (!exists) throw new NotFoundException(Errors.CITY_NOT_FOUND);
     const { current } = await this.weatherClient.get({ city });
     return {
       temperature: current.temperature,

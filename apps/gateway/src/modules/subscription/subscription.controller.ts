@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { SubscribeBody } from './body/subscribe.body';
-import { UnsubscribePath } from './path/unsubscribe.path';
 import { TokenPath } from './path/token.path';
 
 @Controller()
@@ -19,7 +18,7 @@ export class SubscriptionController {
   }
 
   @Get('/unsubscribe/:token')
-  unsubscribe(@Param() param: UnsubscribePath) {
+  unsubscribe(@Param() param: TokenPath) {
     return this.subscriptionService.unsubscribe(param);
   }
 }

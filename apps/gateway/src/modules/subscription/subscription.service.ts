@@ -8,7 +8,9 @@ import { EmailClientService } from '../email-client/email-client.service';
 import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
 import { SubscribeBody } from './body/subscribe.body';
 import { TokenPath } from './path/token.path';
-import { UnsubscribePath } from './path/unsubscribe.path';
+import { SubscriptionErrors } from './constants/subscription-errors.const';
+import { Errors } from '../../common/constants/errors.const';
+import { SubscriptionMessages } from './constants/subscription-messages.const';
 
 @Injectable()
 export class SubscriptionService {
@@ -23,16 +25,16 @@ export class SubscriptionService {
       email: body.email,
     });
     if (exists) {
-      throw new ConflictException('Email already subscribed');
+      throw new ConflictException(SubscriptionErrors.EMAIL_ALREADY_SUBSCRIBED);
     }
     const { exists: cityExists } = await this.weatherClient.cityExists({
       city: body.city,
     });
-    if (!cityExists) throw new NotFoundException('City not found');
+    if (!cityExists) throw new NotFoundException(Errors.CITY_NOT_FOUND);
 
     const { token } = await this.subscriptionClient.create(body);
     await this.emailClient.sendConfirmation({ email: body.email, token });
-    return { message: 'Subscription successful. Confirmation email sent.' };
+    return { message: SubscriptionMessages.SUBSCRIPTION_SUCCESS };
   }
 
   async confirm({ token }: TokenPath): Promise<{ message: string }> {
@@ -43,7 +45,7 @@ export class SubscriptionService {
     return this.subscriptionClient.confirm({ token });
   }
 
-  async unsubscribe({ token }: UnsubscribePath): Promise<{ message: string }> {
+  async unsubscribe({ token }: TokenPath): Promise<{ message: string }> {
     const { exists } = await this.subscriptionClient.tokenExists({ token });
     if (!exists) {
       throw new NotFoundException('Token not found');

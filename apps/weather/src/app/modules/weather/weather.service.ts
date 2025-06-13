@@ -26,6 +26,9 @@ export class WeatherService implements IWeatherService {
 
   async get(request: GetRequest): Promise<GetResponse> {
     const response = await fetch(`${this.baseUrl}&days=7&q=${request.city}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch weather data for ${request.city}`);
+    }
     const data = (await response.json()) as WeatherApiResponse;
     const { forecastday: forecastDays } = data.forecast;
     return {
