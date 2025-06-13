@@ -28,6 +28,7 @@ RUN yarn --cwd ./dist install --frozen-lockfile --production && \
     yarn --cwd ./dist prisma generate
 
 COPY --from=builder /src/apps/subscription/dist/main.js ./dist/main.js
+COPY libs/proto/common.proto ./libs/proto/common.proto
 COPY libs/proto/subscription.proto ./libs/proto/subscription.proto
 
 EXPOSE 4555

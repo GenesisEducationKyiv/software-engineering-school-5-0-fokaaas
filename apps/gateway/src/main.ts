@@ -5,17 +5,12 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { GrpcExceptionFilter } from './common/filters/grpc-exception.filter';
-import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors();
 
-  app.useGlobalFilters(
-    new HttpExceptionFilter(),
-    new GrpcExceptionFilter(),
-    new GlobalExceptionFilter()
-  );
+  app.useGlobalFilters(new GrpcExceptionFilter(), new HttpExceptionFilter());
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import configuration from './config/configuration';
-import { EmailModule } from './email/email.module';
+import configuration from '../common/config/configuration';
+import { WeatherModule } from './weather/weather.module';
 
 @Module({
   imports: [
@@ -9,7 +9,7 @@ import { EmailModule } from './email/email.module';
       load: [configuration],
       isGlobal: true,
     }),
-    EmailModule,
+    WeatherModule,
   ],
 })
 export class AppModule {}

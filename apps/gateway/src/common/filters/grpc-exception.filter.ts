@@ -3,9 +3,11 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ServiceError, status as GrpcStatus } from '@grpc/grpc-js';
+import { Errors } from '../constants/errors.const';
 
 @Catch()
 export class GrpcExceptionFilter implements ExceptionFilter {
@@ -14,9 +16,14 @@ export class GrpcExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     if (this.isGrpcServiceError(exception)) {
       const httpStatus = this.mapGrpcToHttp(exception.code);
-      response.status(httpStatus).json({ message: exception.message });
+      response
+        .status(httpStatus)
+        .json({ message: this.extractGrpcMessage(exception.message) });
     } else {
-      throw exception;
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
+        message: Errors.INTERNAL_SERVER_ERROR,
+      });
+      Logger.error(exception.stack);
     }
   }
 
@@ -40,5 +47,13 @@ export class GrpcExceptionFilter implements ExceptionFilter {
 
   private mapGrpcToHttp(code: number): number {
     return this.grpcToHttpMap[code] ?? HttpStatus.INTERNAL_SERVER_ERROR;
+  }
+
+  private extractGrpcMessage(raw: string): string {
+    const index = raw.indexOf(':');
+    if (index === -1) {
+      return raw;
+    }
+    return raw.slice(index + 1).trim();
   }
 }
