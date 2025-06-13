@@ -1,8 +1,6 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type {
   CreateRequest,
-  EmailRequest,
-  ExistsResponse,
   FindByFrequencyListResponse,
   FrequencyRequest,
   ISubscriptionService,
@@ -33,16 +31,8 @@ export class SubscriptionClientService
     return this.clientService.findByFrequency(request).toPromise();
   }
 
-  async emailExists(request: EmailRequest): Promise<ExistsResponse> {
-    return this.clientService.emailExists(request).toPromise();
-  }
-
   async create(request: CreateRequest): Promise<TokenResponse> {
     return this.clientService.create(request).toPromise();
-  }
-
-  async tokenExists(request: TokenRequest): Promise<ExistsResponse> {
-    return this.clientService.tokenExists(request).toPromise();
   }
 
   async confirm(request: TokenRequest): Promise<Empty> {
