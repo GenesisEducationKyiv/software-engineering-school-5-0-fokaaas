@@ -6,9 +6,7 @@ import "common.proto";
 
 service SubscriptionService {
   rpc FindByFrequency (FindByFrequencyRequest) returns (FindByFrequencyListResponse) {}
-  rpc EmailExists (EmailRequest) returns (ExistsResponse) {}
   rpc Create (CreateRequest) returns (TokenResponse) {}
-  rpc TokenExists (TokenRequest) returns (ExistsResponse) {}
   rpc Confirm (TokenRequest) returns (common.Empty) {}
   rpc Unsubscribe (TokenRequest) returns (common.Empty) {}
 }
@@ -27,16 +25,9 @@ message FindByFrequencyListResponse {
   repeated FindByFrequencyResponse subscriptions = 1;
 }
 
-message EmailRequest {
-  string email = 1;
-}
 
 message TokenRequest {
   string token = 1;
-}
-
-message ExistsResponse {
-  bool exists = 1;
 }
 
 message TokenResponse {

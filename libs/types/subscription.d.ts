@@ -16,10 +16,6 @@ export type ExistsResponse = {
   exists: boolean;
 };
 
-export type MessageResponse = {
-  message: string;
-};
-
 export type TokenResponse = {
   token: string;
 };
@@ -43,9 +39,7 @@ export interface ISubscriptionService {
   findByFrequency(
     request: FrequencyRequest
   ): Promise<FindByFrequencyListResponse>;
-  emailExists(request: EmailRequest): Promise<ExistsResponse>;
   create(request: CreateRequest): Promise<TokenResponse>;
-  tokenExists(request: TokenRequest): Promise<ExistsResponse>;
   confirm(request: TokenRequest): Promise<Empty>;
   unsubscribe(request: TokenRequest): Promise<Empty>;
 }

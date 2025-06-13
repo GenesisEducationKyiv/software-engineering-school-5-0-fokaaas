@@ -1,8 +1,7 @@
 import { GrpcMethod, GrpcService } from '@nestjs/microservices';
 import type {
   CreateRequest,
-  EmailRequest, Empty,
-  ExistsResponse,
+  Empty,
   FindByFrequencyListResponse,
   FrequencyRequest,
   ISubscriptionController,
@@ -22,19 +21,9 @@ export class SubscriptionController implements ISubscriptionController {
     return this.subscriptionService.findByFrequency(request);
   }
 
-  @GrpcMethod('SubscriptionService', 'EmailExists')
-  emailExists(request: EmailRequest): Promise<ExistsResponse> {
-    return this.subscriptionService.emailExists(request);
-  }
-
   @GrpcMethod('SubscriptionService', 'Create')
   create(request: CreateRequest): Promise<TokenResponse> {
     return this.subscriptionService.create(request);
-  }
-
-  @GrpcMethod('SubscriptionService', 'TokenExists')
-  tokenExists(request: TokenRequest): Promise<ExistsResponse> {
-    return this.subscriptionService.tokenExists(request);
   }
 
   @GrpcMethod('SubscriptionService', 'Confirm')
