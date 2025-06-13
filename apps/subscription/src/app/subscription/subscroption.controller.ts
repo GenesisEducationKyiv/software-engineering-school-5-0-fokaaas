@@ -1,12 +1,11 @@
 import { GrpcMethod, GrpcService } from '@nestjs/microservices';
 import type {
   CreateRequest,
-  EmailRequest,
+  EmailRequest, Empty,
   ExistsResponse,
   FindByFrequencyListResponse,
   FrequencyRequest,
   ISubscriptionController,
-  MessageResponse,
   TokenRequest,
   TokenResponse,
 } from '@types';
@@ -39,12 +38,12 @@ export class SubscriptionController implements ISubscriptionController {
   }
 
   @GrpcMethod('SubscriptionService', 'Confirm')
-  confirm(request: TokenRequest): Promise<MessageResponse> {
+  confirm(request: TokenRequest): Promise<Empty> {
     return this.subscriptionService.confirm(request);
   }
 
   @GrpcMethod('SubscriptionService', 'Unsubscribe')
-  unsubscribe(request: TokenRequest): Promise<MessageResponse> {
+  unsubscribe(request: TokenRequest): Promise<Empty> {
     return this.subscriptionService.unsubscribe(request);
   }
 }

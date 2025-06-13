@@ -6,10 +6,10 @@ import type {
   FindByFrequencyListResponse,
   FrequencyRequest,
   ISubscriptionService,
-  MessageResponse,
   TokenRequest,
   TokenResponse,
   GrpcToObservable,
+  Empty,
 } from '@types';
 import type { ClientGrpc } from '@nestjs/microservices';
 
@@ -45,11 +45,11 @@ export class SubscriptionClientService
     return this.clientService.tokenExists(request).toPromise();
   }
 
-  async confirm(request: TokenRequest): Promise<MessageResponse> {
+  async confirm(request: TokenRequest): Promise<Empty> {
     return this.clientService.confirm(request).toPromise();
   }
 
-  async unsubscribe(request: TokenRequest): Promise<MessageResponse> {
+  async unsubscribe(request: TokenRequest): Promise<Empty> {
     return this.clientService.unsubscribe(request).toPromise();
   }
 }

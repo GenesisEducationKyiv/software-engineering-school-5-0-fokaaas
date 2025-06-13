@@ -1,3 +1,5 @@
+import { Empty } from './index';
+
 export type EmailRequest = {
   email: string;
 };
@@ -44,8 +46,8 @@ export interface ISubscriptionService {
   emailExists(request: EmailRequest): Promise<ExistsResponse>;
   create(request: CreateRequest): Promise<TokenResponse>;
   tokenExists(request: TokenRequest): Promise<ExistsResponse>;
-  confirm(request: TokenRequest): Promise<MessageResponse>;
-  unsubscribe(request: TokenRequest): Promise<MessageResponse>;
+  confirm(request: TokenRequest): Promise<Empty>;
+  unsubscribe(request: TokenRequest): Promise<Empty>;
 }
 
 export type ISubscriptionController = ISubscriptionService;

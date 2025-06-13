@@ -42,7 +42,8 @@ export class SubscriptionService {
     if (!exists) {
       throw new NotFoundException('Token not found');
     }
-    return this.subscriptionClient.confirm({ token });
+    await this.subscriptionClient.confirm({ token });
+    return { message: SubscriptionMessages.SUBSCRIPTION_CONFIRMED };
   }
 
   async unsubscribe({ token }: TokenPath): Promise<{ message: string }> {
@@ -50,6 +51,7 @@ export class SubscriptionService {
     if (!exists) {
       throw new NotFoundException('Token not found');
     }
-    return this.subscriptionClient.unsubscribe({ token });
+    await this.subscriptionClient.unsubscribe({ token });
+    return { message: SubscriptionMessages.UNSUBSCRIBED_SUCCESSFULLY };
   }
 }

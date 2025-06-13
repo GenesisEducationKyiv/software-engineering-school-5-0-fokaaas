@@ -4,11 +4,11 @@ import { SubscriptionRepository } from './subscription.repository';
 import type {
   CreateRequest,
   EmailRequest,
+  Empty,
   ExistsResponse,
   FindByFrequencyListResponse,
   FrequencyRequest,
   ISubscriptionService,
-  MessageResponse,
   TokenRequest,
   TokenResponse,
 } from '@types';
@@ -57,7 +57,7 @@ export class SubscriptionService implements ISubscriptionService {
     return { exists: fromRedis || fromDb };
   }
 
-  async confirm(request: TokenRequest): Promise<MessageResponse> {
+  async confirm(request: TokenRequest): Promise<Empty> {
     const data = await this.redis.getObj<CreateRequest>(request.token);
     await this.repo.create({
       email: data.email,
@@ -66,11 +66,11 @@ export class SubscriptionService implements ISubscriptionService {
       token: request.token,
     });
     await this.redis.delete(request.token);
-    return { message: 'Subscription confirmed successfully' };
+    return {};
   }
 
-  async unsubscribe(request: TokenRequest): Promise<MessageResponse> {
+  async unsubscribe(request: TokenRequest): Promise<Empty> {
     await this.repo.deleteByToken(request.token);
-    return { message: 'Unsubscribed successfully' };
+    return {};
   }
 }
