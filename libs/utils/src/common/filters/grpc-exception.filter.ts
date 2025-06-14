@@ -11,7 +11,7 @@ export class GrpcExceptionFilter implements RpcExceptionFilter {
       return throwError(() => exception.getError());
     }
 
-    Logger.error(exception.message);
+    Logger.error(exception.stack);
 
     return throwError(() =>
       new RpcException({
