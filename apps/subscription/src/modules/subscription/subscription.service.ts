@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Frequency } from '@prisma/client';
 import { SubscriptionRepository } from './subscription.repository';
 import type {
   CreateRequest,
@@ -65,7 +64,7 @@ export class SubscriptionService implements ISubscriptionService {
     const data = await this.redis.getObj<CreateRequest>(request.token);
     await this.repo.create({
       email: data.email,
-      frequency: data.frequency as Frequency,
+      frequency: data.frequency,
       city: data.city,
       token: request.token,
     });
@@ -74,7 +73,7 @@ export class SubscriptionService implements ISubscriptionService {
   }
 
   async unsubscribe({ token }: TokenRequest): Promise<Empty> {
-    const exists = this.tokenExists(token);
+    const exists = await this.tokenExists(token);
     if (!exists) {
       throw new GrpcNotFoundException('Token');
     }
