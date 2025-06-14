@@ -14,6 +14,9 @@
     },
     {
       "path": "./apps/subscription"
+    },
+    {
+      "path": "./libs/utils",
     }
   ]
 }

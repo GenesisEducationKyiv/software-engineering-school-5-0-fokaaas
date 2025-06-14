@@ -26,6 +26,7 @@ RUN yarn --cwd ./dist install --frozen-lockfile --production
 
 COPY --from=builder /src/apps/email/dist/main.js ./dist/main.js
 COPY --from=builder /src/apps/email/templates ./templates
+COPY libs/proto/common.proto ./libs/proto/common.proto
 COPY libs/proto/email.proto ./libs/proto/email.proto
 
 EXPOSE 4557

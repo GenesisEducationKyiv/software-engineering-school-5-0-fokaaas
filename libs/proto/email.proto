@@ -2,17 +2,17 @@ syntax = "proto3";
 
 package email;
 
+import "common.proto";
+
 service EmailService {
-  rpc SendConfirmation (SendConfirmationRequest) returns (Empty) {}
-  rpc SendForecast (SendForecastRequest) returns (Empty) {}
+  rpc SendConfirmation (SendConfirmationRequest) returns (common.Empty) {}
+  rpc SendForecast (SendForecastRequest) returns (common.Empty) {}
 }
 
 message SendConfirmationRequest {
   string email = 1;
   string token = 2;
 }
-
-message Empty {}
 
 message SendDayRequest {
   string date = 1;

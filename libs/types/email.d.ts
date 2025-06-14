@@ -1,4 +1,4 @@
-export type Empty = Record<string, never>;
+import { Empty } from './index';
 
 export type SendConfirmationRequest = {
   email: string;

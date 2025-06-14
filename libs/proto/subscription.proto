@@ -2,13 +2,13 @@ syntax = "proto3";
 
 package subscription;
 
+import "common.proto";
+
 service SubscriptionService {
   rpc FindByFrequency (FindByFrequencyRequest) returns (FindByFrequencyListResponse) {}
-  rpc EmailExists (EmailExistsRequest) returns (EmailExistsResponse) {}
-  rpc Create (CreateRequest) returns (CreateResponse) {}
-  rpc TokenExists (TokenExistsRequest) returns (TokenExistsResponse) {}
-  rpc Confirm (ConfirmRequest) returns (ConfirmResponse) {}
-  rpc Unsubscribe (UnsubscribeRequest) returns (UnsubscribeResponse) {}
+  rpc Create (CreateRequest) returns (TokenResponse) {}
+  rpc Confirm (TokenRequest) returns (common.Empty) {}
+  rpc Unsubscribe (TokenRequest) returns (common.Empty) {}
 }
 
 message FindByFrequencyRequest {
@@ -25,44 +25,17 @@ message FindByFrequencyListResponse {
   repeated FindByFrequencyResponse subscriptions = 1;
 }
 
-message EmailExistsRequest {
-  string email = 1;
+
+message TokenRequest {
+  string token = 1;
 }
 
-message EmailExistsResponse {
-  bool exists = 1;
+message TokenResponse {
+  string token = 1;
 }
 
 message CreateRequest {
   string email = 1;
   string frequency = 2;
   string city = 3;
-}
-
-message CreateResponse {
-  string token = 1;
-}
-
-message TokenExistsRequest {
-  string token = 1;
-}
-
-message TokenExistsResponse {
-  bool exists = 1;
-}
-
-message ConfirmRequest {
-  string token = 1;
-}
-
-message ConfirmResponse {
-  string message = 1;
-}
-
-message UnsubscribeRequest {
-  string token = 1;
-}
-
-message UnsubscribeResponse {
-  string message = 1;
 }
