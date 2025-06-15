@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:15
+    container_name: testing-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+  redis:
+    image: redis:latest
+    container_name: testing-redis
+    ports:
+      - "6379:6379"

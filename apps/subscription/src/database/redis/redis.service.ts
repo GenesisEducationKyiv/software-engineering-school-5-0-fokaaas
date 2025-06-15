@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import { ConfigService } from '@nestjs/config';
+import * as console from 'node:console';
 
-@Injectable()
 @Injectable()
 export class RedisService {
   constructor(
@@ -14,6 +14,7 @@ export class RedisService {
   async setObj<T>(key: string, value: T): Promise<void> {
     const json = JSON.stringify(value);
     const ttl = this.config.get<number>('redis.ttl') ?? 0;
+    console.log(`Setting key: ${key}, TTL: ${ttl} seconds`);
     await this.client.set(key, json, 'EX', ttl);
   }
 

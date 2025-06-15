@@ -2,7 +2,6 @@ import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import { Logger, Module } from '@nestjs/common';
 import { RedisService } from './redis.service';
-import * as process from 'node:process';
 
 @Module({
   providers: [
@@ -14,7 +13,7 @@ import * as process from 'node:process';
           port: configService.get<number>('redis.port'),
         });
 
-        client.on('connect', () => Logger.log('✅ Connected to Redis' + process.env.NODE_ENV + ':' + configService.get('redis.port')));
+        client.on('connect', () => Logger.log('✅ Connected to Redis'));
         client.on('error', (err) =>
           Logger.error('❌ Redis connection error:', err)
         );

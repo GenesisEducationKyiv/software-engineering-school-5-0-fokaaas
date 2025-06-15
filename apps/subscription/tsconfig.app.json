@@ -16,7 +16,6 @@
   ],
   "exclude": [
     "eslint.config.mjs",
-    "jest.config.ts",
     "src/**/*.spec.ts",
     "src/**/*.ispec.ts"
   ],

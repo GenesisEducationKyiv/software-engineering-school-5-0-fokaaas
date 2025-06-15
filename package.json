@@ -13,7 +13,13 @@
     "build:subscription": "nx build subscription",
     "build:email": "nx build email",
     "build:gateway": "nx build gateway",
-    "lint": "yarn eslint libs/types && nx run-many --target=lint --all"
+    "lint": "yarn eslint libs/types && nx run-many --target=lint --all",
+    "itest:subscription": "docker compose -f apps/subscription/docker-compose.test.yml up -d && yarn migrate:test && yarn seed && dotenv -e apps/subscription/.testing.env -- nx test subscription --configuration=integration && docker compose -f apps/subscription/docker-compose.test.yml down",
+    "migrate:test": "dotenv -e apps/subscription/.testing.env -- yarn prisma migrate deploy --schema=apps/subscription/prisma/schema.prisma",
+    "seed": "dotenv -e apps/subscription/.testing.env -- yarn prisma db seed"
+  },
+  "prisma": {
+    "seed": "ts-node apps/subscription/src/common/seed/seed.ts"
   },
   "private": true,
   "dependencies": {
@@ -46,6 +52,7 @@
     "@swc/helpers": "~0.5.11",
     "@types/jest": "^29.5.12",
     "@types/node": "20",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-prettier": "^5.4.1",
@@ -53,9 +60,9 @@
     "jest-environment-jsdom": "^29.7.0",
     "nx": "21.0.3",
     "prettier": "^2.6.2",
-    "tsconfig-paths-webpack-plugin": "^4.2.0",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
+    "tsconfig-paths-webpack-plugin": "^4.2.0",
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.19.0",

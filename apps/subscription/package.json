@@ -20,6 +20,26 @@
           "buildTarget": "@weather-api/subscription:build",
           "runBuildTargetDependencies": false
         }
+      },
+      "test": {
+        "executor": "@nx/jest:jest",
+        "defaultConfiguration": "unit",
+        "configurations": {
+          "integration": {
+            "jestConfig": "jest.integration.config.ts",
+            "passWithNoTests": true
+          },
+          "unit": {
+            "jestConfig": "jest.unit.config.ts",
+            "passWithNoTests": true
+          }
+        }
+      },
+      "itest": {
+        "executor": "@nx/jest:jest",
+        "options": {
+          "jestConfig": "jest.integration.config.ts"
+        }
       }
     }
   },
