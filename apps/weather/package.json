@@ -7,37 +7,18 @@
       "build": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "webpack-cli build",
-          "args": [
-            "node-env=production"
-          ]
-        },
-        "configurations": {
-          "development": {
-            "args": [
-              "node-env=development"
-            ]
-          }
+          "command": "webpack-cli build"
         }
       },
       "serve": {
         "continuous": true,
         "executor": "@nx/js:node",
-        "defaultConfiguration": "development",
         "dependsOn": [
           "build"
         ],
         "options": {
           "buildTarget": "@weather-api/weather:build",
           "runBuildTargetDependencies": false
-        },
-        "configurations": {
-          "development": {
-            "buildTarget": "@weather-api/weather:build:development"
-          },
-          "production": {
-            "buildTarget": "@weather-api/weather:build:production"
-          }
         }
       }
     }
