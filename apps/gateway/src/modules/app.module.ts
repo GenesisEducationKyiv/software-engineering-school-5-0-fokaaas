@@ -3,10 +3,12 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { WeatherModule } from './weather/weather.module';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { join } from 'node:path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: join(__dirname, '..', `.${process.env.NODE_ENV}.env`),
       load: [configuration],
       isGlobal: true,
     }),
