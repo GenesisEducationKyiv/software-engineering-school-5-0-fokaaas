@@ -112,6 +112,19 @@ describe('SubscriptionService (integration)', () => {
   });
 
   describe('unsubscribe', () => {
+    let spyTokenExists: jest.SpyInstance;
+
+    beforeAll(() => {
+      spyTokenExists = jest.spyOn(
+        service,
+        'tokenExists' as keyof SubscriptionService
+      );
+    });
+
+    afterEach(() => {
+      spyTokenExists.mockReset();
+    });
+
     it('should unsubscribe with valid token', async () => {
       const arg = { token: 'token' };
 
@@ -122,6 +135,9 @@ describe('SubscriptionService (integration)', () => {
         where: arg,
       });
       expect(subscription).toBeNull(); // subscription should be deleted
+
+      expect(spyTokenExists).toHaveBeenCalledTimes(1);
+      expect(spyTokenExists).toHaveBeenCalledWith(arg.token);
     });
 
     it('should throw error if token not found', async () => {
@@ -129,6 +145,9 @@ describe('SubscriptionService (integration)', () => {
       const errorMessage = 'Token not found';
 
       await expect(service.unsubscribe(arg)).rejects.toThrow(errorMessage);
+
+      expect(spyTokenExists).toHaveBeenCalledTimes(1);
+      expect(spyTokenExists).toHaveBeenCalledWith(arg.token);
     });
   });
 });

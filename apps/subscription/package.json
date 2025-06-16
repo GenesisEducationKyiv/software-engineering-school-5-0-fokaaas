@@ -34,12 +34,6 @@
             "passWithNoTests": true
           }
         }
-      },
-      "itest": {
-        "executor": "@nx/jest:jest",
-        "options": {
-          "jestConfig": "jest.integration.config.ts"
-        }
       }
     }
   },
