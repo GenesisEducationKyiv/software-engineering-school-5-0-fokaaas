@@ -20,7 +20,24 @@
           "buildTarget": "@weather-api/weather:build",
           "runBuildTargetDependencies": false
         }
+      },
+      "test": {
+        "executor": "@nx/jest:jest",
+        "defaultConfiguration": "unit",
+        "configurations": {
+          "integration": {
+            "jestConfig": "jest.integration.config.ts",
+            "passWithNoTests": true
+          },
+          "unit": {
+            "jestConfig": "jest.unit.config.ts",
+            "passWithNoTests": true
+          }
+        }
       }
     }
+  },
+  "devDependencies": {
+    "msw": "^2.10.2"
   }
 }
