@@ -168,7 +168,7 @@ describe('SubscriptionController (integration)', () => {
       const body = {
         email: 'alreadyExists@gmail.com',
         city: 'Odesa',
-        frequency: 'hourly',
+        frequency: 'daily',
       };
 
       const expectedResponse = {

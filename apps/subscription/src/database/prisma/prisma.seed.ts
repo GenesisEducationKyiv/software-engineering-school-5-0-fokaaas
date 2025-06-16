@@ -22,13 +22,13 @@ export async function main(): Promise<void> {
         email: 'alreadyExists@gmail.com',
         token: 'token2',
         city: 'Odesa',
-        frequency: Frequency.HOURLY,
+        frequency: Frequency.DAILY,
       },
       {
         email: 'unsubscribe@gmail.com',
         token: 'd63c8e48-96a7-455d-9c71-73d49064bb1f',
         city: 'Kharkiv',
-        frequency: Frequency.HOURLY,
+        frequency: Frequency.DAILY,
       },
     ],
   });

@@ -39,6 +39,12 @@ describe('SubscriptionService (integration)', () => {
         subscriptions: [
           { email: 'example@mail.com', token: 'token', city: 'Kyiv' },
           { email: 'example1@mail.com', token: 'token1', city: 'Lviv' },
+          { email: 'alreadyExists@gmail.com', token: 'token2', city: 'Odesa' },
+          {
+            email: 'unsubscribe@gmail.com',
+            token: 'd63c8e48-96a7-455d-9c71-73d49064bb1f',
+            city: 'Kharkiv',
+          },
         ],
       };
 
