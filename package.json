@@ -15,7 +15,7 @@
     "build:gateway": "nx build gateway",
     "lint": "yarn eslint libs/types && nx run-many --target=lint --all",
     "itest:subscription": "yarn setup:test:infrastructure && dotenv -e apps/subscription/.testing.env -- nx test subscription --configuration=integration && yarn teardown:test:infrastructure",
-    "itest:gateway": "yarn setup:test:infrastructure && NODE_ENV=testing dotenv -e apps/gateway/.testing.env -- nx test gateway --configuration=integration && yarn teardown:test:infrastructure",
+    "itest:gateway": "yarn setup:test:infrastructure && NODE_ENV=testing nx test gateway && yarn teardown:test:infrastructure",
     "test:weather": "dotenv -e apps/weather/.testing.env -- nx test weather",
     "setup:test:infrastructure": "docker compose -f apps/subscription/docker-compose.test.yml up -d && yarn migrate:test && yarn seed",
     "teardown:test:infrastructure": "docker compose -f apps/subscription/docker-compose.test.yml down",

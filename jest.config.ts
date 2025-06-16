@@ -5,7 +5,7 @@ const config: Config = {
   ...nxPreset,
   coverageDirectory: 'coverage',
   modulePathIgnorePatterns: ['<rootDir>/apps/*/dist/'],
-  testEnvironment: 'jest-fixed-jsdom',
+  testEnvironment: 'node',
 };
 
 export default config;

@@ -1,7 +1,7 @@
 import Redis from 'ioredis';
 import { Frequency } from '@prisma/client';
-import * as process from 'node:process';
 import { Logger } from '@nestjs/common';
+import { CreateRequest } from '@types';
 
 const redis = new Redis({
   host: process.env.REDIS_HOST ?? '127.0.0.1',
@@ -9,14 +9,22 @@ const redis = new Redis({
 });
 
 export async function main() {
-  await redis.set(
-    'some-token',
-    JSON.stringify({
+  const subscriptions: Record<string, CreateRequest> = {
+    'some-token': {
       frequency: Frequency.DAILY,
       city: 'Poltava',
       email: 'example3@mail.com',
-    })
-  );
+    },
+    'de86e58a-3dee-45dc-8c98-3df0a8eb45b2': {
+      frequency: Frequency.HOURLY,
+      city: 'Lviv',
+      email: 'example4@mail.com',
+    },
+  };
+
+  for (const [token, data] of Object.entries(subscriptions)) {
+    await redis.set(token, JSON.stringify(data));
+  }
 }
 
 export default async function () {

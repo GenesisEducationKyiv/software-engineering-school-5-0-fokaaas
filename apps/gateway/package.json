@@ -23,18 +23,21 @@
       },
       "test": {
         "executor": "@nx/jest:jest",
-        "defaultConfiguration": "unit",
+        "defaultConfiguration": "integration",
         "options": {
           "jestConfig": "jest.config.ts"
         },
         "configurations": {
           "integration": {
             "testMatch": ["<rootDir>/apps/gateway/**/*.ispec.ts"]
-          },
-          "unit": {
-            "testMatch": ["<rootDir>/apps/gateway/**/*.spec.ts"]
           }
-        }
+        },
+        "dependsOn": [
+          {
+            "target": "serve",
+            "projects": ["subscription"]
+          }
+        ]
       }
     }
   },
