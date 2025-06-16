@@ -6,7 +6,7 @@ import * as process from 'node:process';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../../common/config/configuration';
 
-describe('WeatherService (Unit)', () => {
+describe('WeatherService (unit)', () => {
   let service: WeatherService;
   let server: ReturnType<typeof setupServer>;
 

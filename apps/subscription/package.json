@@ -24,14 +24,15 @@
       "test": {
         "executor": "@nx/jest:jest",
         "defaultConfiguration": "unit",
+        "options": {
+          "jestConfig": "jest.config.ts"
+        },
         "configurations": {
           "integration": {
-            "jestConfig": "jest.integration.config.ts",
-            "passWithNoTests": true
+            "testMatch": ["<rootDir>/apps/subscription/**/*.ispec.ts"]
           },
           "unit": {
-            "jestConfig": "jest.unit.config.ts",
-            "passWithNoTests": true
+            "testMatch": ["<rootDir>/apps/subscription/**/*.spec.ts"]
           }
         }
       }
