@@ -2,11 +2,13 @@ import Redis from 'ioredis';
 import { Frequency } from '@prisma/client';
 import { Logger } from '@nestjs/common';
 import { CreateRequest } from '@types';
+import configuration from '../../common/config/configuration';
 
-const redis = new Redis({
-  host: process.env.REDIS_HOST ?? '127.0.0.1',
-  port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
-});
+const {
+  redis: { host, port },
+} = configuration();
+
+const redis = new Redis({ host, port });
 
 export async function main() {
   const subscriptions: Record<string, CreateRequest> = {
