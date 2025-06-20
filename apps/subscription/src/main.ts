@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app/app.module';
+import { AppModule } from './modules/app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 
@@ -21,6 +21,10 @@ async function bootstrap() {
       },
     }
   );
+
+  const filter = appContext.get('GRPC_EXCEPTION_FILTER');
+  app.useGlobalFilters(filter);
+
   await app.listen();
   Logger.log(
     `🔔 Subscription microservice is running on: http://127.0.0.1:${port}`

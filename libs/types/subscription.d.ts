@@ -1,3 +1,5 @@
+import { Empty } from './index';
+
 export type EmailRequest = {
   email: string;
 };
@@ -12,10 +14,6 @@ export type FrequencyRequest = {
 
 export type ExistsResponse = {
   exists: boolean;
-};
-
-export type MessageResponse = {
-  message: string;
 };
 
 export type TokenResponse = {
@@ -41,11 +39,9 @@ export interface ISubscriptionService {
   findByFrequency(
     request: FrequencyRequest
   ): Promise<FindByFrequencyListResponse>;
-  emailExists(request: EmailRequest): Promise<ExistsResponse>;
   create(request: CreateRequest): Promise<TokenResponse>;
-  tokenExists(request: TokenRequest): Promise<ExistsResponse>;
-  confirm(request: TokenRequest): Promise<MessageResponse>;
-  unsubscribe(request: TokenRequest): Promise<MessageResponse>;
+  confirm(request: TokenRequest): Promise<Empty>;
+  unsubscribe(request: TokenRequest): Promise<Empty>;
 }
 
 export type ISubscriptionController = ISubscriptionService;
