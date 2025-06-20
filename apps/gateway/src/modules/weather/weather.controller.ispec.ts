@@ -1,14 +1,14 @@
 import { Test } from '@nestjs/testing';
 import { WeatherService } from './weather.service';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
-import { GrpcExceptionFilter } from '../../common/filters/grpc-exception.filter';
-import { HttpExceptionFilter } from '../../common/filters/http-exception.filter';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { WeatherClientService } from '../weather-client/weather-client.service';
 import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
 import { EmailClientService } from '../email-client/email-client.service';
 import { Errors } from '../../common/constants/errors.const';
 import { WeatherController } from './weather.controller';
+import setupApp from '../../common/utils/setup-app';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 describe('WeatherController (integration)', () => {
   let app: INestApplication;
@@ -39,17 +39,8 @@ describe('WeatherController (integration)', () => {
       controllers: [WeatherController],
     }).compile();
 
-    app = moduleRef.createNestApplication();
-    app.useGlobalFilters(new GrpcExceptionFilter(), new HttpExceptionFilter());
-
-    const globalPrefix = 'api';
-    app.setGlobalPrefix(globalPrefix);
-
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-      })
-    );
+    app = moduleRef.createNestApplication<NestExpressApplication>();
+    setupApp(app);
 
     await app.init();
   });
