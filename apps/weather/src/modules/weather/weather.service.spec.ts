@@ -1,10 +1,9 @@
 import { WeatherService } from './weather.service';
 import { Test } from '@nestjs/testing';
 import { setupServer } from 'msw/node';
-import { createHandlers } from '../../common/utils/mocks/create-handlers';
-import * as process from 'node:process';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../../common/config/configuration';
+import { setupMswServer } from '../../common/utils/mocks/setupMswServer';
 
 describe('WeatherService (unit)', () => {
   let service: WeatherService;
@@ -20,10 +19,7 @@ describe('WeatherService (unit)', () => {
 
     service = moduleRef.get(WeatherService);
 
-    const { WEATHER_API_URL } = process.env;
-    if (WEATHER_API_URL) {
-      server = setupServer(...createHandlers(WEATHER_API_URL ?? ''));
-    }
+    server = await setupMswServer();
     server.listen();
   });
 
