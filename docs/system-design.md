@@ -221,7 +221,8 @@ graph TD
 
 ## 7. Testing Strategy
 
-**Unit Tests:** Gateway microservice has unit tests for business logic using Jest.
+**Unit Tests:** Weather microservice has unit tests for business logic using Jest.
+**Integration Tests:** Gateway and Subscription microservice have integration tests to ensure end-to-end functionality.
 
 ## 8. Future Enhancements
 
@@ -238,8 +239,5 @@ graph TD
   - Build a simple web interface for subscription management, weather viewing, and unsubscription.
 - **Weather Alert Triggers:**
   - Send automatic notifications for severe weather.
-- **Testing**:
-  - Add integration tests for gRPC endpoints.
-  - Implement end-to-end tests for the entire flow from subscription to email delivery.
 - **Logging & Monitoring:**
   - Integrate tools like Prometheus + Grafana for metrics and error tracking.

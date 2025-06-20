@@ -7,39 +7,38 @@
       "build": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "webpack-cli build",
-          "args": [
-            "node-env=production"
-          ]
-        },
-        "configurations": {
-          "development": {
-            "args": [
-              "node-env=development"
-            ]
-          }
+          "command": "webpack-cli build"
         }
       },
       "serve": {
         "continuous": true,
         "executor": "@nx/js:node",
-        "defaultConfiguration": "development",
         "dependsOn": [
           "build"
         ],
         "options": {
           "buildTarget": "@weather-api/weather:build",
           "runBuildTargetDependencies": false
+        }
+      },
+      "test": {
+        "executor": "@nx/jest:jest",
+        "defaultConfiguration": "unit",
+        "options": {
+          "jestConfig": "jest.config.ts"
         },
         "configurations": {
-          "development": {
-            "buildTarget": "@weather-api/weather:build:development"
+          "integration": {
+            "testMatch": ["<rootDir>/apps/weather/**/*.ispec.ts"]
           },
-          "production": {
-            "buildTarget": "@weather-api/weather:build:production"
+          "unit": {
+            "testMatch": ["<rootDir>/apps/weather/**/*.spec.ts"]
           }
         }
       }
     }
+  },
+  "devDependencies": {
+    "msw": "^2.10.2"
   }
 }

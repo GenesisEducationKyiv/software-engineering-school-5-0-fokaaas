@@ -3,21 +3,18 @@
   "compilerOptions": {
     "outDir": "dist",
     "types": [
-      "node",
-      "jest"
+      "node"
     ],
     "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "target": "es2021"
   },
   "include": [
     "src/**/*.ts"
   ],
   "exclude": [
-    "eslint.config.js",
-    "eslint.config.cjs",
-    "eslint.config.mjs"
+    "eslint.config.mjs",
+    "src/**/*.spec.ts",
+    "src/**/*.ispec.ts"
   ]
 }
