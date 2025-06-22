@@ -9,6 +9,7 @@ import { Errors } from '../../common/constants/errors.const';
 import { WeatherController } from './weather.controller';
 import setupApp from '../../common/utils/setup-app';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { status as GrpcStatus } from '@grpc/grpc-js';
 
 describe('WeatherController (integration)', () => {
   let app: INestApplication;
@@ -71,8 +72,6 @@ describe('WeatherController (integration)', () => {
         ],
       });
 
-      weatherClientMock.cityExists?.mockResolvedValue({ exists: true });
-
       const query = { city: 'Kyiv' };
 
       const expectedResponse = {
@@ -88,15 +87,16 @@ describe('WeatherController (integration)', () => {
 
       expect(response.body).toEqual(expectedResponse);
 
-      expect(weatherClientMock.cityExists).toHaveBeenCalledTimes(1);
-      expect(weatherClientMock.cityExists).toHaveBeenCalledWith(query);
-
       expect(weatherClientMock.get).toHaveBeenCalledTimes(1);
       expect(weatherClientMock.get).toHaveBeenCalledWith(query);
     });
 
     it('should return 404 for non-existing city', async () => {
-      weatherClientMock.cityExists?.mockResolvedValue({ exists: false });
+      weatherClientMock.get?.mockRejectedValue(
+        Object.assign(new Error(Errors.CITY_NOT_FOUND), {
+          code: GrpcStatus.NOT_FOUND,
+        })
+      );
 
       const query = { city: 'NonExistingCity' };
       const expectedResponse = {
@@ -109,11 +109,6 @@ describe('WeatherController (integration)', () => {
         .expect(HttpStatus.NOT_FOUND);
 
       expect(response.body).toEqual(expectedResponse);
-
-      expect(weatherClientMock.cityExists).toHaveBeenCalledTimes(1);
-      expect(weatherClientMock.cityExists).toHaveBeenCalledWith(query);
-
-      expect(weatherClientMock.get).not.toHaveBeenCalled();
     });
   });
 

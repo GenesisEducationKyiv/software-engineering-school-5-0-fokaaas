@@ -15,8 +15,8 @@ export class WeatherService {
     private readonly subscriptionClient: SubscriptionClientService
   ) {}
 
-  async getWeather({ city }: WeatherQuery) {
-    const { current } = await this.weatherClient.get({ city });
+  async getWeather(query: WeatherQuery) {
+    const { current } = await this.weatherClient.get(query);
     return {
       temperature: current.temperature,
       humidity: current.humidity,

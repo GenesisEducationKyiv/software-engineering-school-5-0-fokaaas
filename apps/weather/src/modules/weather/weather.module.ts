@@ -6,12 +6,12 @@ import { VisualCrossingProvider } from './providers/visual-crossing.provider';
 import { IWeatherProvider, WeatherService } from './weather.service';
 import { Tokens } from './constants/tokens.const';
 
-type WeatherApiConfigs = {
+export type WeatherApiConfigs = {
   url: string;
   key: string;
 };
 
-type VisualCrossingConfigs = WeatherApiConfigs & {
+export type VisualCrossingConfigs = WeatherApiConfigs & {
   iconUrl: string;
 };
 
