@@ -3,7 +3,8 @@ import { Test } from '@nestjs/testing';
 import { setupServer } from 'msw/node';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../../common/config/configuration';
-import { setupMswServer } from '../../common/utils/mocks/setupMswServer';
+import { setupMswServer } from '../../common/utils/mocks/setup-msw-server';
+import { WeatherModule } from './weather.module';
 
 describe('WeatherService (unit)', () => {
   let service: WeatherService;
@@ -13,8 +14,8 @@ describe('WeatherService (unit)', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         await ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+        WeatherModule,
       ],
-      providers: [WeatherService],
     }).compile();
 
     service = moduleRef.get(WeatherService);
