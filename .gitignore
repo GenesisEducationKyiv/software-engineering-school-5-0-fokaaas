@@ -5,8 +5,10 @@
 tmp
 out-tsc
 
-**/.env.dev
-**/.env.prod
+logs
+
+**/.dev.env
+**/.prod.env
 
 # dependencies
 **/node_modules

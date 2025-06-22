@@ -6,7 +6,7 @@ export type CityExistsResponse = {
   exists: boolean;
 };
 
-export type GetRequest = {
+export type GetWeatherRequest = {
   city: string;
 };
 
@@ -18,42 +18,14 @@ export type DayResponse = {
   description: string;
 };
 
-export type GetResponse = {
+export type GetWeatherResponse = {
   current: DayResponse;
   forecast: DayResponse[];
 };
 
 export interface IWeatherService {
   cityExists(request: CityExistsRequest): Promise<CityExistsResponse>;
-  get(request: GetRequest): Promise<GetResponse>;
+  get(request: GetWeatherRequest): Promise<GetWeatherResponse>;
 }
 
 export type IWeatherController = IWeatherService;
-
-export type WeatherApiResponse = {
-  location: {
-    name: string;
-  };
-  current: {
-    last_updated: string;
-    temp_c: number;
-    humidity: number;
-    condition: {
-      icon: string;
-      text: string;
-    };
-  };
-  forecast: {
-    forecastday: {
-      date: string;
-      day: {
-        avgtemp_c: number;
-        avghumidity: number;
-        condition: {
-          icon: string;
-          text: string;
-        };
-      };
-    }[];
-  };
-};
