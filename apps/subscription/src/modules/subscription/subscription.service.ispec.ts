@@ -6,11 +6,7 @@ import { Frequency } from '@prisma/client';
 import { ConfigModule } from '@nestjs/config';
 import { SubscriptionRepository } from './subscription.repository';
 import { RedisModule } from '../../database/redis/redis.module';
-import type {
-  CreateRequest,
-  FindByFrequencyListResponse,
-  FrequencyRequest,
-} from '@types';
+import type { CreateRequest, FrequencyRequest } from '@types';
 import configuration from '../../common/config/configuration';
 
 describe('SubscriptionService (integration)', () => {
@@ -35,7 +31,10 @@ describe('SubscriptionService (integration)', () => {
   describe('findByFrequency', () => {
     it('should correctly return list of mapped subscriptions', async () => {
       const arg: FrequencyRequest = { frequency: Frequency.DAILY };
-      const expected: FindByFrequencyListResponse = {
+
+      const result = await service.findByFrequency(arg);
+
+      expect(result).toEqual({
         subscriptions: [
           { email: 'example@mail.com', token: 'token', city: 'Kyiv' },
           { email: 'example1@mail.com', token: 'token1', city: 'Lviv' },
@@ -46,24 +45,19 @@ describe('SubscriptionService (integration)', () => {
             city: 'Kharkiv',
           },
         ],
-      };
-
-      const result = await service.findByFrequency(arg);
-
-      expect(result).toEqual(expected);
+      });
     });
 
     it('should return empty list if there no such subscriptions', async () => {
       const arg: FrequencyRequest = { frequency: Frequency.HOURLY };
-      const expected: FindByFrequencyListResponse = { subscriptions: [] };
 
       const result = await service.findByFrequency(arg);
-      expect(result).toEqual(expected);
+      expect(result).toEqual({ subscriptions: [] });
     });
   });
 
   describe('create', () => {
-    it('should create subscription and return token', async () => {
+    it('saves creation data in redis under the returned token', async () => {
       const arg: CreateRequest = {
         email: 'testemail@gmail.com',
         city: 'Test City',
@@ -77,15 +71,14 @@ describe('SubscriptionService (integration)', () => {
       expect(data).toEqual(arg);
     });
 
-    it('should throw error if email already exists', async () => {
+    it('throws if email already exists', async () => {
       const arg: CreateRequest = {
         email: 'example@mail.com',
         city: 'Kyiv',
         frequency: Frequency.DAILY,
       };
-      const errorMessage = 'Email already exists';
 
-      await expect(service.create(arg)).rejects.toThrow(errorMessage);
+      await expect(service.create(arg)).rejects.toThrow('Email already exists');
     });
   });
 
@@ -148,9 +141,8 @@ describe('SubscriptionService (integration)', () => {
 
     it('should throw error if token not found', async () => {
       const arg = { token: 'invalid' };
-      const errorMessage = 'Token not found';
 
-      await expect(service.unsubscribe(arg)).rejects.toThrow(errorMessage);
+      await expect(service.unsubscribe(arg)).rejects.toThrow('Token not found');
 
       expect(spyTokenExists).toHaveBeenCalledTimes(1);
       expect(spyTokenExists).toHaveBeenCalledWith(arg.token);

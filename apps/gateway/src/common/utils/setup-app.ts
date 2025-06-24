@@ -7,8 +7,7 @@ export default function setupApp(app: INestApplication): void {
 
   app.useGlobalFilters(new GrpcExceptionFilter(), new HttpExceptionFilter());
 
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
+  app.setGlobalPrefix('api');
 
   app.useGlobalPipes(
     new ValidationPipe({

@@ -26,25 +26,26 @@ describe('WeatherService (unit)', () => {
   describe('cityExists', () => {
     it('should return true for existing city', async () => {
       const arg = { city: 'Kyiv' };
-      const expected = { exists: true };
 
       const result = await service.cityExists(arg);
-      expect(result).toEqual(expected);
+      expect(result).toEqual({ exists: true });
     });
 
     it('should return false for non-existing city', async () => {
       const arg = { city: 'NonExistingCity' };
-      const expected = { exists: false };
 
       const result = await service.cityExists(arg);
-      expect(result).toEqual(expected);
+      expect(result).toEqual({ exists: false });
     });
   });
 
   describe('getWeather', () => {
     it('should return mapped weather data for existing city', async () => {
       const arg = { city: 'Kyiv' };
-      const expected = {
+
+      const result = await service.get(arg);
+
+      expect(result).toEqual({
         current: {
           date: '2025-06-15 23:00',
           description: 'Partly cloudy',
@@ -61,10 +62,7 @@ describe('WeatherService (unit)', () => {
             temperature: '22.0',
           },
         ],
-      };
-
-      const result = await service.get(arg);
-      expect(result).toEqual(expected);
+      });
     });
 
     it('should throw error for non-existing city', async () => {
