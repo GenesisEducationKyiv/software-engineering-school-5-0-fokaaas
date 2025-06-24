@@ -27,7 +27,7 @@ describe('SubscriptionController (integration)', () => {
           envFilePath: join(
             __dirname,
             '../../..',
-            `.${process.env.NODE_ENV}.env`
+            `.env.${process.env.NODE_ENV}`
           ),
         }),
         SubscriptionModule,
