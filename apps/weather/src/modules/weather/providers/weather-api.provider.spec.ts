@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '../../../common/config/configuration';
 import { WeatherApiConfigs } from '../weather.module';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import { ProviderDomains } from '../constants/provider-domains.const';
 import responses from '../../../common/utils/test/responses';
 
@@ -32,12 +32,17 @@ describe('WeatherApiProvider (unit)', () => {
 
     provider = moduleRef.get(WeatherApiProvider);
     spyAppendFileSync = jest
-      .spyOn(fs, 'appendFileSync')
-      .mockReturnValue(undefined);
+      .spyOn(fs, 'appendFile')
+      .mockResolvedValue(undefined);
+  });
+
+  beforeEach(() => {
+    jest.useFakeTimers().setSystemTime(new Date('2025-06-26T10:00:00.000Z'));
   });
 
   afterEach(() => {
     spyAppendFileSync.mockClear();
+    jest.useRealTimers();
   });
 
   describe('cityExists', () => {
@@ -51,9 +56,9 @@ describe('WeatherApiProvider (unit)', () => {
       expect(spyAppendFileSync).toHaveBeenCalledTimes(1);
       expect(spyAppendFileSync).toHaveBeenCalledWith(
         'logs/weather-providers.log',
-        `${ProviderDomains.WEATHER_API} - Response: ${JSON.stringify(
-          responses.weatherApiSuccess
-        )}\n`
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.WEATHER_API
+        } - Response: ${JSON.stringify(responses.weatherApiSuccess)}\n`
       );
     });
 
@@ -67,9 +72,9 @@ describe('WeatherApiProvider (unit)', () => {
       expect(spyAppendFileSync).toHaveBeenCalledTimes(1);
       expect(spyAppendFileSync).toHaveBeenCalledWith(
         'logs/weather-providers.log',
-        `${ProviderDomains.WEATHER_API} - Response: ${JSON.stringify(
-          responses.weatherApiError
-        )}\n`
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.WEATHER_API
+        } - Response: ${JSON.stringify(responses.weatherApiError)}\n`
       );
     });
   });
@@ -102,9 +107,9 @@ describe('WeatherApiProvider (unit)', () => {
       expect(spyAppendFileSync).toHaveBeenCalledTimes(1);
       expect(spyAppendFileSync).toHaveBeenCalledWith(
         'logs/weather-providers.log',
-        `${ProviderDomains.WEATHER_API} - Response: ${JSON.stringify(
-          responses.weatherApiSuccess
-        )}\n`
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.WEATHER_API
+        } - Response: ${JSON.stringify(responses.weatherApiSuccess)}\n`
       );
     });
 
@@ -116,9 +121,9 @@ describe('WeatherApiProvider (unit)', () => {
       expect(spyAppendFileSync).toHaveBeenCalledTimes(1);
       expect(spyAppendFileSync).toHaveBeenCalledWith(
         'logs/weather-providers.log',
-        `${ProviderDomains.WEATHER_API} - Response: ${JSON.stringify(
-          responses.weatherApiError
-        )}\n`
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.WEATHER_API
+        } - Response: ${JSON.stringify(responses.weatherApiError)}\n`
       );
     });
   });

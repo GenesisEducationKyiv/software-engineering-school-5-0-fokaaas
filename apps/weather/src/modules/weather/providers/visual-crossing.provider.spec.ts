@@ -2,14 +2,14 @@ import { Test } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '../../../common/config/configuration';
 import { VisualCrossingConfigs } from '../weather.module';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import { ProviderDomains } from '../constants/provider-domains.const';
 import responses from '../../../common/utils/test/responses';
 import { VisualCrossingProvider } from './visual-crossing.provider';
 
 describe('WeatherApiProvider (unit)', () => {
   let provider: VisualCrossingProvider;
-  let spyAppendFileSync: jest.SpyInstance;
+  let spyAppendFile: jest.SpyInstance;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -32,13 +32,16 @@ describe('WeatherApiProvider (unit)', () => {
     }).compile();
 
     provider = moduleRef.get(VisualCrossingProvider);
-    spyAppendFileSync = jest
-      .spyOn(fs, 'appendFileSync')
-      .mockReturnValue(undefined);
+    spyAppendFile = jest.spyOn(fs, 'appendFile').mockResolvedValue(undefined);
+  });
+
+  beforeEach(() => {
+    jest.useFakeTimers().setSystemTime(new Date('2025-06-26T10:00:00.000Z'));
   });
 
   afterEach(() => {
-    spyAppendFileSync.mockClear();
+    spyAppendFile.mockClear();
+    jest.useRealTimers();
   });
 
   describe('cityExists', () => {
@@ -49,12 +52,12 @@ describe('WeatherApiProvider (unit)', () => {
       const result = await provider.cityExists(arg);
       expect(result).toEqual(expected);
 
-      expect(spyAppendFileSync).toHaveBeenCalledTimes(1);
-      expect(spyAppendFileSync).toHaveBeenCalledWith(
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
         'logs/weather-providers.log',
-        `${ProviderDomains.VISUAL_CROSSING} - Response: ${JSON.stringify(
-          responses.visualCrossingSuccess
-        )}\n`
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.VISUAL_CROSSING
+        } - Response: ${JSON.stringify(responses.visualCrossingSuccess)}\n`
       );
     });
 
@@ -65,12 +68,12 @@ describe('WeatherApiProvider (unit)', () => {
       const result = await provider.cityExists(arg);
       expect(result).toEqual(expected);
 
-      expect(spyAppendFileSync).toHaveBeenCalledTimes(1);
-      expect(spyAppendFileSync).toHaveBeenCalledWith(
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
         'logs/weather-providers.log',
-        `${ProviderDomains.VISUAL_CROSSING} - Response: ${JSON.stringify(
-          responses.visualCrossingError
-        )}\n`
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.VISUAL_CROSSING
+        } - Response: ${JSON.stringify(responses.visualCrossingError)}\n`
       );
     });
   });
@@ -100,12 +103,12 @@ describe('WeatherApiProvider (unit)', () => {
       const result = await provider.get(arg);
       expect(result).toEqual(expected);
 
-      expect(spyAppendFileSync).toHaveBeenCalledTimes(1);
-      expect(spyAppendFileSync).toHaveBeenCalledWith(
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
         'logs/weather-providers.log',
-        `${ProviderDomains.VISUAL_CROSSING} - Response: ${JSON.stringify(
-          responses.visualCrossingSuccess
-        )}\n`
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.VISUAL_CROSSING
+        } - Response: ${JSON.stringify(responses.visualCrossingSuccess)}\n`
       );
     });
 
@@ -114,12 +117,12 @@ describe('WeatherApiProvider (unit)', () => {
 
       await expect(provider.get(arg)).rejects.toThrow('City not found');
 
-      expect(spyAppendFileSync).toHaveBeenCalledTimes(1);
-      expect(spyAppendFileSync).toHaveBeenCalledWith(
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
         'logs/weather-providers.log',
-        `${ProviderDomains.VISUAL_CROSSING} - Response: ${JSON.stringify(
-          responses.visualCrossingError
-        )}\n`
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.VISUAL_CROSSING
+        } - Response: ${JSON.stringify(responses.visualCrossingError)}\n`
       );
     });
   });

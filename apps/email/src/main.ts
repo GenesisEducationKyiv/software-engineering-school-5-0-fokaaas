@@ -29,4 +29,4 @@ async function bootstrap() {
   Logger.log(`📧 Email microservice is running on: http://127.0.0.1:${port}`);
 }
 
-bootstrap();
+void bootstrap();

@@ -1,4 +1,4 @@
-import { appendFileSync } from 'fs';
+import { appendFile } from 'fs/promises';
 
 export function LogApiResponse(provider: string) {
   return function (
@@ -10,16 +10,22 @@ export function LogApiResponse(provider: string) {
 
     descriptor.value = async function (...args: any[]): Promise<Response> {
       const logFile = 'logs/weather-providers.log';
+      const timestamp = new Date().toISOString();
 
       try {
         const response = await originalMethod.apply(this, args);
         const clone = response.clone();
         const body = await clone.text();
 
-        appendFileSync(logFile, `${provider} - Response: ${body}\n`);
+        void appendFile(
+          logFile,
+          `[${timestamp}] ${provider} - Response: ${body}\n`
+        );
+
         return response;
       } catch (err) {
-        appendFileSync(logFile, `${provider} - Unavailable\n`);
+        void appendFile(logFile, `[${timestamp}] ${provider} - Unavailable\n`);
+
         throw err;
       }
     };
