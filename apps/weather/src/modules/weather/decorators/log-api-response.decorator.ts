@@ -1,6 +1,6 @@
 import { appendFile } from 'fs/promises';
 
-export function LogApiResponse(provider: string) {
+export function LogApiResponse(domain: string) {
   return function (
     _target: object,
     _propertyKey: string,
@@ -19,12 +19,12 @@ export function LogApiResponse(provider: string) {
 
         void appendFile(
           logFile,
-          `[${timestamp}] ${provider} - Response: ${body}\n`
+          `[${timestamp}] ${domain} - Response: ${body}\n`
         );
 
         return response;
       } catch (err) {
-        void appendFile(logFile, `[${timestamp}] ${provider} - Unavailable\n`);
+        void appendFile(logFile, `[${timestamp}] ${domain} - Unavailable\n`);
 
         throw err;
       }
