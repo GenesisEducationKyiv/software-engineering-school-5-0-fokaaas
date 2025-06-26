@@ -1,15 +1,50 @@
 import { Test } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '../../../common/config/configuration';
-import { VisualCrossingConfigs } from '../weather.module';
+import { VisualCrossingConfig } from '../weather-service.factory';
 import * as fs from 'fs/promises';
 import { ProviderDomains } from '../constants/provider-domains.const';
-import responses from '../../../common/utils/test/responses';
 import { VisualCrossingProvider } from './visual-crossing.provider';
+import { http, HttpResponse } from 'msw';
+import { mockServer } from '../../../common/utils/msw/setup';
+import { HttpStatus } from '@nestjs/common';
 
-describe('WeatherApiProvider (unit)', () => {
+describe('VisualCrossingProvider (unit)', () => {
   let provider: VisualCrossingProvider;
   let spyAppendFile: jest.SpyInstance;
+
+  const getHandler = (
+    responseObj: object | string,
+    status: number,
+    city: string
+  ) => {
+    return http.get(
+      `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/next6days`,
+      () => HttpResponse.json(responseObj, { status })
+    );
+  };
+
+  const responses = {
+    ok: {
+      currentConditions: {
+        datetime: '23:00',
+        temp: 21.5,
+        humidity: 75,
+        conditions: 'Partly cloudy',
+        icon: 'partly-cloudy-night',
+      },
+      days: [
+        {
+          datetime: '2025-06-15',
+          temp: 22.0,
+          humidity: 70,
+          conditions: 'Partly cloudy',
+          icon: 'partly-cloudy-day',
+        },
+      ],
+    },
+    notFound: 'Bad API Request:Invalid location parameter value',
+  };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -21,9 +56,7 @@ describe('WeatherApiProvider (unit)', () => {
           provide: VisualCrossingProvider,
           useFactory: (configService: ConfigService) => {
             const { url, key, iconUrl } =
-              configService.get<VisualCrossingConfigs>(
-                'visualCrossing'
-              ) as VisualCrossingConfigs;
+              configService.getOrThrow<VisualCrossingConfig>('visualCrossing');
             return new VisualCrossingProvider(url, key, iconUrl);
           },
           inject: [ConfigService],
@@ -32,6 +65,7 @@ describe('WeatherApiProvider (unit)', () => {
     }).compile();
 
     provider = moduleRef.get(VisualCrossingProvider);
+
     spyAppendFile = jest.spyOn(fs, 'appendFile').mockResolvedValue(undefined);
   });
 
@@ -46,9 +80,11 @@ describe('WeatherApiProvider (unit)', () => {
 
   describe('cityExists', () => {
     it('should return true for existing city', async () => {
-      const arg = 'kyiv';
+      const city = 'kyiv';
 
-      const result = await provider.cityExists(arg);
+      mockServer.addHandlers(getHandler(responses.ok, HttpStatus.OK, city));
+
+      const result = await provider.cityExists(city);
       expect(result).toBe(true);
 
       expect(spyAppendFile).toHaveBeenCalledTimes(1);
@@ -56,14 +92,18 @@ describe('WeatherApiProvider (unit)', () => {
         'logs/weather-providers.log',
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.VISUAL_CROSSING
-        } - Response: ${JSON.stringify(responses.visualCrossingSuccess)}\n`
+        } - Response: ${JSON.stringify(responses.ok)}\n`
       );
     });
 
     it('should return false for non-existing city', async () => {
-      const arg = 'NonExistingCity';
+      const city = 'NonExistingCity';
 
-      const result = await provider.cityExists(arg);
+      mockServer.addHandlers(
+        getHandler(responses.notFound, HttpStatus.NOT_FOUND, city)
+      );
+
+      const result = await provider.cityExists(city);
       expect(result).toBe(false);
 
       expect(spyAppendFile).toHaveBeenCalledTimes(1);
@@ -71,16 +111,18 @@ describe('WeatherApiProvider (unit)', () => {
         'logs/weather-providers.log',
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.VISUAL_CROSSING
-        } - Response: ${JSON.stringify(responses.visualCrossingError)}\n`
+        } - Response: ${JSON.stringify(responses.notFound)}\n`
       );
     });
   });
 
   describe('get', () => {
     it('should return mapped weather data for existing city', async () => {
-      const arg = 'kyiv';
+      const city = 'kyiv';
 
-      const result = await provider.get(arg);
+      mockServer.addHandlers(getHandler(responses.ok, HttpStatus.OK, city));
+
+      const result = await provider.get(city);
       expect(result).toEqual({
         current: {
           date: '23:00',
@@ -105,21 +147,25 @@ describe('WeatherApiProvider (unit)', () => {
         'logs/weather-providers.log',
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.VISUAL_CROSSING
-        } - Response: ${JSON.stringify(responses.visualCrossingSuccess)}\n`
+        } - Response: ${JSON.stringify(responses.ok)}\n`
       );
     });
 
     it('should throw error for non-existing city', async () => {
-      const arg = 'nonExistingCity';
+      const city = 'nonExistingCity';
 
-      await expect(provider.get(arg)).rejects.toThrow('City not found');
+      mockServer.addHandlers(
+        getHandler(responses.notFound, HttpStatus.NOT_FOUND, city)
+      );
+
+      await expect(provider.get(city)).rejects.toThrow('City not found');
 
       expect(spyAppendFile).toHaveBeenCalledTimes(1);
       expect(spyAppendFile).toHaveBeenCalledWith(
         'logs/weather-providers.log',
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.VISUAL_CROSSING
-        } - Response: ${JSON.stringify(responses.visualCrossingError)}\n`
+        } - Response: ${JSON.stringify(responses.notFound)}\n`
       );
     });
   });
