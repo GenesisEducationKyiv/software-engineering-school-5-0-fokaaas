@@ -48,10 +48,9 @@ describe('WeatherApiProvider (unit)', () => {
   describe('cityExists', () => {
     it('should return true for existing city', async () => {
       const arg = 'Kyiv';
-      const expected = true;
 
       const result = await provider.cityExists(arg);
-      expect(result).toEqual(expected);
+      expect(result).toBe(true);
 
       expect(spyAppendFileSync).toHaveBeenCalledTimes(1);
       expect(spyAppendFileSync).toHaveBeenCalledWith(
@@ -64,10 +63,9 @@ describe('WeatherApiProvider (unit)', () => {
 
     it('should return false for non-existing city', async () => {
       const arg = 'NonExistingCity';
-      const expected = false;
 
       const result = await provider.cityExists(arg);
-      expect(result).toEqual(expected);
+      expect(result).toBe(false);
 
       expect(spyAppendFileSync).toHaveBeenCalledTimes(1);
       expect(spyAppendFileSync).toHaveBeenCalledWith(
@@ -82,7 +80,9 @@ describe('WeatherApiProvider (unit)', () => {
   describe('get', () => {
     it('should return mapped weather data for existing city', async () => {
       const arg = 'Kyiv';
-      const expected = {
+
+      const result = await provider.get(arg);
+      expect(result).toEqual({
         current: {
           date: '2025-06-15 23:00',
           description: 'Partly cloudy',
@@ -99,10 +99,7 @@ describe('WeatherApiProvider (unit)', () => {
             temperature: '22.0',
           },
         ],
-      };
-
-      const result = await provider.get(arg);
-      expect(result).toEqual(expected);
+      });
 
       expect(spyAppendFileSync).toHaveBeenCalledTimes(1);
       expect(spyAppendFileSync).toHaveBeenCalledWith(
