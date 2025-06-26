@@ -3,8 +3,7 @@ import type { GetWeatherResponse } from '@types';
 import { RpcUnavailableException } from '../../../common/exceptions/rpc-unavailable-exception';
 
 export abstract class WeatherProvider implements IWeatherProvider {
-  protected nextProvider?: IWeatherProvider;
-  protected baseUrl: string;
+  private nextProvider?: IWeatherProvider;
 
   setNext(provider: IWeatherProvider): IWeatherProvider {
     this.nextProvider = provider;

@@ -39,9 +39,19 @@ type WeatherApiErrorResponse = {
 
 @Injectable()
 export class WeatherApiProvider extends WeatherProvider {
+  private baseUrl: string;
+
   constructor(apiUrl: string, apiKey: string) {
     super();
-    this.baseUrl = `${apiUrl}/forecast.json?key=${apiKey}&days=7`;
+    this.initializeBaseUrl(apiUrl, apiKey);
+  }
+
+  private initializeBaseUrl(apiUrl: string, apiKey: string): void {
+    const params = new URLSearchParams({
+      key: apiKey,
+      days: '7',
+    });
+    this.baseUrl = `${apiUrl}/forecast.json?${params.toString()}`;
   }
 
   override async cityExists(city: string): Promise<boolean> {
@@ -98,7 +108,8 @@ export class WeatherApiProvider extends WeatherProvider {
 
   @LogApiResponse(ProviderDomains.WEATHER_API)
   private fetchWeatherData(city: string): Promise<Response> {
-    return fetch(`${this.baseUrl}&q=${city}`);
+    const params = new URLSearchParams({ q: city });
+    return fetch(`${this.baseUrl}&${params.toString()}`);
   }
 
   private isCityNotFound(error: WeatherApiErrorResponse): boolean {

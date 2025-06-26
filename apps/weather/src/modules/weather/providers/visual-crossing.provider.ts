@@ -21,12 +21,25 @@ type VisualCrossingResponse = {
 
 @Injectable()
 export class VisualCrossingProvider extends WeatherProvider {
+  private baseParams: string;
+
   constructor(
     private readonly apiUrl: string,
-    private readonly apiKey: string,
+    apiKey: string,
     private readonly apiIconUrl: string
   ) {
     super();
+    this.initializeBaseParams(apiKey);
+  }
+
+  private initializeBaseParams(apiKey: string): void {
+    this.baseParams = new URLSearchParams({
+      unitGroup: 'metric',
+      elements: 'datetime,temp,humidity,conditions,icon',
+      include: 'days,current',
+      key: apiKey,
+      contentType: 'json',
+    }).toString();
   }
 
   override async cityExists(city: string): Promise<boolean> {
@@ -83,7 +96,7 @@ export class VisualCrossingProvider extends WeatherProvider {
 
   @LogApiResponse(ProviderDomains.VISUAL_CROSSING)
   private fetchWeatherData(city: string): Promise<Response> {
-    const url = `${this.apiUrl}/${city}/next6days?unitGroup=metric&elements=datetime%2Ctemp%2Chumidity%2Cconditions%2Cicon&include=days%2Ccurrent&key=${this.apiKey}&contentType=json`;
+    const url = `${this.apiUrl}/${city}/next6days?${this.baseParams}`;
     return fetch(url);
   }
 
