@@ -21,8 +21,7 @@ export function LogApiResponse(domain: string) {
 
       try {
         const response = await originalMethod.apply(this, args);
-        const clone = response.clone();
-        const body = await clone.text();
+        const body = await response.clone().text();
 
         void appendFile(
           logFile,
