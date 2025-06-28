@@ -1,5 +1,12 @@
 import { appendFile } from 'fs/promises';
 
+/**
+ * Decorator to log API responses for weather providers.
+ * It logs the response body or an error message if the request fails.
+ *
+ * @param domain - The domain of the weather provider.
+ * @returns A method decorator that logs the API response.
+ */
 export function LogApiResponse(domain: string) {
   return function (
     _target: object,
