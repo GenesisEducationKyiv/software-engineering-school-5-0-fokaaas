@@ -44,9 +44,11 @@ const responses = {
 
 describe('VisualCrossingProvider (unit)', () => {
   let provider: VisualCrossingProvider;
-  let spyAppendFile: jest.SpyInstance;
+  const spyAppendFile = jest
+    .spyOn(fs, 'appendFile')
+    .mockResolvedValue(undefined);
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         await ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
@@ -65,11 +67,6 @@ describe('VisualCrossingProvider (unit)', () => {
     }).compile();
 
     provider = moduleRef.get(VisualCrossingProvider);
-
-    spyAppendFile = jest.spyOn(fs, 'appendFile').mockResolvedValue(undefined);
-  });
-
-  beforeEach(() => {
     jest.useFakeTimers().setSystemTime(new Date('2025-06-26T10:00:00.000Z'));
   });
 
