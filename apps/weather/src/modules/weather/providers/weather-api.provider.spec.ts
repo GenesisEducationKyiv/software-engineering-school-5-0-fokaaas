@@ -9,50 +9,50 @@ import { http, HttpResponse } from 'msw';
 import { mockServer } from '../../../common/utils/msw/setup';
 import { HttpStatus } from '@nestjs/common';
 
+const getHandler = (responseObj: object, status: number) => {
+  return http.get('https://api.weatherapi.com/v1/forecast.json', () =>
+    HttpResponse.json(responseObj, { status })
+  );
+};
+
+const responses = {
+  ok: {
+    current: {
+      last_updated: '2025-06-15 23:00',
+      temp_c: 21.5,
+      humidity: 75,
+      condition: {
+        icon: '//cdn.weatherapi.com/weather/64x64/night/116.png',
+        text: 'Partly cloudy',
+      },
+    },
+    forecast: {
+      forecastday: [
+        {
+          date: '2025-06-15',
+          day: {
+            avgtemp_c: 22.0,
+            avghumidity: 70,
+            condition: {
+              icon: '//cdn.weatherapi.com/weather/64x64/day/116.png',
+              text: 'Partly cloudy',
+            },
+          },
+        },
+      ],
+    },
+  },
+  notFound: {
+    error: {
+      code: 1006,
+      message: 'No matching location found.',
+    },
+  },
+};
+
 describe('WeatherApiProvider (unit)', () => {
   let provider: WeatherApiProvider;
   let spyAppendFile: jest.SpyInstance;
-
-  const getHandler = (responseObj: object, status: number) => {
-    return http.get('https://api.weatherapi.com/v1/forecast.json', () =>
-      HttpResponse.json(responseObj, { status })
-    );
-  };
-
-  const responses = {
-    ok: {
-      current: {
-        last_updated: '2025-06-15 23:00',
-        temp_c: 21.5,
-        humidity: 75,
-        condition: {
-          icon: '//cdn.weatherapi.com/weather/64x64/night/116.png',
-          text: 'Partly cloudy',
-        },
-      },
-      forecast: {
-        forecastday: [
-          {
-            date: '2025-06-15',
-            day: {
-              avgtemp_c: 22.0,
-              avghumidity: 70,
-              condition: {
-                icon: '//cdn.weatherapi.com/weather/64x64/day/116.png',
-                text: 'Partly cloudy',
-              },
-            },
-          },
-        ],
-      },
-    },
-    notFound: {
-      error: {
-        code: 1006,
-        message: 'No matching location found.',
-      },
-    },
-  };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({

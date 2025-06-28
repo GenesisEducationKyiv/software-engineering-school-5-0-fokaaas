@@ -9,42 +9,42 @@ import { http, HttpResponse } from 'msw';
 import { mockServer } from '../../../common/utils/msw/setup';
 import { HttpStatus } from '@nestjs/common';
 
+const getHandler = (
+  responseObj: object | string,
+  status: number,
+  city: string
+) => {
+  return http.get(
+    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/next6days`,
+    () => HttpResponse.json(responseObj, { status })
+  );
+};
+
+const responses = {
+  ok: {
+    currentConditions: {
+      datetime: '23:00',
+      temp: 21.5,
+      humidity: 75,
+      conditions: 'Partly cloudy',
+      icon: 'partly-cloudy-night',
+    },
+    days: [
+      {
+        datetime: '2025-06-15',
+        temp: 22.0,
+        humidity: 70,
+        conditions: 'Partly cloudy',
+        icon: 'partly-cloudy-day',
+      },
+    ],
+  },
+  notFound: 'Bad API Request:Invalid location parameter value',
+};
+
 describe('VisualCrossingProvider (unit)', () => {
   let provider: VisualCrossingProvider;
   let spyAppendFile: jest.SpyInstance;
-
-  const getHandler = (
-    responseObj: object | string,
-    status: number,
-    city: string
-  ) => {
-    return http.get(
-      `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/next6days`,
-      () => HttpResponse.json(responseObj, { status })
-    );
-  };
-
-  const responses = {
-    ok: {
-      currentConditions: {
-        datetime: '23:00',
-        temp: 21.5,
-        humidity: 75,
-        conditions: 'Partly cloudy',
-        icon: 'partly-cloudy-night',
-      },
-      days: [
-        {
-          datetime: '2025-06-15',
-          temp: 22.0,
-          humidity: 70,
-          conditions: 'Partly cloudy',
-          icon: 'partly-cloudy-day',
-        },
-      ],
-    },
-    notFound: 'Bad API Request:Invalid location parameter value',
-  };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
