@@ -11,6 +11,15 @@ type Condition = {
   text: string;
 };
 
+type ForecastDay = {
+  date: string;
+  day: {
+    avgtemp_c: number;
+    avghumidity: number;
+    condition: Condition;
+  };
+};
+
 type WeatherApiResponse = {
   current: {
     last_updated: string;
@@ -19,14 +28,7 @@ type WeatherApiResponse = {
     condition: Condition;
   };
   forecast: {
-    forecastday: {
-      date: string;
-      day: {
-        avgtemp_c: number;
-        avghumidity: number;
-        condition: Condition;
-      };
-    }[];
+    forecastday: ForecastDay[];
   };
 };
 
