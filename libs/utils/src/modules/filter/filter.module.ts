@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GrpcExceptionFilter } from '../common/filters/grpc-exception.filter';
+import { GrpcExceptionFilter } from '../../common/filters/grpc-exception.filter';
 
 @Module({
   providers: [
@@ -10,4 +10,4 @@ import { GrpcExceptionFilter } from '../common/filters/grpc-exception.filter';
   ],
   exports: ['GRPC_EXCEPTION_FILTER'],
 })
-export class UtilsModule {}
+export class FilterModule {}

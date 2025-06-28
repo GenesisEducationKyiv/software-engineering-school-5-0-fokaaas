@@ -12,11 +12,13 @@ import { SubscriptionErrors } from './constants/subscription-errors.const';
 import { Errors } from '../../common/constants/errors.const';
 import setupApp from '../../common/utils/setup-app';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
 
 describe('SubscriptionController (integration)', () => {
   let app: INestApplication;
   let weatherClient: WeatherClientService;
   let emailClient: EmailClientService;
+  let subscriptionClient: SubscriptionClientService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -36,6 +38,7 @@ describe('SubscriptionController (integration)', () => {
 
     weatherClient = moduleRef.get(WeatherClientService);
     emailClient = moduleRef.get(EmailClientService);
+    subscriptionClient = moduleRef.get(SubscriptionClientService);
 
     app = moduleRef.createNestApplication<NestExpressApplication>();
     setupApp(app);
@@ -154,7 +157,19 @@ describe('SubscriptionController (integration)', () => {
   });
 
   describe('GET /api/confirm', () => {
+    let spyConfirm: jest.SpyInstance;
+
+    beforeAll(() => {
+      spyConfirm = jest.spyOn(subscriptionClient, 'confirm');
+    });
+
+    afterEach(() => {
+      spyConfirm.mockRestore();
+    });
+
     it('should confirm subscription and respond with 200', async () => {
+      spyConfirm.mockResolvedValue({});
+
       const token = 'de86e58a-3dee-45dc-8c98-3df0a8eb45b2';
 
       const response = await request(app.getHttpServer())
