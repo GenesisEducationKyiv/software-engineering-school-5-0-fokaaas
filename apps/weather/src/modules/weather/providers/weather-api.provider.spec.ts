@@ -50,6 +50,8 @@ const responses = {
   },
 };
 
+const logFilePath = `${configuration().logPath}/weather-providers.log`;
+
 describe('WeatherApiProvider (unit)', () => {
   let provider: WeatherApiProvider;
   const spyAppendFile = jest
@@ -94,7 +96,7 @@ describe('WeatherApiProvider (unit)', () => {
 
       expect(spyAppendFile).toHaveBeenCalledTimes(1);
       expect(spyAppendFile).toHaveBeenCalledWith(
-        'logs/weather-providers.log',
+        logFilePath,
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.WEATHER_API
         } - Response: ${JSON.stringify(responses.ok)}\n`
@@ -113,7 +115,7 @@ describe('WeatherApiProvider (unit)', () => {
 
       expect(spyAppendFile).toHaveBeenCalledTimes(1);
       expect(spyAppendFile).toHaveBeenCalledWith(
-        'logs/weather-providers.log',
+        logFilePath,
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.WEATHER_API
         } - Response: ${JSON.stringify(responses.notFound)}\n`
@@ -149,7 +151,7 @@ describe('WeatherApiProvider (unit)', () => {
 
       expect(spyAppendFile).toHaveBeenCalledTimes(1);
       expect(spyAppendFile).toHaveBeenCalledWith(
-        'logs/weather-providers.log',
+        logFilePath,
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.WEATHER_API
         } - Response: ${JSON.stringify(responses.ok)}\n`
@@ -167,7 +169,7 @@ describe('WeatherApiProvider (unit)', () => {
 
       expect(spyAppendFile).toHaveBeenCalledTimes(1);
       expect(spyAppendFile).toHaveBeenCalledWith(
-        'logs/weather-providers.log',
+        logFilePath,
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.WEATHER_API
         } - Response: ${JSON.stringify(responses.notFound)}\n`

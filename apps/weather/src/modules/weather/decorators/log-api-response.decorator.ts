@@ -1,4 +1,7 @@
 import { appendFile } from 'fs/promises';
+import configuration from '../../../common/config/configuration';
+
+const logFile = `${configuration().logPath}/weather-providers.log`;
 
 /**
  * Decorator to log API responses for weather providers.
@@ -16,7 +19,6 @@ export function LogApiResponse(domain: string) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]): Promise<Response> {
-      const logFile = 'logs/weather-providers.log';
       const timestamp = new Date().toISOString();
 
       try {

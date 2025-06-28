@@ -42,6 +42,8 @@ const responses = {
   notFound: 'Bad API Request:Invalid location parameter value',
 };
 
+const logFilePath = `${configuration().logPath}/weather-providers.log`;
+
 describe('VisualCrossingProvider (unit)', () => {
   let provider: VisualCrossingProvider;
   const spyAppendFile = jest
@@ -86,7 +88,7 @@ describe('VisualCrossingProvider (unit)', () => {
 
       expect(spyAppendFile).toHaveBeenCalledTimes(1);
       expect(spyAppendFile).toHaveBeenCalledWith(
-        'logs/weather-providers.log',
+        logFilePath,
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.VISUAL_CROSSING
         } - Response: ${JSON.stringify(responses.ok)}\n`
@@ -105,7 +107,7 @@ describe('VisualCrossingProvider (unit)', () => {
 
       expect(spyAppendFile).toHaveBeenCalledTimes(1);
       expect(spyAppendFile).toHaveBeenCalledWith(
-        'logs/weather-providers.log',
+        logFilePath,
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.VISUAL_CROSSING
         } - Response: ${JSON.stringify(responses.notFound)}\n`
@@ -141,7 +143,7 @@ describe('VisualCrossingProvider (unit)', () => {
 
       expect(spyAppendFile).toHaveBeenCalledTimes(1);
       expect(spyAppendFile).toHaveBeenCalledWith(
-        'logs/weather-providers.log',
+        logFilePath,
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.VISUAL_CROSSING
         } - Response: ${JSON.stringify(responses.ok)}\n`
@@ -159,7 +161,7 @@ describe('VisualCrossingProvider (unit)', () => {
 
       expect(spyAppendFile).toHaveBeenCalledTimes(1);
       expect(spyAppendFile).toHaveBeenCalledWith(
-        'logs/weather-providers.log',
+        logFilePath,
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.VISUAL_CROSSING
         } - Response: ${JSON.stringify(responses.notFound)}\n`
