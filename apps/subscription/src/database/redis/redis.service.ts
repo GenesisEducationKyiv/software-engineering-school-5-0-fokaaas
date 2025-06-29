@@ -3,7 +3,6 @@ import Redis from 'ioredis';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-@Injectable()
 export class RedisService {
   constructor(
     @Inject('REDIS_CLIENT')

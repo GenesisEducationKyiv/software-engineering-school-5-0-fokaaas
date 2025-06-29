@@ -5,7 +5,8 @@
 tmp
 out-tsc
 
-**/*.env
+**/.env.dev
+**/.env.prod
 
 # dependencies
 **/node_modules
@@ -41,3 +42,5 @@ Thumbs.db
 
 .nx/cache
 .nx/workspace-data
+
+test-output
