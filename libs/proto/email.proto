@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package email;
+
+import "common.proto";
+
+service EmailService {
+  rpc SendConfirmation (SendConfirmationRequest) returns (common.Empty) {}
+  rpc SendForecast (SendForecastRequest) returns (common.Empty) {}
+}
+
+message SendConfirmationRequest {
+  string email = 1;
+  string token = 2;
+}
+
+message SendDayRequest {
+  string date = 1;
+  string temperature = 2;
+  string humidity = 3;
+  string icon = 4;
+  string description = 5;
+}
+
+message SendForecastRequest {
+  string email = 1;
+  string token = 2;
+  SendDayRequest current = 3;
+  repeated SendDayRequest forecast = 4;
+}
+
+
