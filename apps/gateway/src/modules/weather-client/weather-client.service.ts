@@ -2,8 +2,8 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type {
   CityExistsRequest,
   CityExistsResponse,
-  GetRequest,
-  GetResponse,
+  GetWeatherRequest,
+  GetWeatherResponse,
   GrpcToObservable,
   IWeatherService,
 } from '@types';
@@ -26,7 +26,7 @@ export class WeatherClientService implements IWeatherService, OnModuleInit {
     return this.clientService.cityExists(request).toPromise();
   }
 
-  async get(request: GetRequest): Promise<GetResponse> {
+  async get(request: GetWeatherRequest): Promise<GetWeatherResponse> {
     return this.clientService.get(request).toPromise();
   }
 }

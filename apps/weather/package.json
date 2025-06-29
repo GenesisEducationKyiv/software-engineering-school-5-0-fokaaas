@@ -32,7 +32,8 @@
             "testMatch": ["<rootDir>/apps/weather/**/*.ispec.ts"]
           },
           "unit": {
-            "testMatch": ["<rootDir>/apps/weather/**/*.spec.ts"]
+            "testMatch": ["<rootDir>/apps/weather/**/*.spec.ts"],
+            "setupFilesAfterEnv": ["<rootDir>/apps/weather/src/common/utils/msw/setup.ts"]
           }
         }
       }

@@ -2,8 +2,8 @@ import { GrpcMethod, GrpcService } from '@nestjs/microservices';
 import type {
   CityExistsRequest,
   CityExistsResponse,
-  GetRequest,
-  GetResponse,
+  GetWeatherRequest,
+  GetWeatherResponse,
   IWeatherController,
 } from '@types';
 import { WeatherService } from './weather.service';
@@ -18,7 +18,7 @@ export class WeatherController implements IWeatherController {
   }
 
   @GrpcMethod('WeatherService', 'Get')
-  get(request: GetRequest): Promise<GetResponse> {
+  get(request: GetWeatherRequest): Promise<GetWeatherResponse> {
     return this.service.get(request);
   }
 }

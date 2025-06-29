@@ -5,6 +5,8 @@
 tmp
 out-tsc
 
+logs
+
 **/.env.dev
 **/.env.prod
 

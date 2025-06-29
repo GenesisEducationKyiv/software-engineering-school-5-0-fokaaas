@@ -16,4 +16,4 @@ async function bootstrap() {
   Logger.log(`🚀 Gateway is running on: http://127.0.0.1:${port}/api`);
 }
 
-bootstrap();
+void bootstrap();

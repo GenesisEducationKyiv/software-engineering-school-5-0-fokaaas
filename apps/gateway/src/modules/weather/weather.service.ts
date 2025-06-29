@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { WeatherClientService } from '../weather-client/weather-client.service';
 import { WeatherQuery } from './query/weather.query';
 import type { FindByFrequencyListResponse } from '@types';
@@ -6,7 +6,6 @@ import { Cron } from '@nestjs/schedule';
 import { EmailClientService } from '../email-client/email-client.service';
 import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
 import { Frequency } from '../subscription/enum/frequency.enum';
-import { Errors } from '../../common/constants/errors.const';
 
 @Injectable()
 export class WeatherService {
@@ -16,10 +15,8 @@ export class WeatherService {
     private readonly subscriptionClient: SubscriptionClientService
   ) {}
 
-  async getWeather({ city }: WeatherQuery) {
-    const { exists } = await this.weatherClient.cityExists({ city });
-    if (!exists) throw new NotFoundException(Errors.CITY_NOT_FOUND);
-    const { current } = await this.weatherClient.get({ city });
+  async getWeather(query: WeatherQuery) {
+    const { current } = await this.weatherClient.get(query);
     return {
       temperature: current.temperature,
       humidity: current.humidity,
