@@ -51,12 +51,19 @@ const responses = {
       message: 'No matching location found.',
     },
   },
+  unknownError: {
+    error: {
+      code: 9999,
+      message: 'An unknown error occurred',
+    },
+  },
 };
 
 const logFilePath = `${configuration().logPath}/weather-provider.log`;
 
 describe('WeatherApiProvider (unit)', () => {
   let provider: WeatherApiProvider;
+  let spyHttpGet: jest.SpyInstance;
   const spyAppendFile = jest
     .spyOn(fs, 'appendFile')
     .mockResolvedValue(undefined);
@@ -89,11 +96,15 @@ describe('WeatherApiProvider (unit)', () => {
     }).compile();
 
     provider = moduleRef.get(WeatherApiProvider);
+    const httpClientService = moduleRef.get(HttpClientService);
+    spyHttpGet = jest.spyOn(httpClientService, 'get');
+
     jest.useFakeTimers().setSystemTime(new Date('2025-06-26T10:00:00.000Z'));
   });
 
   afterEach(() => {
     spyAppendFile.mockClear();
+    spyHttpGet.mockRestore();
     jest.useRealTimers();
   });
 
@@ -131,6 +142,41 @@ describe('WeatherApiProvider (unit)', () => {
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.WEATHER_API
         } - Response: ${JSON.stringify(responses.notFound)}\n`
+      );
+    });
+
+    it('throws unavailable exception for unknown error', async () => {
+      const city = 'SomeCity';
+
+      mockServer.addHandlers(
+        getHandler(responses.unknownError, HttpStatus.INTERNAL_SERVER_ERROR)
+      );
+
+      await expect(provider.cityExists(city)).rejects.toThrow(
+        'Service is temporary unavailable'
+      );
+
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
+        logFilePath,
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.WEATHER_API
+        } - Response: ${JSON.stringify(responses.unknownError)}\n`
+      );
+    });
+
+    it('should throw error for internal error', async () => {
+      const city = 'SomeCity';
+      const errorMsg = 'Network Error';
+
+      spyHttpGet.mockRejectedValue(new Error(errorMsg));
+
+      await expect(provider.cityExists(city)).rejects.toThrow(errorMsg);
+
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
+        logFilePath,
+        `[2025-06-26T10:00:00.000Z] ${ProviderDomains.WEATHER_API} - Unavailable\n`
       );
     });
   });
@@ -185,6 +231,41 @@ describe('WeatherApiProvider (unit)', () => {
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.WEATHER_API
         } - Response: ${JSON.stringify(responses.notFound)}\n`
+      );
+    });
+
+    it('throws unavailable exception for unknown error', async () => {
+      const city = 'SomeCity';
+
+      mockServer.addHandlers(
+        getHandler(responses.unknownError, HttpStatus.INTERNAL_SERVER_ERROR)
+      );
+
+      await expect(provider.get(city)).rejects.toThrow(
+        'Service is temporary unavailable'
+      );
+
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
+        logFilePath,
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.WEATHER_API
+        } - Response: ${JSON.stringify(responses.unknownError)}\n`
+      );
+    });
+
+    it('should throw error for internal error', async () => {
+      const city = 'SomeCity';
+      const errorMsg = 'Network Error';
+
+      spyHttpGet.mockRejectedValue(new Error(errorMsg));
+
+      await expect(provider.get(city)).rejects.toThrow(errorMsg);
+
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
+        logFilePath,
+        `[2025-06-26T10:00:00.000Z] ${ProviderDomains.WEATHER_API} - Unavailable\n`
       );
     });
   });

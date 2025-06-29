@@ -43,12 +43,14 @@ const responses = {
     ],
   },
   notFound: 'Bad API Request:Invalid location parameter value',
+  unknownError: 'An unknown error occurred',
 };
 
 const logFilePath = `${configuration().logPath}/weather-provider.log`;
 
 describe('VisualCrossingProvider (unit)', () => {
   let provider: VisualCrossingProvider;
+  let spyHttpGet: jest.SpyInstance;
   const spyAppendFile = jest
     .spyOn(fs, 'appendFile')
     .mockResolvedValue(undefined);
@@ -81,11 +83,15 @@ describe('VisualCrossingProvider (unit)', () => {
     }).compile();
 
     provider = moduleRef.get(VisualCrossingProvider);
+    const httpClientService = moduleRef.get(HttpClientService);
+    spyHttpGet = jest.spyOn(httpClientService, 'get');
+
     jest.useFakeTimers().setSystemTime(new Date('2025-06-26T10:00:00.000Z'));
   });
 
   afterEach(() => {
     spyAppendFile.mockClear();
+    spyHttpGet.mockRestore();
     jest.useRealTimers();
   });
 
@@ -123,6 +129,45 @@ describe('VisualCrossingProvider (unit)', () => {
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.VISUAL_CROSSING
         } - Response: ${JSON.stringify(responses.notFound)}\n`
+      );
+    });
+
+    it('throws unavailable exception for unknown error', async () => {
+      const city = 'SomeCity';
+
+      mockServer.addHandlers(
+        getHandler(
+          responses.unknownError,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          city
+        )
+      );
+
+      await expect(provider.cityExists(city)).rejects.toThrow(
+        'Service is temporary unavailable'
+      );
+
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
+        logFilePath,
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.VISUAL_CROSSING
+        } - Response: ${JSON.stringify(responses.unknownError)}\n`
+      );
+    });
+
+    it('should throw error for internal error', async () => {
+      const city = 'SomeCity';
+      const errorMsg = 'Network Error';
+
+      spyHttpGet.mockRejectedValue(new Error(errorMsg));
+
+      await expect(provider.cityExists(city)).rejects.toThrow(errorMsg);
+
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
+        logFilePath,
+        `[2025-06-26T10:00:00.000Z] ${ProviderDomains.VISUAL_CROSSING} - Unavailable\n`
       );
     });
   });
@@ -177,6 +222,45 @@ describe('VisualCrossingProvider (unit)', () => {
         `[2025-06-26T10:00:00.000Z] ${
           ProviderDomains.VISUAL_CROSSING
         } - Response: ${JSON.stringify(responses.notFound)}\n`
+      );
+    });
+
+    it('throws unavailable exception for unknown error', async () => {
+      const city = 'SomeCity';
+
+      mockServer.addHandlers(
+        getHandler(
+          responses.unknownError,
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          city
+        )
+      );
+
+      await expect(provider.get(city)).rejects.toThrow(
+        'Service is temporary unavailable'
+      );
+
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
+        logFilePath,
+        `[2025-06-26T10:00:00.000Z] ${
+          ProviderDomains.VISUAL_CROSSING
+        } - Response: ${JSON.stringify(responses.unknownError)}\n`
+      );
+    });
+
+    it('should throw error for internal error', async () => {
+      const city = 'SomeCity';
+      const errorMsg = 'Network Error';
+
+      spyHttpGet.mockRejectedValue(new Error(errorMsg));
+
+      await expect(provider.get(city)).rejects.toThrow(errorMsg);
+
+      expect(spyAppendFile).toHaveBeenCalledTimes(1);
+      expect(spyAppendFile).toHaveBeenCalledWith(
+        logFilePath,
+        `[2025-06-26T10:00:00.000Z] ${ProviderDomains.VISUAL_CROSSING} - Unavailable\n`
       );
     });
   });
