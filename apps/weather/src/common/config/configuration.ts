@@ -1,5 +1,5 @@
 export default () => ({
-  port: process.env.PORT,
+  port: process.env.PORT ?? 4556,
   logPath: process.env.LOG_PATH,
   weatherApi: {
     key: process.env.WEATHER_API_KEY,
@@ -14,5 +14,8 @@ export default () => ({
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT && parseInt(process.env.REDIS_PORT),
     ttl: process.env.REDIS_TTL,
+  },
+  metrics: {
+    gatewayUrl: process.env.GATEWAY_URL,
   },
 });

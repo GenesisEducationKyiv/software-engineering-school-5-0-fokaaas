@@ -4,6 +4,7 @@ import configuration from '../common/config/configuration';
 import { WeatherModule } from './weather/weather.module';
 import { FilterModule } from '@utils';
 import { join } from 'node:path';
+import { MetricsModule } from './metrics/metrics.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { join } from 'node:path';
     }),
     WeatherModule,
     FilterModule,
+    MetricsModule,
   ],
 })
 export class AppModule {}

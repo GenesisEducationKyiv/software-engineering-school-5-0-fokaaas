@@ -6,30 +6,46 @@ import {
   IWeatherService,
 } from '@types';
 import { RedisService } from '@utils';
+import { MetricsService } from '../metrics/metrics.service';
 
 export class WeatherCacheProxy implements IWeatherService {
   constructor(
     private readonly service: IWeatherService,
-    private readonly redis: RedisService
+    private readonly redis: RedisService,
+    private readonly metrics: MetricsService
   ) {}
 
   async get({ city }: GetWeatherRequest): Promise<GetWeatherResponse> {
-    const key = city.toLowerCase();
-    const cache = await this.redis.getObj<GetWeatherResponse>(key);
-    if (cache) return cache;
+    return this.metrics.withResponseTime(async () => {
+      const key = city.toLowerCase();
+      const cache = await this.redis.getObj<GetWeatherResponse>(key);
+      if (cache) {
+        this.metrics.incCacheHit('get');
+        return cache;
+      }
 
-    const result = await this.service.get({ city });
-    await this.redis.setObj(key, result);
-    return result;
+      this.metrics.incCacheMiss('get');
+
+      const result = await this.service.get({ city });
+      await this.redis.setObj(key, result);
+      return result;
+    }, 'get');
   }
 
   async cityExists({ city }: CityExistsRequest): Promise<CityExistsResponse> {
-    const key = `exists:${city.toLowerCase()}`;
-    const cache = await this.redis.getBool(key);
-    if (cache) return { exists: cache };
+    return this.metrics.withResponseTime(async () => {
+      const key = `exists:${city.toLowerCase()}`;
+      const cache = await this.redis.getBool(key);
+      if (cache) {
+        this.metrics.incCacheHit('cityExists');
+        return { exists: cache };
+      }
 
-    const result = await this.service.cityExists({ city });
-    await this.redis.setBool(key, result.exists);
-    return result;
+      this.metrics.incCacheMiss('cityExists');
+
+      const result = await this.service.cityExists({ city });
+      await this.redis.setBool(key, result.exists);
+      return result;
+    }, 'cityExists');
   }
 }
