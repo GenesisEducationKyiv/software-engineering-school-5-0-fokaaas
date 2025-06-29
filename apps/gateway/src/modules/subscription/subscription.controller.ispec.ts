@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { SubscriptionMessages } from './constants/subscription-messages.const';
 import * as request from 'supertest';
 import { SubscriptionModule } from './subscription.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '../../config/configuration';
 import { WeatherClientService } from '../weather-client/weather-client.service';
 import { EmailClientService } from '../email-client/email-client.service';
@@ -12,13 +12,15 @@ import { SubscriptionErrors } from './constants/subscription-errors.const';
 import { Errors } from '../../common/constants/errors.const';
 import setupApp from '../../common/utils/setup-app';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
+import Redis from 'ioredis';
+import { Frequency } from '@prisma/client';
 
 describe('SubscriptionController (integration)', () => {
   let app: INestApplication;
   let weatherClient: WeatherClientService;
   let emailClient: EmailClientService;
-  let subscriptionClient: SubscriptionClientService;
+
+  let redis: Redis;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -38,7 +40,10 @@ describe('SubscriptionController (integration)', () => {
 
     weatherClient = moduleRef.get(WeatherClientService);
     emailClient = moduleRef.get(EmailClientService);
-    subscriptionClient = moduleRef.get(SubscriptionClientService);
+
+    const redisConfig = moduleRef.get(ConfigService).getOrThrow('redis');
+
+    redis = new Redis(redisConfig);
 
     app = moduleRef.createNestApplication<NestExpressApplication>();
     setupApp(app);
@@ -157,20 +162,20 @@ describe('SubscriptionController (integration)', () => {
   });
 
   describe('GET /api/confirm', () => {
-    let spyConfirm: jest.SpyInstance;
-
-    beforeAll(() => {
-      spyConfirm = jest.spyOn(subscriptionClient, 'confirm');
-    });
-
-    afterEach(() => {
-      spyConfirm.mockRestore();
+    afterEach(async () => {
+      await redis.flushdb();
     });
 
     it('should confirm subscription and respond with 200', async () => {
-      spyConfirm.mockResolvedValue({});
-
       const token = 'de86e58a-3dee-45dc-8c98-3df0a8eb45b2';
+      await redis.set(
+        `subscription:${token}`,
+        JSON.stringify({
+          email: 'test@gmail.com',
+          city: 'Test City',
+          frequency: Frequency.DAILY,
+        })
+      );
 
       const response = await request(app.getHttpServer())
         .get(`/api/confirm/${token}`)

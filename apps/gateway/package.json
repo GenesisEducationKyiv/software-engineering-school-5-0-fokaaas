@@ -29,13 +29,17 @@
         },
         "configurations": {
           "integration": {
-            "testMatch": ["<rootDir>/apps/gateway/**/*.ispec.ts"]
+            "testMatch": [
+              "<rootDir>/apps/gateway/**/*.ispec.ts"
+            ]
           }
         },
         "dependsOn": [
           {
             "target": "serve",
-            "projects": ["subscription"]
+            "projects": [
+              "subscription"
+            ]
           }
         ]
       }
@@ -48,6 +52,7 @@
   },
   "devDependencies": {
     "@types/supertest": "^6.0.3",
+    "ioredis": "^5.6.1",
     "supertest": "^7.1.1"
   }
 }
