@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { WeatherProvider } from './weather.provider';
 import type { GetWeatherResponse } from '@types';
 import { RpcNotFoundException } from '../../../common/exceptions/rpc-not-found.exception';
 import { ProviderErrorMessages } from '../constants/provider-error-messages.const';
 import { LogApiResponse } from '../decorators/log-api-response.decorator';
 import { ProviderDomains } from '../constants/provider-domains.const';
+import { IWeatherProvider } from '../weather.service';
+import { RpcUnavailableException } from '../../../common/exceptions/rpc-unavailable-exception';
 
 type Conditions = {
   datetime: string;
@@ -20,7 +21,7 @@ type VisualCrossingResponse = {
 };
 
 @Injectable()
-export class VisualCrossingProvider extends WeatherProvider {
+export class VisualCrossingProvider implements IWeatherProvider {
   private baseParams: string;
 
   constructor(
@@ -28,7 +29,6 @@ export class VisualCrossingProvider extends WeatherProvider {
     apiKey: string,
     private readonly apiIconUrl: string
   ) {
-    super();
     this.initializeBaseParams(apiKey);
   }
 
@@ -42,31 +42,23 @@ export class VisualCrossingProvider extends WeatherProvider {
     }).toString();
   }
 
-  override async cityExists(city: string): Promise<boolean> {
-    let response: Response;
-    try {
-      response = await this.fetchWeatherData(city);
-    } catch {
-      return super.cityExists(city);
-    }
+  async cityExists(city: string): Promise<boolean> {
+    const response = await this.fetchWeatherData(city);
     if (response.ok) return true;
+
     const message = (await response.text()) as string;
     if (this.isCityNotFound(message)) {
       return false;
     }
-    return super.cityExists(city);
+    throw new RpcUnavailableException();
   }
 
-  override async get(city: string): Promise<GetWeatherResponse> {
-    let response: Response;
-    try {
-      response = await this.fetchWeatherData(city);
-    } catch {
-      return super.get(city);
-    }
+  async get(city: string): Promise<GetWeatherResponse> {
+    const response = await this.fetchWeatherData(city);
     if (response.ok) {
       const { days, currentConditions } =
         (await response.json()) as VisualCrossingResponse;
+
       return {
         current: {
           date: currentConditions.datetime,
@@ -91,7 +83,7 @@ export class VisualCrossingProvider extends WeatherProvider {
       throw new RpcNotFoundException('City');
     }
 
-    return super.get(city);
+    throw new RpcUnavailableException();
   }
 
   @LogApiResponse(ProviderDomains.VISUAL_CROSSING)

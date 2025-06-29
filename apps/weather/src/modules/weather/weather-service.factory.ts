@@ -34,8 +34,6 @@ export class WeatherServiceFactory {
       visualCrossingConfig.iconUrl
     );
 
-    weatherApiProvider.setNext(visualCrossingProvider);
-
-    return new WeatherService(weatherApiProvider);
+    return new WeatherService([weatherApiProvider, visualCrossingProvider]);
   }
 }

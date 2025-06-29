@@ -6,23 +6,42 @@ import type {
   GetWeatherResponse,
   IWeatherService,
 } from '@types';
+import { RpcException } from '@nestjs/microservices';
+import { RpcUnavailableException } from '../../common/exceptions/rpc-unavailable-exception';
 
 export interface IWeatherProvider {
-  setNext(next: IWeatherProvider): IWeatherProvider;
   cityExists(city: string): Promise<boolean>;
   get(city: string): Promise<GetWeatherResponse>;
 }
 
 @Injectable()
 export class WeatherService implements IWeatherService {
-  constructor(private provider: IWeatherProvider) {}
+  constructor(private readonly chain: IWeatherProvider[]) {}
 
-  get({ city }: GetWeatherRequest): Promise<GetWeatherResponse> {
-    return this.provider.get(city);
+  async get({ city }: GetWeatherRequest): Promise<GetWeatherResponse> {
+    return this.tryChain((provider) => provider.get(city));
   }
 
   async cityExists({ city }: CityExistsRequest): Promise<CityExistsResponse> {
-    const exists = await this.provider.cityExists(city);
+    const exists = await this.tryChain((provider) => provider.cityExists(city));
     return { exists };
+  }
+
+  private async tryChain<T>(
+    handler: (provider: IWeatherProvider) => Promise<T>
+  ): Promise<T> {
+    for (const provider of this.chain) {
+      try {
+        return await handler(provider);
+      } catch (error) {
+        if (
+          error instanceof RpcException &&
+          !(error instanceof RpcUnavailableException)
+        ) {
+          throw error;
+        }
+      }
+    }
+    throw new RpcUnavailableException();
   }
 }

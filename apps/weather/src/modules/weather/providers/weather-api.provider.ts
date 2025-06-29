@@ -1,10 +1,11 @@
-import { WeatherProvider } from './weather.provider';
 import { Injectable } from '@nestjs/common';
 import type { GetWeatherResponse } from '@types';
 import { ProviderErrorMessages } from '../constants/provider-error-messages.const';
 import { RpcNotFoundException } from '../../../common/exceptions/rpc-not-found.exception';
 import { LogApiResponse } from '../decorators/log-api-response.decorator';
 import { ProviderDomains } from '../constants/provider-domains.const';
+import { RpcUnavailableException } from '../../../common/exceptions/rpc-unavailable-exception';
+import { IWeatherProvider } from '../weather.service';
 
 type Condition = {
   icon: string;
@@ -40,11 +41,10 @@ type WeatherApiErrorResponse = {
 };
 
 @Injectable()
-export class WeatherApiProvider extends WeatherProvider {
+export class WeatherApiProvider implements IWeatherProvider {
   private baseUrl: string;
 
   constructor(apiUrl: string, apiKey: string) {
-    super();
     this.initializeBaseUrl(apiUrl, apiKey);
   }
 
@@ -56,28 +56,20 @@ export class WeatherApiProvider extends WeatherProvider {
     this.baseUrl = `${apiUrl}/forecast.json?${params.toString()}`;
   }
 
-  override async cityExists(city: string): Promise<boolean> {
-    let response: Response;
-    try {
-      response = await this.fetchWeatherData(city);
-    } catch {
-      return super.cityExists(city);
-    }
+  async cityExists(city: string): Promise<boolean> {
+    const response = await this.fetchWeatherData(city);
     if (response.ok) return true;
+
     const errorData = (await response.json()) as WeatherApiErrorResponse;
     if (this.isCityNotFound(errorData)) {
       return false;
     }
-    return super.cityExists(city);
+    throw new RpcUnavailableException();
   }
 
-  override async get(city: string): Promise<GetWeatherResponse> {
-    let response: Response;
-    try {
-      response = await this.fetchWeatherData(city);
-    } catch {
-      return super.get(city);
-    }
+  async get(city: string): Promise<GetWeatherResponse> {
+    const response = await this.fetchWeatherData(city);
+
     if (response.ok) {
       const data = (await response.json()) as WeatherApiResponse;
       const { forecastday: forecastDays } = data.forecast;
@@ -105,7 +97,7 @@ export class WeatherApiProvider extends WeatherProvider {
       throw new RpcNotFoundException('City');
     }
 
-    return super.get(city);
+    throw new RpcUnavailableException();
   }
 
   @LogApiResponse(ProviderDomains.WEATHER_API)
