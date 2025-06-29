@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { WeatherController } from './weather.controller';
 import { WeatherService } from './weather.service';
 import { WeatherServiceFactory } from './weather-service.factory';
+import { HttpClientModule } from '../http-client/http-client.module';
 
 @Module({
   controllers: [WeatherController],
@@ -13,5 +14,6 @@ import { WeatherServiceFactory } from './weather-service.factory';
       inject: [WeatherServiceFactory],
     },
   ],
+  imports: [HttpClientModule],
 })
 export class WeatherModule {}

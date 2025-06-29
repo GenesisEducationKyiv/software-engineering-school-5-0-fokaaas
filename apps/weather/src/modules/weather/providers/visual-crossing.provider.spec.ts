@@ -8,6 +8,9 @@ import { VisualCrossingProvider } from './visual-crossing.provider';
 import { http, HttpResponse } from 'msw';
 import { mockServer } from '../../../common/utils/msw/setup';
 import { HttpStatus } from '@nestjs/common';
+import { HttpClientLoggerDecorator } from '../../http-client/decorators/http-client-logger.decorator';
+import { HttpClientModule } from '../../http-client/http-client.module';
+import { HttpClientService } from '../../http-client/http-client.service';
 
 const getHandler = (
   responseObj: object | string,
@@ -42,7 +45,7 @@ const responses = {
   notFound: 'Bad API Request:Invalid location parameter value',
 };
 
-const logFilePath = `${configuration().logPath}/weather-providers.log`;
+const logFilePath = `${configuration().logPath}/weather-provider.log`;
 
 describe('VisualCrossingProvider (unit)', () => {
   let provider: VisualCrossingProvider;
@@ -54,16 +57,25 @@ describe('VisualCrossingProvider (unit)', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         await ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+        HttpClientModule,
       ],
       providers: [
         {
           provide: VisualCrossingProvider,
-          useFactory: (configService: ConfigService) => {
+          useFactory: (
+            configService: ConfigService,
+            httpClientService: HttpClientService
+          ) => {
             const { url, key, iconUrl } =
               configService.getOrThrow<VisualCrossingConfig>('visualCrossing');
-            return new VisualCrossingProvider(url, key, iconUrl);
+            const httpClient = new HttpClientLoggerDecorator(
+              httpClientService,
+              ProviderDomains.VISUAL_CROSSING,
+              logFilePath
+            );
+            return new VisualCrossingProvider(url, key, iconUrl, httpClient);
           },
-          inject: [ConfigService],
+          inject: [ConfigService, HttpClientService],
         },
       ],
     }).compile();

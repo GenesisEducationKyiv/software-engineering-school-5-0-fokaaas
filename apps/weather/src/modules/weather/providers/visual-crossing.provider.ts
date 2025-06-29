@@ -2,10 +2,9 @@ import { Injectable } from '@nestjs/common';
 import type { GetWeatherResponse } from '@types';
 import { RpcNotFoundException } from '../../../common/exceptions/rpc-not-found.exception';
 import { ProviderErrorMessages } from '../constants/provider-error-messages.const';
-import { LogApiResponse } from '../decorators/log-api-response.decorator';
-import { ProviderDomains } from '../constants/provider-domains.const';
 import { IWeatherProvider } from '../weather.service';
 import { RpcUnavailableException } from '../../../common/exceptions/rpc-unavailable-exception';
+import type { HttpClient } from '../../http-client/http-client.service';
 
 type Conditions = {
   datetime: string;
@@ -27,7 +26,8 @@ export class VisualCrossingProvider implements IWeatherProvider {
   constructor(
     private readonly apiUrl: string,
     apiKey: string,
-    private readonly apiIconUrl: string
+    private readonly apiIconUrl: string,
+    private readonly httpClient: HttpClient
   ) {
     this.initializeBaseParams(apiKey);
   }
@@ -86,10 +86,9 @@ export class VisualCrossingProvider implements IWeatherProvider {
     throw new RpcUnavailableException();
   }
 
-  @LogApiResponse(ProviderDomains.VISUAL_CROSSING)
   private fetchWeatherData(city: string): Promise<Response> {
     const url = `${this.apiUrl}/${city}/next6days?${this.baseParams}`;
-    return fetch(url);
+    return this.httpClient.get(url);
   }
 
   private isCityNotFound(message: string): boolean {

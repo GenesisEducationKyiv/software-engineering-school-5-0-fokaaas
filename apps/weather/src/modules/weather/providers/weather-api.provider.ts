@@ -2,10 +2,9 @@ import { Injectable } from '@nestjs/common';
 import type { GetWeatherResponse } from '@types';
 import { ProviderErrorMessages } from '../constants/provider-error-messages.const';
 import { RpcNotFoundException } from '../../../common/exceptions/rpc-not-found.exception';
-import { LogApiResponse } from '../decorators/log-api-response.decorator';
-import { ProviderDomains } from '../constants/provider-domains.const';
 import { RpcUnavailableException } from '../../../common/exceptions/rpc-unavailable-exception';
 import { IWeatherProvider } from '../weather.service';
+import type { HttpClient } from '../../http-client/http-client.service';
 
 type Condition = {
   icon: string;
@@ -44,7 +43,11 @@ type WeatherApiErrorResponse = {
 export class WeatherApiProvider implements IWeatherProvider {
   private baseUrl: string;
 
-  constructor(apiUrl: string, apiKey: string) {
+  constructor(
+    apiUrl: string,
+    apiKey: string,
+    private readonly httpClient: HttpClient
+  ) {
     this.initializeBaseUrl(apiUrl, apiKey);
   }
 
@@ -100,10 +103,9 @@ export class WeatherApiProvider implements IWeatherProvider {
     throw new RpcUnavailableException();
   }
 
-  @LogApiResponse(ProviderDomains.WEATHER_API)
   private fetchWeatherData(city: string): Promise<Response> {
     const params = new URLSearchParams({ q: city });
-    return fetch(`${this.baseUrl}&${params.toString()}`);
+    return this.httpClient.get(`${this.baseUrl}&${params.toString()}`);
   }
 
   private isCityNotFound(error: WeatherApiErrorResponse): boolean {

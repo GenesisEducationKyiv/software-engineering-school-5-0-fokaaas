@@ -8,6 +8,9 @@ import { ProviderDomains } from '../constants/provider-domains.const';
 import { http, HttpResponse } from 'msw';
 import { mockServer } from '../../../common/utils/msw/setup';
 import { HttpStatus } from '@nestjs/common';
+import { HttpClientService } from '../../http-client/http-client.service';
+import { HttpClientLoggerDecorator } from '../../http-client/decorators/http-client-logger.decorator';
+import { HttpClientModule } from '../../http-client/http-client.module';
 
 const getHandler = (responseObj: object, status: number) => {
   return http.get('https://api.weatherapi.com/v1/forecast.json', () =>
@@ -50,7 +53,7 @@ const responses = {
   },
 };
 
-const logFilePath = `${configuration().logPath}/weather-providers.log`;
+const logFilePath = `${configuration().logPath}/weather-provider.log`;
 
 describe('WeatherApiProvider (unit)', () => {
   let provider: WeatherApiProvider;
@@ -62,16 +65,25 @@ describe('WeatherApiProvider (unit)', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         await ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+        HttpClientModule,
       ],
       providers: [
         {
           provide: WeatherApiProvider,
-          useFactory: (configService: ConfigService) => {
+          useFactory: (
+            configService: ConfigService,
+            httpClientService: HttpClientService
+          ) => {
             const { url, key } =
               configService.getOrThrow<WeatherApiConfig>('weatherApi');
-            return new WeatherApiProvider(url, key);
+            const httpClient = new HttpClientLoggerDecorator(
+              httpClientService,
+              ProviderDomains.WEATHER_API,
+              logFilePath
+            );
+            return new WeatherApiProvider(url, key, httpClient);
           },
-          inject: [ConfigService],
+          inject: [ConfigService, HttpClientService],
         },
       ],
     }).compile();

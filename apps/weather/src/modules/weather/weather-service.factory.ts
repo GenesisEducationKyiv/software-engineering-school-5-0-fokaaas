@@ -3,6 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { WeatherApiProvider } from './providers/weather-api.provider';
 import { VisualCrossingProvider } from './providers/visual-crossing.provider';
 import { WeatherService } from './weather.service';
+import { HttpClientService } from '../http-client/http-client.service';
+import { HttpClientLoggerDecorator } from '../http-client/decorators/http-client-logger.decorator';
+import { ProviderDomains } from './constants/provider-domains.const';
 
 export type WeatherApiConfig = {
   url: string;
@@ -15,23 +18,39 @@ export type VisualCrossingConfig = WeatherApiConfig & {
 
 @Injectable()
 export class WeatherServiceFactory {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly httpClientService: HttpClientService
+  ) {}
 
   create(): WeatherService {
     const weatherApiConfig =
       this.configService.getOrThrow<WeatherApiConfig>('weatherApi');
     const visualCrossingConfig =
       this.configService.getOrThrow<VisualCrossingConfig>('visualCrossing');
+    const logPath = `${this.configService.get<string>(
+      'logPath'
+    )}/weather-provider.log`;
 
     const weatherApiProvider = new WeatherApiProvider(
       weatherApiConfig.url,
-      weatherApiConfig.key
+      weatherApiConfig.key,
+      new HttpClientLoggerDecorator(
+        this.httpClientService,
+        ProviderDomains.WEATHER_API,
+        logPath
+      )
     );
 
     const visualCrossingProvider = new VisualCrossingProvider(
       visualCrossingConfig.url,
       visualCrossingConfig.key,
-      visualCrossingConfig.iconUrl
+      visualCrossingConfig.iconUrl,
+      new HttpClientLoggerDecorator(
+        this.httpClientService,
+        ProviderDomains.VISUAL_CROSSING,
+        logPath
+      )
     );
 
     return new WeatherService([weatherApiProvider, visualCrossingProvider]);
