@@ -24,6 +24,21 @@ export class RedisService {
     return JSON.parse(json);
   }
 
+  async setBool(key: string, value: boolean): Promise<void> {
+    await this.client.set(
+      this.composeKey(key),
+      value.toString(),
+      'EX',
+      this.ttl
+    );
+  }
+
+  async getBool(key: string): Promise<boolean | null> {
+    const value = await this.client.get(this.composeKey(key));
+    if (value === null) return null;
+    return value.toLowerCase() === 'true';
+  }
+
   async delete(key: string): Promise<void> {
     await this.client.del(this.composeKey(key));
   }

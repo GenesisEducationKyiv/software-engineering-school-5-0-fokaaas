@@ -3,6 +3,7 @@ import { WeatherController } from './weather.controller';
 import { WeatherService } from './weather.service';
 import { WeatherServiceFactory } from './weather-service.factory';
 import { HttpClientModule } from '../http-client/http-client.module';
+import { RedisModule } from '@utils';
 
 @Module({
   controllers: [WeatherController],
@@ -14,6 +15,6 @@ import { HttpClientModule } from '../http-client/http-client.module';
       inject: [WeatherServiceFactory],
     },
   ],
-  imports: [HttpClientModule],
+  imports: [HttpClientModule, RedisModule.register('weather')],
 })
 export class WeatherModule {}

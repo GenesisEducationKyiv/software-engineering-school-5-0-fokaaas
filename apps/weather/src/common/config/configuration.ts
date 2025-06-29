@@ -10,4 +10,9 @@ export default () => ({
     url: process.env.VISUAL_CROSSING_URL,
     iconUrl: process.env.VISUAL_CROSSING_ICON_URL,
   },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT && parseInt(process.env.REDIS_PORT),
+    ttl: process.env.REDIS_TTL,
+  },
 });
