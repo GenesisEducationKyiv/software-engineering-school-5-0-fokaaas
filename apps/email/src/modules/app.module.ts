@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../common/config/configuration';
 import { EmailModule } from './email/email.module';
-import { UtilsModule } from '@utils';
+import { FilterModule } from '@utils';
 import { join } from 'node:path';
 
 @Module({
@@ -13,7 +13,7 @@ import { join } from 'node:path';
       isGlobal: true,
     }),
     EmailModule,
-    UtilsModule,
+    FilterModule,
   ],
 })
 export class AppModule {}

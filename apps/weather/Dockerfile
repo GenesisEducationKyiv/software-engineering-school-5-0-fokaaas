@@ -3,31 +3,32 @@
 # =============================
 FROM node:20.19-alpine3.20 AS builder
 
-WORKDIR src
+WORKDIR /app
 
-COPY tsconfig.base.json yarn.lock package.json nx.json ./
+COPY yarn.lock package.json ./
 COPY apps/weather/package.json ./apps/weather/package.json
+
+COPY . ./
 RUN yarn install --frozen-lockfile
 
-COPY libs/types ./libs/types
-COPY apps/weather ./apps/weather
-RUN npx nx build weather
+COPY . .
+
+RUN yarn build:weather
 
 # =============================
 # Stage 2: Production
 # =============================
 FROM node:20.19-alpine3.20 AS production
+ENV NODE_ENV=prod
 
 WORKDIR /app
 
-COPY --from=builder /src/apps/weather/dist/package.json ./dist/package.json
-COPY --from=builder /src/apps/weather/dist/yarn.lock ./dist/yarn.lock
-RUN yarn --cwd ./dist install --frozen-lockfile --production
+COPY --from=builder /app/apps/weather/dist ./
+COPY --from=builder /app/libs/proto ./libs/proto
 
-COPY --from=builder /src/apps/weather/dist/main.js ./dist/main.js
-COPY libs/proto/weather.proto ./libs/proto/weather.proto
+RUN yarn install --frozen-lockfile --production
 
-EXPOSE 4556
+EXPOSE 4555
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "main.js"]
 

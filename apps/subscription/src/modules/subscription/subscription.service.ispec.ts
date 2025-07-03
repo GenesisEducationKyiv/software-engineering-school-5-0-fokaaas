@@ -1,13 +1,12 @@
 import { Test } from '@nestjs/testing';
 import { SubscriptionService } from './subscription.service';
 import { PrismaService } from '../../database/prisma/prisma.service';
-import { RedisService } from '../../database/redis/redis.service';
+import { RedisService } from '@utils';
 import { Frequency } from '@prisma/client';
 import { ConfigModule } from '@nestjs/config';
-import { SubscriptionRepository } from './subscription.repository';
-import { RedisModule } from '../../database/redis/redis.module';
 import type { CreateRequest, FrequencyRequest } from '@types';
 import configuration from '../../common/config/configuration';
+import { SubscriptionModule } from './subscription.module';
 
 describe('SubscriptionService (integration)', () => {
   let service: SubscriptionService;
@@ -18,14 +17,17 @@ describe('SubscriptionService (integration)', () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         await ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
-        RedisModule,
+        SubscriptionModule,
       ],
-      providers: [SubscriptionService, SubscriptionRepository, PrismaService],
     }).compile();
 
     service = moduleRef.get(SubscriptionService);
     prisma = moduleRef.get(PrismaService);
     redis = moduleRef.get(RedisService);
+  });
+
+  afterEach(async () => {
+    await redis.flush();
   });
 
   describe('findByFrequency', () => {
@@ -84,22 +86,28 @@ describe('SubscriptionService (integration)', () => {
 
   describe('confirm', () => {
     it('should confirm subscription with valid token', async () => {
-      const arg = { token: 'some-token' };
+      const token = '114e05a1-b9a2-4a27-a269-d6eb6dc6a705';
+      const data: CreateRequest = {
+        frequency: Frequency.DAILY,
+        city: 'Poltava',
+        email: 'example3@mail.com',
+      };
+      await redis.setObj<CreateRequest>(token, data);
 
-      const result = await service.confirm(arg);
+      const result = await service.confirm({ token });
 
       expect(result).toEqual({});
 
       const subscription = await prisma.subscription.findFirst({
-        where: arg,
+        where: { token },
       });
       expect(subscription).not.toBeNull();
-      expect(subscription?.email).toBe('example3@mail.com');
-      expect(subscription?.city).toBe('Poltava');
-      expect(subscription?.frequency).toBe(Frequency.DAILY);
+      expect(subscription?.email).toBe(data.email);
+      expect(subscription?.city).toBe(data.city);
+      expect(subscription?.frequency).toBe(data.frequency);
 
-      const redisObj = await redis.exists(arg.token);
-      expect(redisObj).toBe(false); // token should be deleted from Redis
+      const redisObj = await redis.getObj(token);
+      expect(redisObj).toBeNull(); // token should be deleted from Redis
     });
 
     it('should throw error if token not found', async () => {

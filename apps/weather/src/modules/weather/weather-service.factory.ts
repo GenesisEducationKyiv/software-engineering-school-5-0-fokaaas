@@ -6,6 +6,10 @@ import { WeatherService } from './weather.service';
 import { HttpClientService } from '../http-client/http-client.service';
 import { HttpClientLoggerDecorator } from '../http-client/decorators/http-client-logger.decorator';
 import { ProviderDomains } from './constants/provider-domains.const';
+import { RedisService } from '@utils';
+import { WeatherCacheProxy } from './weather-cache.proxy';
+import { IWeatherService } from '@types';
+import { MetricsService } from '../metrics/metrics.service';
 
 export type WeatherApiConfig = {
   url: string;
@@ -20,10 +24,12 @@ export type VisualCrossingConfig = WeatherApiConfig & {
 export class WeatherServiceFactory {
   constructor(
     private readonly configService: ConfigService,
-    private readonly httpClientService: HttpClientService
+    private readonly httpClientService: HttpClientService,
+    private readonly redisService: RedisService,
+    private readonly metricsService: MetricsService
   ) {}
 
-  create(): WeatherService {
+  create(): IWeatherService {
     const weatherApiConfig =
       this.configService.getOrThrow<WeatherApiConfig>('weatherApi');
     const visualCrossingConfig =
@@ -53,6 +59,15 @@ export class WeatherServiceFactory {
       )
     );
 
-    return new WeatherService([weatherApiProvider, visualCrossingProvider]);
+    const weatherService = new WeatherService([
+      weatherApiProvider,
+      visualCrossingProvider,
+    ]);
+
+    return new WeatherCacheProxy(
+      weatherService,
+      this.redisService,
+      this.metricsService
+    );
   }
 }

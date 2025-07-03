@@ -9,7 +9,7 @@ import type {
   TokenRequest,
   TokenResponse,
 } from '@types';
-import { RedisService } from '../../database/redis/redis.service';
+import { RedisService } from '@utils';
 import { randomUUID } from 'node:crypto';
 import { GrpcAlreadyExistsException } from '../../common/exceptions/grpc-already-exists.exception';
 import { GrpcNotFoundException } from '../../common/exceptions/grpc-not-found.exception';
@@ -57,11 +57,10 @@ export class SubscriptionService implements ISubscriptionService {
   }
 
   async confirm(request: TokenRequest): Promise<Empty> {
-    const exists = await this.redis.exists(request.token);
-    if (!exists) {
+    const data = await this.redis.getObj<CreateRequest>(request.token);
+    if (!data) {
       throw new GrpcNotFoundException('Token');
     }
-    const data = await this.redis.getObj<CreateRequest>(request.token);
     await this.repo.create({
       email: data.email,
       frequency: data.frequency,

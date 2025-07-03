@@ -15,5 +15,7 @@
   "nx": {
     "name": "utils"
   },
-  "dependencies": {}
+  "dependencies": {
+    "ioredis": "^5.6.1"
+  }
 }
