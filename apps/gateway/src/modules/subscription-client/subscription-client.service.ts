@@ -10,14 +10,20 @@ import type {
   Empty,
 } from '@types';
 import type { ClientGrpc } from '@nestjs/microservices';
+import { SubscriptionClientDiTokens } from './constants/di-tokens.const';
+import { SubscriptionClient } from '../subscription/subscription.service';
+import { ClientFindSubsByFrequency } from '../weather/weather.service';
 
 @Injectable()
 export class SubscriptionClientService
-  implements ISubscriptionService, OnModuleInit
+  implements SubscriptionClient, ClientFindSubsByFrequency, OnModuleInit
 {
   private clientService: GrpcToObservable<ISubscriptionService>;
 
-  constructor(@Inject('SUBSCRIPTION_PACKAGE') private client: ClientGrpc) {}
+  constructor(
+    @Inject(SubscriptionClientDiTokens.SUBSCRIPTION_PACKAGE)
+    private readonly client: ClientGrpc
+  ) {}
 
   onModuleInit() {
     this.clientService = this.client.getService<

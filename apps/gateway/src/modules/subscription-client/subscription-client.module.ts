@@ -2,12 +2,13 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { SubscriptionClientService } from './subscription-client.service';
+import { SubscriptionClientDiTokens } from './constants/di-tokens.const';
 
 @Module({
   imports: [
     ClientsModule.registerAsync([
       {
-        name: 'SUBSCRIPTION_PACKAGE',
+        name: SubscriptionClientDiTokens.SUBSCRIPTION_PACKAGE,
         useFactory: (config: ConfigService) => {
           const host = config.get<string>('subscription.host');
           const port = config.get<number>('subscription.port');
@@ -24,7 +25,12 @@ import { SubscriptionClientService } from './subscription-client.service';
       },
     ]),
   ],
-  providers: [SubscriptionClientService],
-  exports: [SubscriptionClientService],
+  providers: [
+    {
+      provide: SubscriptionClientDiTokens.SUBSCRIPTION_CLIENT_SERVICE,
+      useClass: SubscriptionClientService,
+    },
+  ],
+  exports: [SubscriptionClientDiTokens.SUBSCRIPTION_CLIENT_SERVICE],
 })
 export class SubscriptionClientModule {}

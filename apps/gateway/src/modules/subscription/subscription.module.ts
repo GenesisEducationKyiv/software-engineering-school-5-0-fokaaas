@@ -4,10 +4,16 @@ import { SubscriptionClientModule } from '../subscription-client/subscription-cl
 import { EmailClientModule } from '../email-client/email-client.module';
 import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
+import { SubscriptionDiTokens } from './constants/di-tokens.const';
 
 @Module({
   imports: [WeatherClientModule, SubscriptionClientModule, EmailClientModule],
   controllers: [SubscriptionController],
-  providers: [SubscriptionService],
+  providers: [
+    {
+      provide: SubscriptionDiTokens.SUBSCRIPTION_SERVICE,
+      useClass: SubscriptionService,
+    },
+  ],
 })
 export class SubscriptionModule {}

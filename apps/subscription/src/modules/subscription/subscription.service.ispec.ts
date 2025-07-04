@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from '../../common/config/configuration';
 import { SubscriptionModule } from './subscription.module';
 import { SubscriptionDto } from './dto/subscription.dto';
-import { SubscriptionDiTokens } from './constants/di-tokens';
+import { SubscriptionDiTokens } from './constants/di-tokens.const';
 
 describe('SubscriptionService (integration)', () => {
   let service: SubscriptionService;

@@ -8,12 +8,20 @@ import type {
   IWeatherService,
 } from '@types';
 import type { ClientGrpc } from '@nestjs/microservices';
+import { WeatherClientDiTokens } from './constants/di-tokens.const';
+import { ClientGetWeather } from '../weather/weather.service';
+import { ClientWeatherCityExists } from '../subscription/subscription.service';
 
 @Injectable()
-export class WeatherClientService implements IWeatherService, OnModuleInit {
+export class WeatherClientService
+  implements ClientGetWeather, ClientWeatherCityExists, OnModuleInit
+{
   private clientService: GrpcToObservable<IWeatherService>;
 
-  constructor(@Inject('WEATHER_PACKAGE') private client: ClientGrpc) {}
+  constructor(
+    @Inject(WeatherClientDiTokens.WEATHER_PACKAGE)
+    private readonly client: ClientGrpc
+  ) {}
 
   onModuleInit() {
     this.clientService =
