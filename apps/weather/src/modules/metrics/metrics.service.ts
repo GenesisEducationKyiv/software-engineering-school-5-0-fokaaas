@@ -8,9 +8,10 @@ import {
   RegistryContentType,
 } from 'prom-client';
 import { Interval } from '@nestjs/schedule';
+import { IMetricsService } from '../weather/factories/weather-service.factory';
 
 @Injectable()
-export class MetricsService {
+export class MetricsService implements IMetricsService {
   constructor(
     @InjectMetric(Metrics.CACHE_HIT_TOTAL)
     private readonly cacheHitTotalCounter: Counter<string>,

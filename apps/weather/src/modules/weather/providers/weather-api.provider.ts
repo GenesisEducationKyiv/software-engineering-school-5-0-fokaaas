@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import type { GetWeatherResponse } from '@types';
 import { ProviderErrorMessages } from '../constants/provider-error-messages.const';
 import { RpcNotFoundException } from '../../../common/exceptions/rpc-not-found.exception';
 import { RpcUnavailableException } from '../../../common/exceptions/rpc-unavailable-exception';
 import { IWeatherProvider } from '../weather.service';
-import type { HttpClient } from '../../http-client/http-client.service';
+import type { IHttpClientService } from '../../http-client/http-client.service';
+import { WeatherDto } from '../dto/weather.dto';
 
 type Condition = {
   icon: string;
@@ -20,7 +20,7 @@ type ForecastDay = {
   };
 };
 
-type WeatherApiResponse = {
+export type WeatherApiResponse = {
   current: {
     last_updated: string;
     temp_c: number;
@@ -39,6 +39,10 @@ type WeatherApiErrorResponse = {
   };
 };
 
+export interface WeatherApiMapper {
+  mapWeatherApiResponseToWeatherDto(response: WeatherApiResponse): WeatherDto;
+}
+
 @Injectable()
 export class WeatherApiProvider implements IWeatherProvider {
   private baseUrl: string;
@@ -46,7 +50,8 @@ export class WeatherApiProvider implements IWeatherProvider {
   constructor(
     apiUrl: string,
     apiKey: string,
-    private readonly httpClient: HttpClient
+    private readonly httpClient: IHttpClientService,
+    private readonly mapper: WeatherApiMapper
   ) {
     this.initializeBaseUrl(apiUrl, apiKey);
   }
@@ -70,28 +75,12 @@ export class WeatherApiProvider implements IWeatherProvider {
     throw new RpcUnavailableException();
   }
 
-  async get(city: string): Promise<GetWeatherResponse> {
+  async get(city: string): Promise<WeatherDto> {
     const response = await this.fetchWeatherData(city);
 
     if (response.ok) {
       const data = (await response.json()) as WeatherApiResponse;
-      const { forecastday: forecastDays } = data.forecast;
-      return {
-        current: {
-          date: data.current.last_updated,
-          temperature: data.current.temp_c.toFixed(1),
-          humidity: data.current.humidity.toString(),
-          icon: data.current.condition.icon.slice(2),
-          description: data.current.condition.text,
-        },
-        forecast: forecastDays.map((day) => ({
-          date: day.date,
-          temperature: day.day.avgtemp_c.toFixed(1),
-          humidity: day.day.avghumidity.toString(),
-          icon: day.day.condition.icon.slice(2),
-          description: day.day.condition.text,
-        })),
-      };
+      return this.mapper.mapWeatherApiResponseToWeatherDto(data);
     }
 
     const errorData = (await response.json()) as WeatherApiErrorResponse;

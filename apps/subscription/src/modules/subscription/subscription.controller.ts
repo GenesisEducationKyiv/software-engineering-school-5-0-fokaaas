@@ -8,7 +8,7 @@ import type {
   TokenRequest,
   TokenResponse,
 } from '@types';
-import { SubscriptionDiTokens } from './constants/di-tokens';
+import { SubscriptionDiTokens } from './constants/di-tokens.const';
 import { Inject } from '@nestjs/common';
 import { Frequency } from '@prisma/client';
 import { SubscriptionDto } from './dto/subscription.dto';

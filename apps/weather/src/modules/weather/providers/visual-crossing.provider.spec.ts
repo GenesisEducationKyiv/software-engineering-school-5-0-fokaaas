@@ -1,16 +1,17 @@
 import { Test } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import configuration from '../../../common/config/configuration';
-import { VisualCrossingConfig } from '../weather-service.factory';
 import * as fs from 'fs/promises';
 import { ProviderDomains } from '../constants/provider-domains.const';
 import { VisualCrossingProvider } from './visual-crossing.provider';
 import { http, HttpResponse } from 'msw';
 import { mockServer } from '../../../common/utils/msw/setup';
 import { HttpStatus } from '@nestjs/common';
-import { HttpClientLoggerDecorator } from '../../http-client/decorators/http-client-logger.decorator';
 import { HttpClientModule } from '../../http-client/http-client.module';
-import { HttpClientService } from '../../http-client/http-client.service';
+import { WeatherDiTokens } from '../constants/di-tokens.const';
+import { WeatherMapper } from '../weather.mapper';
+import { VisualCrossingProviderFactory } from '../factories/vissual-crossing-provider.factory';
+import { HttpClientDiTokens } from '../../http-client/constants/di-tokens.const';
 
 const getHandler = (
   responseObj: object | string,
@@ -62,28 +63,24 @@ describe('VisualCrossingProvider (unit)', () => {
         HttpClientModule,
       ],
       providers: [
+        VisualCrossingProviderFactory,
         {
-          provide: VisualCrossingProvider,
-          useFactory: (
-            configService: ConfigService,
-            httpClientService: HttpClientService
-          ) => {
-            const { url, key, iconUrl } =
-              configService.getOrThrow<VisualCrossingConfig>('visualCrossing');
-            const httpClient = new HttpClientLoggerDecorator(
-              httpClientService,
-              ProviderDomains.VISUAL_CROSSING,
-              logFilePath
-            );
-            return new VisualCrossingProvider(url, key, iconUrl, httpClient);
-          },
-          inject: [ConfigService, HttpClientService],
+          provide: WeatherDiTokens.WEATHER_MAPPER,
+          useClass: WeatherMapper,
+        },
+        {
+          provide: WeatherDiTokens.VISUAL_CROSSING_PROVIDER,
+          useFactory: (factory: VisualCrossingProviderFactory) =>
+            factory.create(),
+          inject: [VisualCrossingProviderFactory],
         },
       ],
     }).compile();
 
-    provider = moduleRef.get(VisualCrossingProvider);
-    const httpClientService = moduleRef.get(HttpClientService);
+    provider = moduleRef.get(WeatherDiTokens.VISUAL_CROSSING_PROVIDER);
+    const httpClientService = moduleRef.get(
+      HttpClientDiTokens.HTTP_CLIENT_SERVICE
+    );
     spyHttpGet = jest.spyOn(httpClientService, 'get');
 
     jest.useFakeTimers().setSystemTime(new Date('2025-06-26T10:00:00.000Z'));

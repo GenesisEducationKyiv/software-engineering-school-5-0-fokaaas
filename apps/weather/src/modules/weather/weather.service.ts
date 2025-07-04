@@ -1,28 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import type {
-  CityExistsRequest,
-  CityExistsResponse,
-  GetWeatherRequest,
-  GetWeatherResponse,
-  IWeatherService,
-} from '@types';
 import { RpcException } from '@nestjs/microservices';
 import { RpcUnavailableException } from '../../common/exceptions/rpc-unavailable-exception';
+import { IWeatherService } from './weather.controller';
+import { WeatherDto } from './dto/weather.dto';
+import { ExistsDto } from './dto/exists.dto';
 
 export interface IWeatherProvider {
   cityExists(city: string): Promise<boolean>;
-  get(city: string): Promise<GetWeatherResponse>;
+  get(city: string): Promise<WeatherDto>;
 }
 
 @Injectable()
 export class WeatherService implements IWeatherService {
   constructor(private readonly chain: IWeatherProvider[]) {}
 
-  async get({ city }: GetWeatherRequest): Promise<GetWeatherResponse> {
+  async get(city: string): Promise<WeatherDto> {
     return this.tryChain((provider) => provider.get(city));
   }
 
-  async cityExists({ city }: CityExistsRequest): Promise<CityExistsResponse> {
+  async cityExists(city: string): Promise<ExistsDto> {
     const exists = await this.tryChain((provider) => provider.cityExists(city));
     return { exists };
   }
