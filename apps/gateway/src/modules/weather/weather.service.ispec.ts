@@ -3,6 +3,9 @@ import { WeatherClientService } from '../weather-client/weather-client.service';
 import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
 import { EmailClientService } from '../email-client/email-client.service';
 import { Test } from '@nestjs/testing';
+import { WeatherClientDiTokens } from '../weather-client/constants/di-tokens.const';
+import { SubscriptionClientDiTokens } from '../subscription-client/constants/di-tokens.const';
+import { EmailClientDiTokens } from '../email-client/constants/di-tokens.const';
 
 describe('WeatherService (integration)', () => {
   let weatherService: WeatherService;
@@ -35,15 +38,15 @@ describe('WeatherService (integration)', () => {
       providers: [
         WeatherService,
         {
-          provide: WeatherClientService,
+          provide: WeatherClientDiTokens.WEATHER_CLIENT_SERVICE,
           useValue: weatherClientMock,
         },
         {
-          provide: SubscriptionClientService,
+          provide: SubscriptionClientDiTokens.SUBSCRIPTION_CLIENT_SERVICE,
           useValue: subscriptionClientMock,
         },
         {
-          provide: EmailClientService,
+          provide: EmailClientDiTokens.EMAIL_CLIENT_SERVICE,
           useValue: emailClientMock,
         },
       ],

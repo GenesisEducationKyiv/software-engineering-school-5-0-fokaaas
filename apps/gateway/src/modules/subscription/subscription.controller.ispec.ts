@@ -14,6 +14,8 @@ import setupApp from '../../common/utils/setup-app';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import Redis from 'ioredis';
 import { Frequency } from '@prisma/client';
+import { WeatherClientDiTokens } from '../weather-client/constants/di-tokens.const';
+import { EmailClientDiTokens } from '../email-client/constants/di-tokens.const';
 
 describe('SubscriptionController (integration)', () => {
   let app: INestApplication;
@@ -38,8 +40,8 @@ describe('SubscriptionController (integration)', () => {
       ],
     }).compile();
 
-    weatherClient = moduleRef.get(WeatherClientService);
-    emailClient = moduleRef.get(EmailClientService);
+    weatherClient = moduleRef.get(WeatherClientDiTokens.WEATHER_CLIENT_SERVICE);
+    emailClient = moduleRef.get(EmailClientDiTokens.EMAIL_CLIENT_SERVICE);
 
     const redisConfig = moduleRef.get(ConfigService).getOrThrow('redis');
 

@@ -3,13 +3,15 @@ import { WeatherService } from './weather.service';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { WeatherClientService } from '../weather-client/weather-client.service';
-import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
-import { EmailClientService } from '../email-client/email-client.service';
 import { Errors } from '../../common/constants/errors.const';
 import { WeatherController } from './weather.controller';
 import setupApp from '../../common/utils/setup-app';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { status as GrpcStatus } from '@grpc/grpc-js';
+import { WeatherClientDiTokens } from '../weather-client/constants/di-tokens.const';
+import { SubscriptionClientDiTokens } from '../subscription-client/constants/di-tokens.const';
+import { EmailClientDiTokens } from '../email-client/constants/di-tokens.const';
+import { WeatherDiTokens } from './constants/di-tokens.const';
 
 describe('WeatherController (integration)', () => {
   let app: INestApplication;
@@ -23,17 +25,20 @@ describe('WeatherController (integration)', () => {
 
     const moduleRef = await Test.createTestingModule({
       providers: [
-        WeatherService,
         {
-          provide: WeatherClientService,
+          provide: WeatherDiTokens.WEATHER_SERVICE,
+          useClass: WeatherService,
+        },
+        {
+          provide: WeatherClientDiTokens.WEATHER_CLIENT_SERVICE,
           useValue: weatherClientMock,
         },
         {
-          provide: SubscriptionClientService,
+          provide: SubscriptionClientDiTokens.SUBSCRIPTION_CLIENT_SERVICE,
           useValue: {},
         },
         {
-          provide: EmailClientService,
+          provide: EmailClientDiTokens.EMAIL_CLIENT_SERVICE,
           useValue: {},
         },
       ],
