@@ -3,7 +3,7 @@ import { RedisService } from '@utils';
 import { randomUUID } from 'node:crypto';
 import { GrpcAlreadyExistsException } from '../../common/exceptions/grpc-already-exists.exception';
 import { GrpcNotFoundException } from '../../common/exceptions/grpc-not-found.exception';
-import { SubscriptionDiTokens } from './constants/di-tokens';
+import { SubscriptionDiTokens } from './constants/di-tokens.const';
 import { SubscriptionsDto } from './dto/subscriptions.dto';
 import { Frequency, Prisma, Subscription } from '@prisma/client';
 import { ISubscriptionService } from './subscription.controller';

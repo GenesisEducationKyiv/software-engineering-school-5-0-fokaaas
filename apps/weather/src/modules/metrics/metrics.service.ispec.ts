@@ -4,6 +4,7 @@ import { MetricsModule } from './metrics.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '../../common/config/configuration';
 import { register } from 'prom-client';
+import { MetricsDiTokens } from './constants/di-tokens.const';
 
 jest.mock('@nestjs/schedule', () => ({
   ...jest.requireActual('@nestjs/schedule'),
@@ -26,7 +27,7 @@ describe('MetricsService', () => {
       ],
     }).compile();
 
-    service = moduleRef.get(MetricsService);
+    service = moduleRef.get(MetricsDiTokens.METRICS_SERVICE);
     const config = moduleRef.get(ConfigService);
 
     gatewayUrl = config.getOrThrow<string>('metrics.gatewayUrl');
