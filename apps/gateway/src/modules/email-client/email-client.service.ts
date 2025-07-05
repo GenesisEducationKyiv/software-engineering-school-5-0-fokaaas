@@ -7,12 +7,20 @@ import type {
   GrpcToObservable,
 } from '@types';
 import type { ClientGrpc } from '@nestjs/microservices';
+import { EmailClientDiTokens } from './constants/di-tokens.const';
+import { ClientSendConfirmationEmail } from '../subscription/subscription.service';
+import { ClientSendForecast } from '../weather/weather.service';
 
 @Injectable()
-export class EmailClientService implements IEmailService, OnModuleInit {
+export class EmailClientService
+  implements ClientSendConfirmationEmail, ClientSendForecast, OnModuleInit
+{
   private clientService: GrpcToObservable<IEmailService>;
 
-  constructor(@Inject('EMAIL_PACKAGE') private client: ClientGrpc) {}
+  constructor(
+    @Inject(EmailClientDiTokens.EMAIL_PACKAGE)
+    private readonly client: ClientGrpc
+  ) {}
 
   onModuleInit() {
     this.clientService =

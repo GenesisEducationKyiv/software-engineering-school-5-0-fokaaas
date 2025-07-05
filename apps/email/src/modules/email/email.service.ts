@@ -1,25 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import type {
-  Empty,
-  IEmailService,
-  SendConfirmationRequest,
-  SendForecastRequest,
-} from '@types';
 import { ConfigService } from '@nestjs/config';
+import { IEmailService } from './email.controller';
+import { ConfirmationDto } from '../dto/confirmation.dto';
+import { ForecastDto } from '../dto/forecast.dto';
 
 @Injectable()
 export class EmailService implements IEmailService {
   private readonly frontBaseUrl: string;
 
   constructor(private mailer: MailerService, private config: ConfigService) {
-    this.frontBaseUrl = this.config.get<string>('frontBaseUrl') ?? '';
+    this.frontBaseUrl = this.config.getOrThrow<string>('frontBaseUrl');
   }
 
-  async sendConfirmation({
-    email,
-    token,
-  }: SendConfirmationRequest): Promise<Empty> {
+  async sendConfirmation({ email, token }: ConfirmationDto): Promise<void> {
     await this.mailer.sendMail({
       to: email,
       subject: '🍃 Confirm your email',
@@ -28,14 +22,9 @@ export class EmailService implements IEmailService {
         link: `${this.frontBaseUrl}/confirm/${token}`,
       },
     });
-    return {};
   }
 
-  async sendForecast({
-    email,
-    token,
-    ...context
-  }: SendForecastRequest): Promise<Empty> {
+  async sendForecast({ email, token, ...context }: ForecastDto): Promise<void> {
     await this.mailer.sendMail({
       to: email,
       subject: '🚀 Your forecast is ready!',
@@ -46,6 +35,5 @@ export class EmailService implements IEmailService {
         ...context,
       },
     });
-    return {};
   }
 }

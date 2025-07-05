@@ -1,11 +1,22 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { SubscriptionService } from './subscription.service';
+import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { SubscribeBody } from './body/subscribe.body';
 import { TokenPath } from './path/token.path';
+import { SubscriptionDto } from './dto/subscription.dto';
+import { MessageDto } from './dto/message.dto';
+import { SubscriptionDiTokens } from './constants/di-tokens.const';
+
+export interface ISubscriptionService {
+  subscribe(dto: SubscriptionDto): Promise<MessageDto>;
+  confirm(token: string): Promise<MessageDto>;
+  unsubscribe(token: string): Promise<MessageDto>;
+}
 
 @Controller()
 export class SubscriptionController {
-  constructor(private subscriptionService: SubscriptionService) {}
+  constructor(
+    @Inject(SubscriptionDiTokens.SUBSCRIPTION_SERVICE)
+    private readonly subscriptionService: ISubscriptionService
+  ) {}
 
   @Post('/subscribe')
   subscribe(@Body() body: SubscribeBody) {
@@ -14,11 +25,11 @@ export class SubscriptionController {
 
   @Get('/confirm/:token')
   confirm(@Param() param: TokenPath) {
-    return this.subscriptionService.confirm(param);
+    return this.subscriptionService.confirm(param.token);
   }
 
   @Get('/unsubscribe/:token')
   unsubscribe(@Param() param: TokenPath) {
-    return this.subscriptionService.unsubscribe(param);
+    return this.subscriptionService.unsubscribe(param.token);
   }
 }
