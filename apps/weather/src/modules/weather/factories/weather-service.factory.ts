@@ -10,7 +10,7 @@ import { MetricsDiTokens } from '../../metrics/constants/di-tokens.const';
 export interface IMetricsService {
   incCacheHit(method: string): void;
   incCacheMiss(method: string): void;
-  withResponseTime<T>(fn: () => Promise<T>, method: string): Promise<T>;
+  createResponseTimer(method: string): { [Symbol.dispose]: () => void };
 }
 
 @Injectable()

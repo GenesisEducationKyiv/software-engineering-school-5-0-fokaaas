@@ -35,7 +35,11 @@ export class MetricsService implements IMetricsService {
 
   createResponseTimer(method: string) {
     const end = this.responseTimeSecondsHistogram.startTimer();
-    return { [Symbol.dispose]: () => end({ method }) };
+    return {
+      [Symbol.dispose]: () => {
+        end({ method });
+      },
+    };
   }
 
   @Interval(5000)
