@@ -25,7 +25,13 @@
     "teardown:test:infrastructure": "docker compose -f docker-compose.test.yml down",
     "migrate:test": "dotenv -e apps/subscription/.env.test -- yarn prisma migrate deploy --schema=apps/subscription/prisma/schema.prisma",
     "prisma:generate": "yarn prisma generate --schema=apps/subscription/prisma/schema.prisma",
-    "seed": "dotenv -e apps/subscription/.env.test -- yarn prisma db seed"
+    "seed": "dotenv -e apps/subscription/.env.test -- yarn prisma db seed",
+    "depcruise": "yarn depcruise:common && yarn depcruise:subscription && yarn depcruise:email && yarn depcruise:weather && yarn depcruise:gateway",
+    "depcruise:common": "depcruise --config .dependency-cruiser.js apps libs",
+    "depcruise:subscription": "depcruise --config apps/subscription/.dependency-cruiser.js apps/subscription",
+    "depcruise:email": "depcruise --config apps/email/.dependency-cruiser.js apps/email",
+    "depcruise:weather": "depcruise --config apps/weather/.dependency-cruiser.js apps/weather",
+    "depcruise:gateway": "depcruise --config apps/gateway/.dependency-cruiser.js apps/gateway"
   },
   "prisma": {
     "seed": "ts-node apps/subscription/src/database/seed.ts"
@@ -61,6 +67,7 @@
     "@swc/helpers": "~0.5.11",
     "@types/jest": "^29.5.12",
     "@types/node": "20",
+    "dependency-cruiser": "^16.10.4",
     "dotenv-cli": "^8.0.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
