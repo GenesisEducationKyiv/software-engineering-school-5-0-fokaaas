@@ -1,9 +1,9 @@
-import { HttpClient } from '../http-client.service';
+import { IHttpClientService } from '../http-client.service';
 import { appendFile } from 'fs/promises';
 
-export class HttpClientLoggerDecorator implements HttpClient {
+export class HttpClientLoggerDecorator implements IHttpClientService {
   constructor(
-    private readonly client: HttpClient,
+    private readonly client: IHttpClientService,
     private readonly domain: string,
     private readonly filePath: string
   ) {}

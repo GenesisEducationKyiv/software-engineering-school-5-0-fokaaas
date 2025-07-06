@@ -7,6 +7,7 @@ import {
 } from '@willsoto/nestjs-prometheus';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
+import { MetricsDiTokens } from './constants/di-tokens.const';
 
 @Module({
   imports: [
@@ -25,7 +26,13 @@ import { ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
   ],
-  providers: [MetricsService, ...MetricProviders],
-  exports: [MetricsService],
+  providers: [
+    {
+      provide: MetricsDiTokens.METRICS_SERVICE,
+      useClass: MetricsService,
+    },
+    ...MetricProviders,
+  ],
+  exports: [MetricsDiTokens.METRICS_SERVICE],
 })
 export class MetricsModule {}

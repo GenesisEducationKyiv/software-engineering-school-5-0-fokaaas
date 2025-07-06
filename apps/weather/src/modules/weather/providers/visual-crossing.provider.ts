@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import type { GetWeatherResponse } from '@types';
 import { RpcNotFoundException } from '../../../common/exceptions/rpc-not-found.exception';
 import { ProviderErrorMessages } from '../constants/provider-error-messages.const';
 import { IWeatherProvider } from '../weather.service';
 import { RpcUnavailableException } from '../../../common/exceptions/rpc-unavailable-exception';
-import type { HttpClient } from '../../http-client/http-client.service';
+import type { IHttpClientService } from '../../http-client/http-client.service';
+import { WeatherDto } from '../dto/weather.dto';
+import { WeatherApiConfig } from './weather-api.provider';
 
 type Conditions = {
   datetime: string;
@@ -14,22 +15,36 @@ type Conditions = {
   icon: string;
 };
 
-type VisualCrossingResponse = {
+export type VisualCrossingResponse = {
   days: Conditions[];
   currentConditions: Conditions;
 };
 
+export type VisualCrossingConfig = WeatherApiConfig & {
+  iconUrl: string;
+};
+
+export interface VisualCrossingMapper {
+  mapVisualCrossingResponseToWeatherDto(
+    response: VisualCrossingResponse,
+    iconUrl: string
+  ): WeatherDto;
+}
+
 @Injectable()
 export class VisualCrossingProvider implements IWeatherProvider {
   private baseParams: string;
+  private readonly apiIconUrl: string;
+  private readonly apiUrl: string;
 
   constructor(
-    private readonly apiUrl: string,
-    apiKey: string,
-    private readonly apiIconUrl: string,
-    private readonly httpClient: HttpClient
+    config: VisualCrossingConfig,
+    private readonly httpClient: IHttpClientService,
+    private readonly mapper: VisualCrossingMapper
   ) {
-    this.initializeBaseParams(apiKey);
+    this.apiUrl = config.url;
+    this.apiIconUrl = config.iconUrl;
+    this.initializeBaseParams(config.key);
   }
 
   private initializeBaseParams(apiKey: string): void {
@@ -53,28 +68,15 @@ export class VisualCrossingProvider implements IWeatherProvider {
     throw new RpcUnavailableException();
   }
 
-  async get(city: string): Promise<GetWeatherResponse> {
+  async get(city: string): Promise<WeatherDto> {
     const response = await this.fetchWeatherData(city);
     if (response.ok) {
-      const { days, currentConditions } =
-        (await response.json()) as VisualCrossingResponse;
+      const data = (await response.json()) as VisualCrossingResponse;
 
-      return {
-        current: {
-          date: currentConditions.datetime,
-          temperature: currentConditions.temp.toFixed(1),
-          humidity: currentConditions.humidity.toString(),
-          icon: this.getIconUrl(currentConditions.icon),
-          description: currentConditions.conditions,
-        },
-        forecast: days.map((day) => ({
-          date: day.datetime,
-          temperature: day.temp.toFixed(1),
-          humidity: day.humidity.toString(),
-          icon: this.getIconUrl(day.icon),
-          description: day.conditions,
-        })),
-      };
+      return this.mapper.mapVisualCrossingResponseToWeatherDto(
+        data,
+        this.apiIconUrl
+      );
     }
 
     const message = (await response.text()) as string;
@@ -93,9 +95,5 @@ export class VisualCrossingProvider implements IWeatherProvider {
 
   private isCityNotFound(message: string): boolean {
     return message === ProviderErrorMessages.VISUAL_CROSSING_INVALID_LOCATION;
-  }
-
-  private getIconUrl(icon: string): string {
-    return `${this.apiIconUrl}/${icon}.png`;
   }
 }
