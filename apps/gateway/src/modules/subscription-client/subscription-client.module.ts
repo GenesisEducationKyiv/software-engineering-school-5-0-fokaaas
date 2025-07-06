@@ -10,8 +10,8 @@ import { SubscriptionClientDiTokens } from './constants/di-tokens.const';
       {
         name: SubscriptionClientDiTokens.SUBSCRIPTION_PACKAGE,
         useFactory: (config: ConfigService) => {
-          const host = config.get<string>('subscription.host');
-          const port = config.get<number>('subscription.port');
+          const host = config.getOrThrow<string>('subscription.host');
+          const port = config.getOrThrow<number>('subscription.port');
           return {
             transport: Transport.GRPC,
             options: {
