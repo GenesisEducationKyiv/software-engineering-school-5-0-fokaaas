@@ -1,0 +1,51 @@
+{
+  "name": "@weather-api/subscription",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "webpack-cli build"
+        }
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@weather-api/subscription:build",
+          "runBuildTargetDependencies": false
+        }
+      },
+      "test": {
+        "executor": "@nx/jest:jest",
+        "defaultConfiguration": "unit",
+        "options": {
+          "jestConfig": "jest.config.ts"
+        },
+        "configurations": {
+          "integration": {
+            "testMatch": [
+              "<rootDir>/apps/subscription/**/*.ispec.ts"
+            ]
+          },
+          "unit": {
+            "testMatch": [
+              "<rootDir>/apps/subscription/**/*.spec.ts"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "prisma": "^6.8.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.8.0"
+  }
+}

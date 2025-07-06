@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/gateway"
+    },
+    {
+      "path": "./apps/weather"
+    },
+    {
+      "path": "./apps/email"
+    },
+    {
+      "path": "./apps/subscription"
+    },
+    {
+      "path": "./libs/utils",
+    }
+  ]
+}
