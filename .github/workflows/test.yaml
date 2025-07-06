@@ -24,7 +24,7 @@ jobs:
 
       - name: Start PostgreSQL & Redis
         run: |
-          docker compose -f apps/subscription/docker-compose.test.yml up -d && sleep 5s
+          docker compose -f docker-compose.test.yml up -d && sleep 5s
 
       - name: Start migration
         run: yarn migrate:test
