@@ -117,21 +117,30 @@ describe('MetricsService', () => {
 
       const metrics = await getMetrics();
 
-      [
-        'cache_miss_total{instance="",job="weather-microservice",method="methodA"} 1',
-        'cache_miss_total{instance="",job="weather-microservice",method="methodB"} 1',
-      ].forEach((metric) => expect(metrics).toContain(metric));
+      expect(metrics).toContain(
+        'cache_miss_total{instance="",job="weather-microservice",method="methodA"} 1'
+      );
+      expect(metrics).toContain(
+        'cache_miss_total{instance="",job="weather-microservice",method="methodB"} 1'
+      );
     });
   });
 
-  describe('withResponseTime', () => {
+  describe('createResponseTimer', () => {
+    if (!Symbol.dispose) {
+      Object.defineProperty(Symbol, 'dispose', {
+        get() {
+          return Symbol.for('nodejs.dispose');
+        },
+      });
+    }
+
     it('should measure response time for a function', async () => {
-      const mockFn = jest.fn().mockResolvedValue('result');
+      const fn = () => {
+        using timer = service.createResponseTimer('testMethod');
+      };
 
-      const result = await service.withResponseTime(mockFn, 'testMethod');
-
-      expect(result).toBe('result');
-      expect(mockFn).toHaveBeenCalled();
+      fn();
 
       await service.pushToGatewayInterval();
 
@@ -143,15 +152,12 @@ describe('MetricsService', () => {
     });
 
     it('should measure response time with multiple buckets', async () => {
-      const mockFn = jest.fn().mockImplementation(async () => {
-        await new Promise((res) => setTimeout(res, 10));
-        return 'result';
-      });
+      const fn = async () => {
+        using timer = service.createResponseTimer('testMethod');
+        await new Promise((res) => setTimeout(res, 11));
+      };
 
-      const result = await service.withResponseTime(mockFn, 'testMethod');
-
-      expect(result).toBe('result');
-      expect(mockFn).toHaveBeenCalled();
+      await fn();
 
       await service.pushToGatewayInterval();
 

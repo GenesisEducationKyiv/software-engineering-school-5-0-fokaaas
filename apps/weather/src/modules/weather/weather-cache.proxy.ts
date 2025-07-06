@@ -16,36 +16,36 @@ export class WeatherCacheProxy implements IWeatherService {
   ) {}
 
   async get({ city }: GetWeatherRequest): Promise<GetWeatherResponse> {
-    return this.metrics.withResponseTime(async () => {
-      const key = city.toLowerCase();
-      const cache = await this.redis.getObj<GetWeatherResponse>(key);
-      if (cache) {
-        this.metrics.incCacheHit('get');
-        return cache;
-      }
+    using timer = this.metrics.createResponseTimer('get');
 
-      this.metrics.incCacheMiss('get');
+    const key = city.toLowerCase();
+    const cache = await this.redis.getObj<GetWeatherResponse>(key);
+    if (cache) {
+      this.metrics.incCacheHit('get');
+      return cache;
+    }
 
-      const result = await this.service.get({ city });
-      await this.redis.setObj(key, result);
-      return result;
-    }, 'get');
+    this.metrics.incCacheMiss('get');
+
+    const result = await this.service.get({ city });
+    await this.redis.setObj(key, result);
+    return result;
   }
 
   async cityExists({ city }: CityExistsRequest): Promise<CityExistsResponse> {
-    return this.metrics.withResponseTime(async () => {
-      const key = `exists:${city.toLowerCase()}`;
-      const cache = await this.redis.getBool(key);
-      if (cache) {
-        this.metrics.incCacheHit('cityExists');
-        return { exists: cache };
-      }
+    using timer = this.metrics.createResponseTimer('cityExists');
 
-      this.metrics.incCacheMiss('cityExists');
+    const key = `exists:${city.toLowerCase()}`;
+    const cache = await this.redis.getBool(key);
+    if (cache) {
+      this.metrics.incCacheHit('cityExists');
+      return { exists: cache };
+    }
 
-      const result = await this.service.cityExists({ city });
-      await this.redis.setBool(key, result.exists);
-      return result;
-    }, 'cityExists');
+    this.metrics.incCacheMiss('cityExists');
+
+    const result = await this.service.cityExists({ city });
+    await this.redis.setBool(key, result.exists);
+    return result;
   }
 }

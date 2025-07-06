@@ -32,11 +32,9 @@ export class MetricsService {
     this.cacheMissTotalCounter.inc({ method });
   }
 
-  async withResponseTime<T>(fn: () => Promise<T>, method: string): Promise<T> {
+  createResponseTimer(method: string) {
     const end = this.responseTimeSecondsHistogram.startTimer();
-    const result = await fn();
-    end({ method });
-    return result;
+    return { [Symbol.dispose]: () => end({ method }) };
   }
 
   @Interval(5000)
