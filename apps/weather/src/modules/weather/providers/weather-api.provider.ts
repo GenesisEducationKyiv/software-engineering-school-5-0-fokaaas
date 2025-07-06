@@ -39,6 +39,11 @@ type WeatherApiErrorResponse = {
   };
 };
 
+export type WeatherApiConfig = {
+  url: string;
+  key: string;
+};
+
 export interface WeatherApiMapper {
   mapWeatherApiResponseToWeatherDto(response: WeatherApiResponse): WeatherDto;
 }
@@ -48,12 +53,11 @@ export class WeatherApiProvider implements IWeatherProvider {
   private baseUrl: string;
 
   constructor(
-    apiUrl: string,
-    apiKey: string,
+    { url, key }: WeatherApiConfig,
     private readonly httpClient: IHttpClientService,
     private readonly mapper: WeatherApiMapper
   ) {
-    this.initializeBaseUrl(apiUrl, apiKey);
+    this.initializeBaseUrl(url, key);
   }
 
   private initializeBaseUrl(apiUrl: string, apiKey: string): void {

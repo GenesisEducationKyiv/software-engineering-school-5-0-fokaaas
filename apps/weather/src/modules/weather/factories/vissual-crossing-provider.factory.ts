@@ -4,15 +4,13 @@ import { HttpClientService } from '../../http-client/http-client.service';
 import { IWeatherProvider } from '../weather.service';
 import { HttpClientLoggerDecorator } from '../../http-client/decorators/http-client-logger.decorator';
 import { ProviderDomains } from '../constants/provider-domains.const';
-import { VisualCrossingProvider } from '../providers/visual-crossing.provider';
+import {
+  VisualCrossingConfig,
+  VisualCrossingProvider,
+} from '../providers/visual-crossing.provider';
 import type { VisualCrossingMapper } from '../providers/visual-crossing.provider';
-import { WeatherApiConfig } from './weather-api-provider.factory';
 import { HttpClientDiTokens } from '../../http-client/constants/di-tokens.const';
 import { WeatherDiTokens } from '../constants/di-tokens.const';
-
-export type VisualCrossingConfig = WeatherApiConfig & {
-  iconUrl: string;
-};
 
 @Injectable()
 export class VisualCrossingProviderFactory {
@@ -34,9 +32,7 @@ export class VisualCrossingProviderFactory {
     )}/weather-provider.log`;
 
     return new VisualCrossingProvider(
-      apiConfig.url,
-      apiConfig.key,
-      apiConfig.iconUrl,
+      apiConfig,
       new HttpClientLoggerDecorator(
         this.httpClientService,
         ProviderDomains.VISUAL_CROSSING,

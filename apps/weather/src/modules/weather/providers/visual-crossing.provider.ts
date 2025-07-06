@@ -5,6 +5,7 @@ import { IWeatherProvider } from '../weather.service';
 import { RpcUnavailableException } from '../../../common/exceptions/rpc-unavailable-exception';
 import type { IHttpClientService } from '../../http-client/http-client.service';
 import { WeatherDto } from '../dto/weather.dto';
+import { WeatherApiConfig } from './weather-api.provider';
 
 type Conditions = {
   datetime: string;
@@ -19,6 +20,10 @@ export type VisualCrossingResponse = {
   currentConditions: Conditions;
 };
 
+export type VisualCrossingConfig = WeatherApiConfig & {
+  iconUrl: string;
+};
+
 export interface VisualCrossingMapper {
   mapVisualCrossingResponseToWeatherDto(
     response: VisualCrossingResponse,
@@ -29,15 +34,17 @@ export interface VisualCrossingMapper {
 @Injectable()
 export class VisualCrossingProvider implements IWeatherProvider {
   private baseParams: string;
+  private readonly apiIconUrl: string;
+  private readonly apiUrl: string;
 
   constructor(
-    private readonly apiUrl: string,
-    apiKey: string,
-    private readonly apiIconUrl: string,
+    config: VisualCrossingConfig,
     private readonly httpClient: IHttpClientService,
     private readonly mapper: VisualCrossingMapper
   ) {
-    this.initializeBaseParams(apiKey);
+    this.apiUrl = config.url;
+    this.apiIconUrl = config.iconUrl;
+    this.initializeBaseParams(config.key);
   }
 
   private initializeBaseParams(apiKey: string): void {
