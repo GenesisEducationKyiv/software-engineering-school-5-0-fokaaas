@@ -82,7 +82,7 @@ A shared **Redis** cluster and **PostgreSQL** instance are used for caching and 
 - Does not solve our core problems: team coupling, scalability, resilience.
 - Any outage or bug affects the whole system.
 
-### ⚡ 3. Service decomposition with direct HTTP
+### ⚡ 2. Service decomposition with direct HTTP
 
 **Pros:**
 - Easy to inspect payloads.
@@ -93,7 +93,7 @@ A shared **Redis** cluster and **PostgreSQL** instance are used for caching and 
 - Higher latency and payload size compared to binary protocols.
 - Requires manual schema synchronization and validation logic.
 
-### 🛠️ 2. Service decomposition with gRPC
+### 🛠️ 3. Service decomposition with gRPC
 
 **Pros:**
 - Strongly typed contracts with `.proto` files.
