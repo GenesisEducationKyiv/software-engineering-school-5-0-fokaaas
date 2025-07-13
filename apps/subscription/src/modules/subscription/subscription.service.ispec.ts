@@ -6,7 +6,7 @@ import { Frequency } from '@prisma/client';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../../common/config/configuration';
 import { SubscriptionModule } from './subscription.module';
-import { SubscriptionDto } from './dto/subscription.dto';
+import { SubscriptionData } from './data/subscription.data';
 import { SubscriptionDiTokens } from './constants/di-tokens.const';
 
 describe('SubscriptionService (integration)', () => {
@@ -57,21 +57,21 @@ describe('SubscriptionService (integration)', () => {
 
   describe('create', () => {
     it('saves creation data in redis under the returned token', async () => {
-      const arg: SubscriptionDto = {
+      const arg: SubscriptionData = {
         email: 'testemail@gmail.com',
         city: 'Test City',
         frequency: Frequency.DAILY,
       };
 
       const result = await service.create(arg);
-      expect(result.token).toBeTruthy();
+      expect(result).toBeTruthy();
 
-      const data = await redis.getObj<SubscriptionDto>(result.token);
+      const data = await redis.getObj<SubscriptionData>(result);
       expect(data).toEqual(arg);
     });
 
     it('throws if email already exists', async () => {
-      const arg: SubscriptionDto = {
+      const arg: SubscriptionData = {
         email: 'example@mail.com',
         city: 'Kyiv',
         frequency: Frequency.DAILY,
@@ -84,12 +84,12 @@ describe('SubscriptionService (integration)', () => {
   describe('confirm', () => {
     it('should confirm subscription with valid token', async () => {
       const token = '114e05a1-b9a2-4a27-a269-d6eb6dc6a705';
-      const data: SubscriptionDto = {
+      const data: SubscriptionData = {
         frequency: Frequency.DAILY,
         city: 'Poltava',
         email: 'example3@mail.com',
       };
-      await redis.setObj<SubscriptionDto>(token, data);
+      await redis.setObj<SubscriptionData>(token, data);
 
       const result = await service.confirm(token);
 

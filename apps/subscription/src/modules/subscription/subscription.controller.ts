@@ -10,35 +10,33 @@ import type {
 } from '@types';
 import { SubscriptionDiTokens } from './constants/di-tokens.const';
 import { Inject } from '@nestjs/common';
-import { Frequency } from '@prisma/client';
-import { SubscriptionDto } from './dto/subscription.dto';
-import { TokenDto } from './dto/token.dto';
-import { SubscriptionsDto } from './dto/subscriptions.dto';
-
-export interface ISubscriptionService {
-  findByFrequency(frequency: Frequency): Promise<SubscriptionsDto>;
-  create(dto: SubscriptionDto): Promise<TokenDto>;
-  confirm(token: string): Promise<void>;
-  unsubscribe(token: string): Promise<void>;
-}
+import type { SubscriptionServiceInterface } from './interfaces/subscription-service.interface';
+import type { SubscriptionMapperInterface } from './interfaces/subscription-mapper.interface';
 
 @GrpcService()
 export class SubscriptionController implements ISubscriptionController {
   constructor(
     @Inject(SubscriptionDiTokens.SUBSCRIPTION_SERVICE)
-    private readonly subscriptionService: ISubscriptionService
+    private readonly subscriptionService: SubscriptionServiceInterface,
+
+    @Inject(SubscriptionDiTokens.SUBSCRIPTION_MAPPER)
+    private readonly mapper: SubscriptionMapperInterface
   ) {}
 
   @GrpcMethod('SubscriptionService', 'FindByFrequency')
-  findByFrequency(
+  async findByFrequency(
     request: FrequencyRequest
   ): Promise<FindByFrequencyListResponse> {
-    return this.subscriptionService.findByFrequency(request.frequency);
+    const subscriptions = await this.subscriptionService.findByFrequency(
+      request.frequency
+    );
+    return this.mapper.mapToSubscriptionsDto(subscriptions);
   }
 
   @GrpcMethod('SubscriptionService', 'Create')
-  create(request: CreateRequest): Promise<TokenResponse> {
-    return this.subscriptionService.create(request);
+  async create(request: CreateRequest): Promise<TokenResponse> {
+    const token = await this.subscriptionService.create(request);
+    return { token };
   }
 
   @GrpcMethod('SubscriptionService', 'Confirm')

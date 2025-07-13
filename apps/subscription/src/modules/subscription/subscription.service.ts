@@ -4,37 +4,22 @@ import { randomUUID } from 'node:crypto';
 import { GrpcAlreadyExistsException } from '../../common/exceptions/grpc-already-exists.exception';
 import { GrpcNotFoundException } from '../../common/exceptions/grpc-not-found.exception';
 import { SubscriptionDiTokens } from './constants/di-tokens.const';
-import { SubscriptionsDto } from './dto/subscriptions.dto';
-import { Frequency, Prisma, Subscription } from '@prisma/client';
-import { ISubscriptionService } from './subscription.controller';
-import { SubscriptionDto } from './dto/subscription.dto';
-import { TokenDto } from './dto/token.dto';
-
-export interface ISubscriptionRepository {
-  find(where: Prisma.SubscriptionWhereInput): Promise<Subscription[]>;
-  create(data: Prisma.SubscriptionCreateInput): Promise<Subscription>;
-  deleteByToken(token: string): Promise<void>;
-}
-
-export interface ISubscriptionMapper {
-  mapToSubscriptionsDto(subscriptions: Subscription[]): SubscriptionsDto;
-}
+import { Frequency, Subscription } from '@prisma/client';
+import { SubscriptionData } from './data/subscription.data';
+import { SubscriptionServiceInterface } from './interfaces/subscription-service.interface';
+import type { SubscriptionRepositoryInterface } from './interfaces/subscription-repository.interface';
 
 @Injectable()
-export class SubscriptionService implements ISubscriptionService {
+export class SubscriptionService implements SubscriptionServiceInterface {
   constructor(
     @Inject(SubscriptionDiTokens.SUBSCRIPTION_REPOSITORY)
-    private readonly repo: ISubscriptionRepository,
-
-    @Inject(SubscriptionDiTokens.SUBSCRIPTION_MAPPER)
-    private readonly mapper: ISubscriptionMapper,
+    private readonly repo: SubscriptionRepositoryInterface,
 
     private readonly redis: RedisService
   ) {}
 
-  async findByFrequency(frequency: Frequency): Promise<SubscriptionsDto> {
-    const subscriptions = await this.repo.find({ frequency });
-    return this.mapper.mapToSubscriptionsDto(subscriptions);
+  findByFrequency(frequency: Frequency): Promise<Subscription[]> {
+    return this.repo.find({ frequency });
   }
 
   private async emailExists(email: string): Promise<boolean> {
@@ -47,18 +32,18 @@ export class SubscriptionService implements ISubscriptionService {
     return items.length > 0;
   }
 
-  async create(dto: SubscriptionDto): Promise<TokenDto> {
-    const emailExists = await this.emailExists(dto.email);
+  async create(data: SubscriptionData): Promise<string> {
+    const emailExists = await this.emailExists(data.email);
     if (emailExists) {
       throw new GrpcAlreadyExistsException('Email');
     }
     const token = randomUUID();
-    await this.redis.setObj<SubscriptionDto>(token, dto);
-    return { token };
+    await this.redis.setObj<SubscriptionData>(token, data);
+    return token;
   }
 
   async confirm(token: string): Promise<void> {
-    const data = await this.redis.getObj<SubscriptionDto>(token);
+    const data = await this.redis.getObj<SubscriptionData>(token);
     if (!data) {
       throw new GrpcNotFoundException('Token');
     }

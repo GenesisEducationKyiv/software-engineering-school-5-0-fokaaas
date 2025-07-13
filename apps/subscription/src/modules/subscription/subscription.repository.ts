@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma/prisma.service';
 import { Prisma, Subscription } from '@prisma/client';
-import { ISubscriptionRepository } from './subscription.service';
+import { SubscriptionRepositoryInterface } from './interfaces/subscription-repository.interface';
 
 @Injectable()
-export class SubscriptionRepository implements ISubscriptionRepository {
+export class SubscriptionRepository implements SubscriptionRepositoryInterface {
   constructor(private readonly prisma: PrismaService) {}
 
   find(where: Prisma.SubscriptionWhereInput): Promise<Subscription[]> {

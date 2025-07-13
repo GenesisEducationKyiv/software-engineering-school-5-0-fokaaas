@@ -1,9 +1,9 @@
-import { BaseSubscriptionDto } from './base-subscription.dto';
-
-class SubscriptionItemDto extends BaseSubscriptionDto {
+type SubscriptionItemDto = {
+  email: string;
+  city: string;
   token: string;
-}
+};
 
-export class SubscriptionsDto {
+export type SubscriptionsDto = {
   subscriptions: SubscriptionItemDto[];
-}
+};
