@@ -1,17 +1,13 @@
 import { Controller, Get, Inject, Query } from '@nestjs/common';
 import { WeatherQuery } from './query/weather.query';
-import { CurrentWeatherDto } from './dto/current-weather.dto';
 import { WeatherDiTokens } from './constants/di-tokens.const';
-
-export interface IWeatherService {
-  getWeather(city: string): Promise<CurrentWeatherDto>;
-}
+import type { WeatherServiceInterface } from './interfaces/weather-service.interface';
 
 @Controller()
 export class WeatherController {
   constructor(
     @Inject(WeatherDiTokens.WEATHER_SERVICE)
-    private weatherService: IWeatherService
+    private weatherService: WeatherServiceInterface
   ) {}
 
   @Get('/weather')

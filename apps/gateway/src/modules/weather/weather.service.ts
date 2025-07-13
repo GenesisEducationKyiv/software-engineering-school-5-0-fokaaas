@@ -1,48 +1,30 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  Empty,
-  FindByFrequencyListResponse,
-  FrequencyRequest,
-  GetWeatherRequest,
-  GetWeatherResponse,
-  SendForecastRequest,
-} from '@types';
+import { FindByFrequencyListResponse } from '@types';
 import { Cron } from '@nestjs/schedule';
 import { Frequency } from '../subscription/enum/frequency.enum';
 import { WeatherClientDiTokens } from '../weather-client/constants/di-tokens.const';
 import { EmailClientDiTokens } from '../email-client/constants/di-tokens.const';
 import { SubscriptionClientDiTokens } from '../subscription-client/constants/di-tokens.const';
-import { IWeatherService } from './weather.controller';
-import { CurrentWeatherDto } from './dto/current-weather.dto';
-
-export interface ClientGetWeather {
-  get(request: GetWeatherRequest): Promise<GetWeatherResponse>;
-}
-
-export interface ClientSendForecast {
-  sendForecast(request: SendForecastRequest): Promise<Empty>;
-}
-
-export interface ClientFindSubsByFrequency {
-  findByFrequency(
-    request: FrequencyRequest
-  ): Promise<FindByFrequencyListResponse>;
-}
+import { CurrentWeatherData } from './data/current-weather.data';
+import { WeatherServiceInterface } from './interfaces/weather-service.interface';
+import type { GetWeatherInterface } from '../weather-client/interfaces/get-weather.interface';
+import type { FindSubscriptionsInterface } from '../subscription-client/interfaces/find-subscriptions.interface';
+import type { SendForecastInterface } from '../email-client/interfaces/send-forecast.interface';
 
 @Injectable()
-export class WeatherService implements IWeatherService {
+export class WeatherService implements WeatherServiceInterface {
   constructor(
     @Inject(WeatherClientDiTokens.WEATHER_CLIENT_SERVICE)
-    private readonly weatherClient: ClientGetWeather,
+    private readonly weatherClient: GetWeatherInterface,
 
     @Inject(EmailClientDiTokens.EMAIL_CLIENT_SERVICE)
-    private readonly emailClient: ClientSendForecast,
+    private readonly emailClient: SendForecastInterface,
 
     @Inject(SubscriptionClientDiTokens.SUBSCRIPTION_CLIENT_SERVICE)
-    private readonly subscriptionClient: ClientFindSubsByFrequency
+    private readonly subscriptionClient: FindSubscriptionsInterface
   ) {}
 
-  async getWeather(city: string): Promise<CurrentWeatherDto> {
+  async getWeather(city: string): Promise<CurrentWeatherData> {
     const { current } = await this.weatherClient.get({ city });
     return {
       temperature: current.temperature,

@@ -8,12 +8,12 @@ import type {
 } from '@types';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { EmailClientDiTokens } from './constants/di-tokens.const';
-import { ClientSendConfirmationEmail } from '../subscription/subscription.service';
-import { ClientSendForecast } from '../weather/weather.service';
+import { SendConfirmationInterface } from './interfaces/send-confirmation.interface';
+import { SendForecastInterface } from './interfaces/send-forecast.interface';
 
 @Injectable()
 export class EmailClientService
-  implements ClientSendConfirmationEmail, ClientSendForecast, OnModuleInit
+  implements SendConfirmationInterface, SendForecastInterface, OnModuleInit
 {
   private clientService: GrpcToObservable<IEmailService>;
 

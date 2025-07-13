@@ -1,6 +1,6 @@
 import { Frequency } from '../enum/frequency.enum';
 
-export class SubscriptionDto {
+export class SubscriptionData {
   email: string;
   city: string;
   frequency: Frequency;
