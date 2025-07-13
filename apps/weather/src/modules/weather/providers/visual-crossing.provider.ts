@@ -1,46 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { RpcNotFoundException } from '../../../common/exceptions/rpc-not-found.exception';
 import { ProviderErrorMessages } from '../constants/provider-error-messages.const';
-import { IWeatherProvider } from '../weather.service';
 import { RpcUnavailableException } from '../../../common/exceptions/rpc-unavailable-exception';
-import type { IHttpClientService } from '../../http-client/http-client.service';
-import { WeatherDto } from '../dto/weather.dto';
 import { WeatherApiConfig } from './weather-api.provider';
-
-type Conditions = {
-  datetime: string;
-  temp: number;
-  humidity: number;
-  conditions: string;
-  icon: string;
-};
-
-export type VisualCrossingResponse = {
-  days: Conditions[];
-  currentConditions: Conditions;
-};
+import { WeatherProviderInterface } from '../interfaces/weather-provider.interface';
+import type {
+  VisualCrossingMapperInterface,
+  VisualCrossingResponse,
+} from '../interfaces/visual-crossing-mapper.interface';
+import { WeatherData } from '../data/weather.data';
+import { HttpClientServiceInterface } from '../../http-client/interfaces/http-client-service.interface';
 
 export type VisualCrossingConfig = WeatherApiConfig & {
   iconUrl: string;
 };
 
-export interface VisualCrossingMapper {
-  mapVisualCrossingResponseToWeatherDto(
-    response: VisualCrossingResponse,
-    iconUrl: string
-  ): WeatherDto;
-}
-
 @Injectable()
-export class VisualCrossingProvider implements IWeatherProvider {
+export class VisualCrossingProvider implements WeatherProviderInterface {
   private baseParams: string;
   private readonly apiIconUrl: string;
   private readonly apiUrl: string;
 
   constructor(
     config: VisualCrossingConfig,
-    private readonly httpClient: IHttpClientService,
-    private readonly mapper: VisualCrossingMapper
+    private readonly httpClient: HttpClientServiceInterface,
+    private readonly mapper: VisualCrossingMapperInterface
   ) {
     this.apiUrl = config.url;
     this.apiIconUrl = config.iconUrl;
@@ -68,12 +52,12 @@ export class VisualCrossingProvider implements IWeatherProvider {
     throw new RpcUnavailableException();
   }
 
-  async get(city: string): Promise<WeatherDto> {
+  async get(city: string): Promise<WeatherData> {
     const response = await this.fetchWeatherData(city);
     if (response.ok) {
       const data = (await response.json()) as VisualCrossingResponse;
 
-      return this.mapper.mapVisualCrossingResponseToWeatherDto(
+      return this.mapper.mapVisualCrossingResponseToWeatherData(
         data,
         this.apiIconUrl
       );

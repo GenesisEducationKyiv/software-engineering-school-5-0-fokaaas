@@ -6,21 +6,15 @@ import type {
   GetWeatherResponse,
   IWeatherController,
 } from '@types';
-import { WeatherDto } from './dto/weather.dto';
-import { ExistsDto } from './dto/exists.dto';
 import { WeatherDiTokens } from './constants/di-tokens.const';
 import { Inject } from '@nestjs/common';
-
-export interface IWeatherService {
-  cityExists(city: string): Promise<ExistsDto>;
-  get(city: string): Promise<WeatherDto>;
-}
+import type { WeatherServiceInterface } from './interfaces/weather-service.interface';
 
 @GrpcService()
 export class WeatherController implements IWeatherController {
   constructor(
     @Inject(WeatherDiTokens.WEATHER_SERVICE)
-    private readonly service: IWeatherService
+    private readonly service: WeatherServiceInterface
   ) {}
 
   @GrpcMethod('WeatherService', 'CityExists')

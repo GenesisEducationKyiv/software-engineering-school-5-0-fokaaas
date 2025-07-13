@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
-
-export interface IHttpClientService {
-  get(url: string, options?: RequestInit): Promise<Response>;
-}
+import { HttpClientServiceInterface } from './interfaces/http-client-service.interface';
 
 @Injectable()
-export class HttpClientService implements IHttpClientService {
+export class HttpClientService implements HttpClientServiceInterface {
   get(url: string, options?: RequestInit): Promise<Response> {
     return fetch(url, options);
   }

@@ -1,17 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import {
-  WeatherApiMapper,
+  WeatherApiMapperInterface,
   WeatherApiResponse,
-} from './providers/weather-api.provider';
+} from './interfaces/weather-api-mapper.interface';
 import {
-  VisualCrossingMapper,
+  VisualCrossingMapperInterface,
   VisualCrossingResponse,
-} from './providers/visual-crossing.provider';
-import { WeatherDto } from './dto/weather.dto';
+} from './interfaces/visual-crossing-mapper.interface';
+import { WeatherData } from './data/weather.data';
 
 @Injectable()
-export class WeatherMapper implements WeatherApiMapper, VisualCrossingMapper {
-  mapWeatherApiResponseToWeatherDto(response: WeatherApiResponse): WeatherDto {
+export class WeatherMapper
+  implements WeatherApiMapperInterface, VisualCrossingMapperInterface
+{
+  mapWeatherApiResponseToWeatherData(
+    response: WeatherApiResponse
+  ): WeatherData {
     const { forecastday: forecastDays } = response.forecast;
 
     return {
@@ -32,10 +36,10 @@ export class WeatherMapper implements WeatherApiMapper, VisualCrossingMapper {
     };
   }
 
-  mapVisualCrossingResponseToWeatherDto(
+  mapVisualCrossingResponseToWeatherData(
     response: VisualCrossingResponse,
     iconUrl: string
-  ): WeatherDto {
+  ): WeatherData {
     const { days, currentConditions } = response;
 
     return {

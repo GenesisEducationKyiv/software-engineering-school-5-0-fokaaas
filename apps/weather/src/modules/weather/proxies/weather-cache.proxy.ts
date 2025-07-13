@@ -1,21 +1,21 @@
 import { RedisService } from '@utils';
-import { IWeatherService } from '../weather.controller';
-import { WeatherDto } from '../dto/weather.dto';
-import { ExistsDto } from '../dto/exists.dto';
-import { IMetricsService } from '../factories/weather-service.factory';
+import { WeatherServiceInterface } from '../interfaces/weather-service.interface';
+import { WeatherData } from '../data/weather.data';
+import { ExistsData } from '../data/exists.data';
+import { MetricsServiceInterface } from '../../metrics/interfaces/metrics-service.interface';
 
-export class WeatherCacheProxy implements IWeatherService {
+export class WeatherCacheProxy implements WeatherServiceInterface {
   constructor(
-    private readonly service: IWeatherService,
+    private readonly service: WeatherServiceInterface,
     private readonly redis: RedisService,
-    private readonly metrics: IMetricsService
+    private readonly metrics: MetricsServiceInterface
   ) {}
 
-  async get(city: string): Promise<WeatherDto> {
+  async get(city: string): Promise<WeatherData> {
     using timer = this.metrics.createResponseTimer('get');
 
     const key = city.toLowerCase();
-    const cache = await this.redis.getObj<WeatherDto>(key);
+    const cache = await this.redis.getObj<WeatherData>(key);
     if (cache) {
       this.metrics.incCacheHit('get');
       return cache;
@@ -28,7 +28,7 @@ export class WeatherCacheProxy implements IWeatherService {
     return result;
   }
 
-  async cityExists(city: string): Promise<ExistsDto> {
+  async cityExists(city: string): Promise<ExistsData> {
     using timer = this.metrics.createResponseTimer('cityExists');
 
     const key = `exists:${city.toLowerCase()}`;
