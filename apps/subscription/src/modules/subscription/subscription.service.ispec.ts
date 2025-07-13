@@ -35,23 +35,41 @@ describe('SubscriptionService (integration)', () => {
     it('should correctly return list of mapped subscriptions', async () => {
       const result = await service.findByFrequency(Frequency.DAILY);
 
-      expect(result).toEqual({
-        subscriptions: [
-          { email: 'example@mail.com', token: 'token', city: 'Kyiv' },
-          { email: 'example1@mail.com', token: 'token1', city: 'Lviv' },
-          { email: 'alreadyExists@gmail.com', token: 'token2', city: 'Odesa' },
-          {
-            email: 'unsubscribe@gmail.com',
-            token: 'd63c8e48-96a7-455d-9c71-73d49064bb1f',
-            city: 'Kharkiv',
-          },
-        ],
-      });
+      expect(result).toEqual([
+        {
+          email: 'example@mail.com',
+          token: 'token',
+          city: 'Kyiv',
+          frequency: Frequency.DAILY,
+          id: expect.any(String),
+        },
+        {
+          email: 'example1@mail.com',
+          token: 'token1',
+          city: 'Lviv',
+          frequency: Frequency.DAILY,
+          id: expect.any(String),
+        },
+        {
+          email: 'alreadyExists@gmail.com',
+          token: 'token2',
+          city: 'Odesa',
+          frequency: Frequency.DAILY,
+          id: expect.any(String),
+        },
+        {
+          email: 'unsubscribe@gmail.com',
+          token: 'd63c8e48-96a7-455d-9c71-73d49064bb1f',
+          city: 'Kharkiv',
+          frequency: Frequency.DAILY,
+          id: expect.any(String),
+        },
+      ]);
     });
 
     it('should return empty list if there no such subscriptions', async () => {
       const result = await service.findByFrequency(Frequency.HOURLY);
-      expect(result).toEqual({ subscriptions: [] });
+      expect(result).toEqual([]);
     });
   });
 
