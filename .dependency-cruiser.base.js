@@ -9,21 +9,22 @@ module.exports = {
   },
   forbidden: [
     {
-      name: 'controllers-no-application',
-      comment: 'Controllers should not depend on application',
+      name: 'services-no-presentation',
+      comment: 'Services should not depend on presentation layer',
       severity: 'error',
-      from: { path: 'src/modules/.+\\.controller\\.ts$' },
-      to: { path: 'src/modules/.+\\.service\\.ts$' },
+      from: { path: 'src/modules/.+\\.service\\.ts$' },
+      to: { path: 'src/modules/.+\\.controller\\.ts$' },
     },
     {
-      name: 'mapper-only-services-or-dto',
-      comment: 'Mapper should import services interfaces or DTOs',
+      name: 'mapper-only-interfaces-&-dto-&-data',
+      comment: 'Mapper should import only interfaces, DTOs and data',
       severity: 'error',
       from: { path: 'src/modules/.+\\.mapper\\.ts$' },
       to: {
         pathNot: [
-          'src/modules/.+\\.service\\.ts$',
+          'src/modules/.+\\.interface\\.ts$',
           'src/modules/.+/dto/.+\\.ts$',
+          'src/modules/.+/data/.+\\.ts$',
         ],
       },
     },
