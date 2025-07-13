@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
-import { IEmailService } from './email.controller';
-import { ConfirmationDto } from '../dto/confirmation.dto';
-import { ForecastDto } from '../dto/forecast.dto';
+import { ConfirmationData } from './data/confirmation.data';
+import { ForecastData } from './data/forecast.data';
+import { EmailServiceInterface } from './interfaces/email-service.interface';
 
 @Injectable()
-export class EmailService implements IEmailService {
+export class EmailService implements EmailServiceInterface {
   private readonly frontBaseUrl: string;
 
   constructor(
@@ -16,7 +16,7 @@ export class EmailService implements IEmailService {
     this.frontBaseUrl = this.config.getOrThrow<string>('frontBaseUrl');
   }
 
-  async sendConfirmation({ email, token }: ConfirmationDto): Promise<void> {
+  async sendConfirmation({ email, token }: ConfirmationData): Promise<void> {
     await this.mailer.sendMail({
       to: email,
       subject: '🍃 Confirm your email',
@@ -27,7 +27,11 @@ export class EmailService implements IEmailService {
     });
   }
 
-  async sendForecast({ email, token, ...context }: ForecastDto): Promise<void> {
+  async sendForecast({
+    email,
+    token,
+    ...context
+  }: ForecastData): Promise<void> {
     await this.mailer.sendMail({
       to: email,
       subject: '🚀 Your forecast is ready!',

@@ -5,21 +5,15 @@ import type {
   SendConfirmationRequest,
   SendForecastRequest,
 } from '@types';
-import { ConfirmationDto } from '../dto/confirmation.dto';
-import { ForecastDto } from '../dto/forecast.dto';
 import { Inject } from '@nestjs/common';
-import { EmailDiTokens } from '../constants/di-tokens.const';
-
-export interface IEmailService {
-  sendConfirmation(dto: ConfirmationDto): Promise<void>;
-  sendForecast(dto: ForecastDto): Promise<void>;
-}
+import { EmailDiTokens } from './constants/di-tokens.const';
+import type { EmailServiceInterface } from './interfaces/email-service.interface';
 
 @GrpcService()
 export class EmailController implements IEmailController {
   constructor(
     @Inject(EmailDiTokens.EMAIL_SERVICE)
-    private readonly service: IEmailService
+    private readonly service: EmailServiceInterface
   ) {}
 
   @GrpcMethod('EmailService', 'SendConfirmation')
