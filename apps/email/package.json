@@ -1,0 +1,34 @@
+{
+  "name": "@weather-api/email",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "webpack-cli build"
+        }
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@weather-api/email:build",
+          "runBuildTargetDependencies": false
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@nestjs-modules/mailer": "^2.0.2",
+    "handlebars": "^4.7.8",
+    "nodemailer": "^7.0.3"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^6.4.17"
+  }
+}
