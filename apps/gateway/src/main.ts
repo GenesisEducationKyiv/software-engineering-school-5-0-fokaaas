@@ -10,7 +10,7 @@ async function bootstrap() {
   setupApp(app);
 
   const configService = app.get<ConfigService>(ConfigService);
-  const port = configService.get<number>('port') ?? 4558;
+  const port = configService.getOrThrow<number>('port');
 
   await app.listen(port);
   Logger.log(`🚀 Gateway is running on: http://127.0.0.1:${port}/api`);

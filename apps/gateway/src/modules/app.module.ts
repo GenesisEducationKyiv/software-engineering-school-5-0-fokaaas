@@ -4,12 +4,14 @@ import configuration from '../config/configuration';
 import { WeatherModule } from './weather/weather.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { join } from 'node:path';
+import { validationSchema } from '../config/validation';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: join(__dirname, '..', `.env.${process.env.NODE_ENV}`),
       load: [configuration],
+      validationSchema,
       isGlobal: true,
     }),
     WeatherModule,
