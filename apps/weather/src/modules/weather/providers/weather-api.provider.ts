@@ -1,36 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import type { GetWeatherResponse } from '@types';
 import { ProviderErrorMessages } from '../constants/provider-error-messages.const';
 import { RpcNotFoundException } from '../../../common/exceptions/rpc-not-found.exception';
 import { RpcUnavailableException } from '../../../common/exceptions/rpc-unavailable-exception';
-import { IWeatherProvider } from '../weather.service';
-import type { HttpClient } from '../../http-client/http-client.service';
-
-type Condition = {
-  icon: string;
-  text: string;
-};
-
-type ForecastDay = {
-  date: string;
-  day: {
-    avgtemp_c: number;
-    avghumidity: number;
-    condition: Condition;
-  };
-};
-
-type WeatherApiResponse = {
-  current: {
-    last_updated: string;
-    temp_c: number;
-    humidity: number;
-    condition: Condition;
-  };
-  forecast: {
-    forecastday: ForecastDay[];
-  };
-};
+import { WeatherProviderInterface } from '../interfaces/weather-provider.interface';
+import type {
+  WeatherApiMapperInterface,
+  WeatherApiResponse,
+} from '../interfaces/weather-api-mapper.interface';
+import { WeatherData } from '../data/weather.data';
+import { HttpClientServiceInterface } from '../../http-client/interfaces/http-client-service.interface';
 
 type WeatherApiErrorResponse = {
   error: {
@@ -39,16 +17,21 @@ type WeatherApiErrorResponse = {
   };
 };
 
+export type WeatherApiConfig = {
+  url: string;
+  key: string;
+};
+
 @Injectable()
-export class WeatherApiProvider implements IWeatherProvider {
+export class WeatherApiProvider implements WeatherProviderInterface {
   private baseUrl: string;
 
   constructor(
-    apiUrl: string,
-    apiKey: string,
-    private readonly httpClient: HttpClient
+    { url, key }: WeatherApiConfig,
+    private readonly httpClient: HttpClientServiceInterface,
+    private readonly mapper: WeatherApiMapperInterface
   ) {
-    this.initializeBaseUrl(apiUrl, apiKey);
+    this.initializeBaseUrl(url, key);
   }
 
   private initializeBaseUrl(apiUrl: string, apiKey: string): void {
@@ -70,28 +53,12 @@ export class WeatherApiProvider implements IWeatherProvider {
     throw new RpcUnavailableException();
   }
 
-  async get(city: string): Promise<GetWeatherResponse> {
+  async get(city: string): Promise<WeatherData> {
     const response = await this.fetchWeatherData(city);
 
     if (response.ok) {
       const data = (await response.json()) as WeatherApiResponse;
-      const { forecastday: forecastDays } = data.forecast;
-      return {
-        current: {
-          date: data.current.last_updated,
-          temperature: data.current.temp_c.toFixed(1),
-          humidity: data.current.humidity.toString(),
-          icon: data.current.condition.icon.slice(2),
-          description: data.current.condition.text,
-        },
-        forecast: forecastDays.map((day) => ({
-          date: day.date,
-          temperature: day.day.avgtemp_c.toFixed(1),
-          humidity: day.day.avghumidity.toString(),
-          icon: day.day.condition.icon.slice(2),
-          description: day.day.condition.text,
-        })),
-      };
+      return this.mapper.mapWeatherApiResponseToWeatherData(data);
     }
 
     const errorData = (await response.json()) as WeatherApiErrorResponse;

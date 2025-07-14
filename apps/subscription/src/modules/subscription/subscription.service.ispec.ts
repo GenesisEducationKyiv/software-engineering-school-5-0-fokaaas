@@ -4,9 +4,10 @@ import { PrismaService } from '../../database/prisma/prisma.service';
 import { RedisService } from '@utils';
 import { Frequency } from '@prisma/client';
 import { ConfigModule } from '@nestjs/config';
-import type { CreateRequest, FrequencyRequest } from '@types';
 import configuration from '../../common/config/configuration';
 import { SubscriptionModule } from './subscription.module';
+import { SubscriptionData } from './data/subscription.data';
+import { SubscriptionDiTokens } from './constants/di-tokens.const';
 
 describe('SubscriptionService (integration)', () => {
   let service: SubscriptionService;
@@ -21,7 +22,7 @@ describe('SubscriptionService (integration)', () => {
       ],
     }).compile();
 
-    service = moduleRef.get(SubscriptionService);
+    service = moduleRef.get(SubscriptionDiTokens.SUBSCRIPTION_SERVICE);
     prisma = moduleRef.get(PrismaService);
     redis = moduleRef.get(RedisService);
   });
@@ -32,49 +33,63 @@ describe('SubscriptionService (integration)', () => {
 
   describe('findByFrequency', () => {
     it('should correctly return list of mapped subscriptions', async () => {
-      const arg: FrequencyRequest = { frequency: Frequency.DAILY };
+      const result = await service.findByFrequency(Frequency.DAILY);
 
-      const result = await service.findByFrequency(arg);
-
-      expect(result).toEqual({
-        subscriptions: [
-          { email: 'example@mail.com', token: 'token', city: 'Kyiv' },
-          { email: 'example1@mail.com', token: 'token1', city: 'Lviv' },
-          { email: 'alreadyExists@gmail.com', token: 'token2', city: 'Odesa' },
-          {
-            email: 'unsubscribe@gmail.com',
-            token: 'd63c8e48-96a7-455d-9c71-73d49064bb1f',
-            city: 'Kharkiv',
-          },
-        ],
-      });
+      expect(result).toEqual([
+        {
+          email: 'example@mail.com',
+          token: 'token',
+          city: 'Kyiv',
+          frequency: Frequency.DAILY,
+          id: expect.any(String),
+        },
+        {
+          email: 'example1@mail.com',
+          token: 'token1',
+          city: 'Lviv',
+          frequency: Frequency.DAILY,
+          id: expect.any(String),
+        },
+        {
+          email: 'alreadyExists@gmail.com',
+          token: 'token2',
+          city: 'Odesa',
+          frequency: Frequency.DAILY,
+          id: expect.any(String),
+        },
+        {
+          email: 'unsubscribe@gmail.com',
+          token: 'd63c8e48-96a7-455d-9c71-73d49064bb1f',
+          city: 'Kharkiv',
+          frequency: Frequency.DAILY,
+          id: expect.any(String),
+        },
+      ]);
     });
 
     it('should return empty list if there no such subscriptions', async () => {
-      const arg: FrequencyRequest = { frequency: Frequency.HOURLY };
-
-      const result = await service.findByFrequency(arg);
-      expect(result).toEqual({ subscriptions: [] });
+      const result = await service.findByFrequency(Frequency.HOURLY);
+      expect(result).toEqual([]);
     });
   });
 
   describe('create', () => {
     it('saves creation data in redis under the returned token', async () => {
-      const arg: CreateRequest = {
+      const arg: SubscriptionData = {
         email: 'testemail@gmail.com',
         city: 'Test City',
         frequency: Frequency.DAILY,
       };
 
       const result = await service.create(arg);
-      expect(result.token).toBeTruthy();
+      expect(result).toBeTruthy();
 
-      const data = await redis.getObj<CreateRequest>(result.token);
+      const data = await redis.getObj<SubscriptionData>(result);
       expect(data).toEqual(arg);
     });
 
     it('throws if email already exists', async () => {
-      const arg: CreateRequest = {
+      const arg: SubscriptionData = {
         email: 'example@mail.com',
         city: 'Kyiv',
         frequency: Frequency.DAILY,
@@ -87,16 +102,16 @@ describe('SubscriptionService (integration)', () => {
   describe('confirm', () => {
     it('should confirm subscription with valid token', async () => {
       const token = '114e05a1-b9a2-4a27-a269-d6eb6dc6a705';
-      const data: CreateRequest = {
+      const data: SubscriptionData = {
         frequency: Frequency.DAILY,
         city: 'Poltava',
         email: 'example3@mail.com',
       };
-      await redis.setObj<CreateRequest>(token, data);
+      await redis.setObj<SubscriptionData>(token, data);
 
-      const result = await service.confirm({ token });
+      const result = await service.confirm(token);
 
-      expect(result).toEqual({});
+      expect(result).toBeUndefined();
 
       const subscription = await prisma.subscription.findFirst({
         where: { token },
@@ -111,10 +126,10 @@ describe('SubscriptionService (integration)', () => {
     });
 
     it('should throw error if token not found', async () => {
-      const arg = { token: 'invalid' };
+      const token = 'invalid';
       const errorMessage = 'Token not found';
 
-      await expect(service.confirm(arg)).rejects.toThrow(errorMessage);
+      await expect(service.confirm(token)).rejects.toThrow(errorMessage);
     });
   });
 
@@ -133,27 +148,29 @@ describe('SubscriptionService (integration)', () => {
     });
 
     it('should unsubscribe with valid token', async () => {
-      const arg = { token: 'token' };
+      const token = 'token';
 
-      const result = await service.unsubscribe(arg);
-      expect(result).toEqual({});
+      const result = await service.unsubscribe(token);
+      expect(result).toBeUndefined();
 
       const subscription = await prisma.subscription.findFirst({
-        where: arg,
+        where: { token },
       });
       expect(subscription).toBeNull(); // subscription should be deleted
 
       expect(spyTokenExists).toHaveBeenCalledTimes(1);
-      expect(spyTokenExists).toHaveBeenCalledWith(arg.token);
+      expect(spyTokenExists).toHaveBeenCalledWith(token);
     });
 
     it('should throw error if token not found', async () => {
-      const arg = { token: 'invalid' };
+      const token = 'invalid';
 
-      await expect(service.unsubscribe(arg)).rejects.toThrow('Token not found');
+      await expect(service.unsubscribe(token)).rejects.toThrow(
+        'Token not found'
+      );
 
       expect(spyTokenExists).toHaveBeenCalledTimes(1);
-      expect(spyTokenExists).toHaveBeenCalledWith(arg.token);
+      expect(spyTokenExists).toHaveBeenCalledWith(token);
     });
   });
 });

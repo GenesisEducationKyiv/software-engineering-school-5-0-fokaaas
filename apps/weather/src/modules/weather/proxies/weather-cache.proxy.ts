@@ -1,25 +1,21 @@
-import {
-  CityExistsRequest,
-  CityExistsResponse,
-  GetWeatherRequest,
-  GetWeatherResponse,
-  IWeatherService,
-} from '@types';
 import { RedisService } from '@utils';
-import { MetricsService } from '../metrics/metrics.service';
+import { WeatherServiceInterface } from '../interfaces/weather-service.interface';
+import { WeatherData } from '../data/weather.data';
+import { ExistsData } from '../data/exists.data';
+import { MetricsServiceInterface } from '../../metrics/interfaces/metrics-service.interface';
 
-export class WeatherCacheProxy implements IWeatherService {
+export class WeatherCacheProxy implements WeatherServiceInterface {
   constructor(
-    private readonly service: IWeatherService,
+    private readonly service: WeatherServiceInterface,
     private readonly redis: RedisService,
-    private readonly metrics: MetricsService
+    private readonly metrics: MetricsServiceInterface
   ) {}
 
-  async get({ city }: GetWeatherRequest): Promise<GetWeatherResponse> {
+  async get(city: string): Promise<WeatherData> {
     using timer = this.metrics.createResponseTimer('get');
 
     const key = city.toLowerCase();
-    const cache = await this.redis.getObj<GetWeatherResponse>(key);
+    const cache = await this.redis.getObj<WeatherData>(key);
     if (cache) {
       this.metrics.incCacheHit('get');
       return cache;
@@ -27,12 +23,12 @@ export class WeatherCacheProxy implements IWeatherService {
 
     this.metrics.incCacheMiss('get');
 
-    const result = await this.service.get({ city });
+    const result = await this.service.get(city);
     await this.redis.setObj(key, result);
     return result;
   }
 
-  async cityExists({ city }: CityExistsRequest): Promise<CityExistsResponse> {
+  async cityExists(city: string): Promise<ExistsData> {
     using timer = this.metrics.createResponseTimer('cityExists');
 
     const key = `exists:${city.toLowerCase()}`;
@@ -44,7 +40,7 @@ export class WeatherCacheProxy implements IWeatherService {
 
     this.metrics.incCacheMiss('cityExists');
 
-    const result = await this.service.cityExists({ city });
+    const result = await this.service.cityExists(city);
     await this.redis.setBool(key, result.exists);
     return result;
   }

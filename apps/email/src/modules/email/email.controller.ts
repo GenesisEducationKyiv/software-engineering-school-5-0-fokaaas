@@ -1,23 +1,30 @@
 import { GrpcMethod, GrpcService } from '@nestjs/microservices';
-import { EmailService } from './email.service';
 import type {
   Empty,
   IEmailController,
   SendConfirmationRequest,
   SendForecastRequest,
 } from '@types';
+import { Inject } from '@nestjs/common';
+import { EmailDiTokens } from './constants/di-tokens.const';
+import type { EmailServiceInterface } from './interfaces/email-service.interface';
 
 @GrpcService()
 export class EmailController implements IEmailController {
-  constructor(private readonly service: EmailService) {}
+  constructor(
+    @Inject(EmailDiTokens.EMAIL_SERVICE)
+    private readonly service: EmailServiceInterface
+  ) {}
 
   @GrpcMethod('EmailService', 'SendConfirmation')
-  sendConfirmation(request: SendConfirmationRequest): Promise<Empty> {
-    return this.service.sendConfirmation(request);
+  async sendConfirmation(request: SendConfirmationRequest): Promise<Empty> {
+    await this.service.sendConfirmation(request);
+    return {};
   }
 
   @GrpcMethod('EmailService', 'SendForecast')
-  sendForecast(request: SendForecastRequest): Promise<Empty> {
-    return this.service.sendForecast(request);
+  async sendForecast(request: SendForecastRequest): Promise<Empty> {
+    await this.service.sendForecast(request);
+    return {};
   }
 }

@@ -5,10 +5,16 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { EmailController } from './email.controller';
 import { EmailService } from './email.service';
 import { join } from 'path';
+import { EmailDiTokens } from './constants/di-tokens.const';
 
 @Module({
   controllers: [EmailController],
-  providers: [EmailService],
+  providers: [
+    {
+      provide: EmailDiTokens.EMAIL_SERVICE,
+      useClass: EmailService,
+    },
+  ],
   imports: [
     MailerModule.forRootAsync({
       useFactory: async (configService: ConfigService) => ({

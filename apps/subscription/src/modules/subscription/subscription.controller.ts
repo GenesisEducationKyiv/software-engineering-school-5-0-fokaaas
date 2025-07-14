@@ -8,31 +8,46 @@ import type {
   TokenRequest,
   TokenResponse,
 } from '@types';
-import { SubscriptionService } from './subscription.service';
+import { SubscriptionDiTokens } from './constants/di-tokens.const';
+import { Inject } from '@nestjs/common';
+import type { SubscriptionServiceInterface } from './interfaces/subscription-service.interface';
+import type { SubscriptionMapperInterface } from './interfaces/subscription-mapper.interface';
 
 @GrpcService()
 export class SubscriptionController implements ISubscriptionController {
-  constructor(private readonly subscriptionService: SubscriptionService) {}
+  constructor(
+    @Inject(SubscriptionDiTokens.SUBSCRIPTION_SERVICE)
+    private readonly subscriptionService: SubscriptionServiceInterface,
+
+    @Inject(SubscriptionDiTokens.SUBSCRIPTION_MAPPER)
+    private readonly mapper: SubscriptionMapperInterface
+  ) {}
 
   @GrpcMethod('SubscriptionService', 'FindByFrequency')
-  findByFrequency(
+  async findByFrequency(
     request: FrequencyRequest
   ): Promise<FindByFrequencyListResponse> {
-    return this.subscriptionService.findByFrequency(request);
+    const subscriptions = await this.subscriptionService.findByFrequency(
+      request.frequency
+    );
+    return this.mapper.mapToSubscriptionsDto(subscriptions);
   }
 
   @GrpcMethod('SubscriptionService', 'Create')
-  create(request: CreateRequest): Promise<TokenResponse> {
-    return this.subscriptionService.create(request);
+  async create(request: CreateRequest): Promise<TokenResponse> {
+    const token = await this.subscriptionService.create(request);
+    return { token };
   }
 
   @GrpcMethod('SubscriptionService', 'Confirm')
-  confirm(request: TokenRequest): Promise<Empty> {
-    return this.subscriptionService.confirm(request);
+  async confirm(request: TokenRequest): Promise<Empty> {
+    await this.subscriptionService.confirm(request.token);
+    return {};
   }
 
   @GrpcMethod('SubscriptionService', 'Unsubscribe')
-  unsubscribe(request: TokenRequest): Promise<Empty> {
-    return this.subscriptionService.unsubscribe(request);
+  async unsubscribe(request: TokenRequest): Promise<Empty> {
+    await this.subscriptionService.unsubscribe(request.token);
+    return {};
   }
 }

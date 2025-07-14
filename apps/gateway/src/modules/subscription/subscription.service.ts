@@ -1,37 +1,45 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { WeatherClientService } from '../weather-client/weather-client.service';
-import { EmailClientService } from '../email-client/email-client.service';
-import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
-import { SubscribeBody } from './body/subscribe.body';
-import { TokenPath } from './path/token.path';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Errors } from '../../common/constants/errors.const';
 import { SubscriptionMessages } from './constants/subscription-messages.const';
+import { SubscriptionClientDiTokens } from '../subscription-client/constants/di-tokens.const';
+import { WeatherClientDiTokens } from '../weather-client/constants/di-tokens.const';
+import { EmailClientDiTokens } from '../email-client/constants/di-tokens.const';
+import type { WeatherCityExistsInterface } from '../weather-client/interfaces/city-exists.interface';
+import { SubscriptionServiceInterface } from './interfaces/subscription-service.interface';
+import { SubscriptionData } from './data/subscription.data';
+import type { ManageSubscriptionInterface } from '../subscription-client/interfaces/manage-subscription.interface';
+import type { SendConfirmationInterface } from '../email-client/interfaces/send-confirmation.interface';
 
 @Injectable()
-export class SubscriptionService {
+export class SubscriptionService implements SubscriptionServiceInterface {
   constructor(
-    private readonly subscriptionClient: SubscriptionClientService,
-    private readonly weatherClient: WeatherClientService,
-    private readonly emailClient: EmailClientService
+    @Inject(SubscriptionClientDiTokens.SUBSCRIPTION_CLIENT_SERVICE)
+    private readonly subscriptionClient: ManageSubscriptionInterface,
+
+    @Inject(WeatherClientDiTokens.WEATHER_CLIENT_SERVICE)
+    private readonly weatherClient: WeatherCityExistsInterface,
+
+    @Inject(EmailClientDiTokens.EMAIL_CLIENT_SERVICE)
+    private readonly emailClient: SendConfirmationInterface
   ) {}
 
-  async subscribe(body: SubscribeBody): Promise<{ message: string }> {
+  async subscribe(data: SubscriptionData): Promise<string> {
     const { exists: cityExists } = await this.weatherClient.cityExists({
-      city: body.city,
+      city: data.city,
     });
     if (!cityExists) throw new NotFoundException(Errors.CITY_NOT_FOUND);
-    const { token } = await this.subscriptionClient.create(body);
-    await this.emailClient.sendConfirmation({ email: body.email, token });
-    return { message: SubscriptionMessages.SUBSCRIPTION_SUCCESS };
+    const { token } = await this.subscriptionClient.create(data);
+    await this.emailClient.sendConfirmation({ email: data.email, token });
+    return SubscriptionMessages.SUBSCRIPTION_SUCCESS;
   }
 
-  async confirm({ token }: TokenPath): Promise<{ message: string }> {
+  async confirm(token: string): Promise<string> {
     await this.subscriptionClient.confirm({ token });
-    return { message: SubscriptionMessages.SUBSCRIPTION_CONFIRMED };
+    return SubscriptionMessages.SUBSCRIPTION_CONFIRMED;
   }
 
-  async unsubscribe({ token }: TokenPath): Promise<{ message: string }> {
+  async unsubscribe(token: string): Promise<string> {
     await this.subscriptionClient.unsubscribe({ token });
-    return { message: SubscriptionMessages.UNSUBSCRIBED_SUCCESSFULLY };
+    return SubscriptionMessages.UNSUBSCRIBED_SUCCESSFULLY;
   }
 }

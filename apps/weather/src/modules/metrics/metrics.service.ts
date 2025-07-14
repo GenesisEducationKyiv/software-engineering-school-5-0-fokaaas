@@ -8,9 +8,10 @@ import {
   RegistryContentType,
 } from 'prom-client';
 import { Interval } from '@nestjs/schedule';
+import { MetricsServiceInterface } from './interfaces/metrics-service.interface';
 
 @Injectable()
-export class MetricsService {
+export class MetricsService implements MetricsServiceInterface {
   constructor(
     @InjectMetric(Metrics.CACHE_HIT_TOTAL)
     private readonly cacheHitTotalCounter: Counter<string>,
@@ -34,7 +35,11 @@ export class MetricsService {
 
   createResponseTimer(method: string) {
     const end = this.responseTimeSecondsHistogram.startTimer();
-    return { [Symbol.dispose]: () => end({ method }) };
+    return {
+      [Symbol.dispose]: () => {
+        end({ method });
+      },
+    };
   }
 
   @Interval(5000)

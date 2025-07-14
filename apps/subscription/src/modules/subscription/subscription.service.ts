@@ -1,39 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import { SubscriptionRepository } from './subscription.repository';
-import type {
-  CreateRequest,
-  Empty,
-  FindByFrequencyListResponse,
-  FrequencyRequest,
-  ISubscriptionService,
-  TokenRequest,
-  TokenResponse,
-} from '@types';
+import { Inject, Injectable } from '@nestjs/common';
 import { RedisService } from '@utils';
 import { randomUUID } from 'node:crypto';
 import { GrpcAlreadyExistsException } from '../../common/exceptions/grpc-already-exists.exception';
 import { GrpcNotFoundException } from '../../common/exceptions/grpc-not-found.exception';
+import { SubscriptionDiTokens } from './constants/di-tokens.const';
+import { Frequency, Subscription } from '@prisma/client';
+import { SubscriptionData } from './data/subscription.data';
+import { SubscriptionServiceInterface } from './interfaces/subscription-service.interface';
+import type { SubscriptionRepositoryInterface } from './interfaces/subscription-repository.interface';
 
 @Injectable()
-export class SubscriptionService implements ISubscriptionService {
+export class SubscriptionService implements SubscriptionServiceInterface {
   constructor(
-    private readonly repo: SubscriptionRepository,
+    @Inject(SubscriptionDiTokens.SUBSCRIPTION_REPOSITORY)
+    private readonly repo: SubscriptionRepositoryInterface,
+
     private readonly redis: RedisService
   ) {}
 
-  async findByFrequency(
-    request: FrequencyRequest
-  ): Promise<FindByFrequencyListResponse> {
-    const subscriptions = await this.repo
-      .find({ frequency: request.frequency })
-      .then((items) =>
-        items.map((item) => ({
-          email: item.email,
-          city: item.city,
-          token: item.token,
-        }))
-      );
-    return { subscriptions };
+  findByFrequency(frequency: Frequency): Promise<Subscription[]> {
+    return this.repo.find({ frequency });
   }
 
   private async emailExists(email: string): Promise<boolean> {
@@ -46,18 +32,18 @@ export class SubscriptionService implements ISubscriptionService {
     return items.length > 0;
   }
 
-  async create(request: CreateRequest): Promise<TokenResponse> {
-    const emailExists = await this.emailExists(request.email);
+  async create(data: SubscriptionData): Promise<string> {
+    const emailExists = await this.emailExists(data.email);
     if (emailExists) {
       throw new GrpcAlreadyExistsException('Email');
     }
     const token = randomUUID();
-    await this.redis.setObj<CreateRequest>(token, request);
-    return { token };
+    await this.redis.setObj<SubscriptionData>(token, data);
+    return token;
   }
 
-  async confirm(request: TokenRequest): Promise<Empty> {
-    const data = await this.redis.getObj<CreateRequest>(request.token);
+  async confirm(token: string): Promise<void> {
+    const data = await this.redis.getObj<SubscriptionData>(token);
     if (!data) {
       throw new GrpcNotFoundException('Token');
     }
@@ -65,18 +51,16 @@ export class SubscriptionService implements ISubscriptionService {
       email: data.email,
       frequency: data.frequency,
       city: data.city,
-      token: request.token,
+      token: token,
     });
-    await this.redis.delete(request.token);
-    return {};
+    await this.redis.delete(token);
   }
 
-  async unsubscribe({ token }: TokenRequest): Promise<Empty> {
+  async unsubscribe(token: string): Promise<void> {
     const exists = await this.tokenExists(token);
     if (!exists) {
       throw new GrpcNotFoundException('Token');
     }
     await this.repo.deleteByToken(token);
-    return {};
   }
 }

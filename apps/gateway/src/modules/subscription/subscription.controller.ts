@@ -1,24 +1,31 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { SubscriptionService } from './subscription.service';
+import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { SubscribeBody } from './body/subscribe.body';
 import { TokenPath } from './path/token.path';
+import { SubscriptionDiTokens } from './constants/di-tokens.const';
+import type { SubscriptionServiceInterface } from './interfaces/subscription-service.interface';
 
 @Controller()
 export class SubscriptionController {
-  constructor(private subscriptionService: SubscriptionService) {}
+  constructor(
+    @Inject(SubscriptionDiTokens.SUBSCRIPTION_SERVICE)
+    private readonly subscriptionService: SubscriptionServiceInterface
+  ) {}
 
   @Post('/subscribe')
-  subscribe(@Body() body: SubscribeBody) {
-    return this.subscriptionService.subscribe(body);
+  async subscribe(@Body() body: SubscribeBody) {
+    const message = await this.subscriptionService.subscribe(body);
+    return { message };
   }
 
   @Get('/confirm/:token')
-  confirm(@Param() param: TokenPath) {
-    return this.subscriptionService.confirm(param);
+  async confirm(@Param() param: TokenPath) {
+    const message = await this.subscriptionService.confirm(param.token);
+    return { message };
   }
 
   @Get('/unsubscribe/:token')
-  unsubscribe(@Param() param: TokenPath) {
-    return this.subscriptionService.unsubscribe(param);
+  async unsubscribe(@Param() param: TokenPath) {
+    const message = await this.subscriptionService.unsubscribe(param.token);
+    return { message };
   }
 }

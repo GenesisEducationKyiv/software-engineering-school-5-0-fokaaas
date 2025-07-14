@@ -1,16 +1,17 @@
 import { WeatherApiProvider } from './weather-api.provider';
 import { Test } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import configuration from '../../../common/config/configuration';
-import { WeatherApiConfig } from '../weather-service.factory';
 import * as fs from 'fs/promises';
 import { ProviderDomains } from '../constants/provider-domains.const';
 import { http, HttpResponse } from 'msw';
 import { mockServer } from '../../../common/utils/msw/setup';
 import { HttpStatus } from '@nestjs/common';
-import { HttpClientService } from '../../http-client/http-client.service';
-import { HttpClientLoggerDecorator } from '../../http-client/decorators/http-client-logger.decorator';
 import { HttpClientModule } from '../../http-client/http-client.module';
+import { WeatherDiTokens } from '../constants/di-tokens.const';
+import { WeatherApiProviderFactory } from '../factories/weather-api-provider.factory';
+import { WeatherMapper } from '../weather.mapper';
+import { HttpClientDiTokens } from '../../http-client/constants/di-tokens.const';
 
 const getHandler = (responseObj: object, status: number) => {
   return http.get('https://api.weatherapi.com/v1/forecast.json', () =>
@@ -75,28 +76,23 @@ describe('WeatherApiProvider (unit)', () => {
         HttpClientModule,
       ],
       providers: [
+        WeatherApiProviderFactory,
         {
-          provide: WeatherApiProvider,
-          useFactory: (
-            configService: ConfigService,
-            httpClientService: HttpClientService
-          ) => {
-            const { url, key } =
-              configService.getOrThrow<WeatherApiConfig>('weatherApi');
-            const httpClient = new HttpClientLoggerDecorator(
-              httpClientService,
-              ProviderDomains.WEATHER_API,
-              logFilePath
-            );
-            return new WeatherApiProvider(url, key, httpClient);
-          },
-          inject: [ConfigService, HttpClientService],
+          provide: WeatherDiTokens.WEATHER_MAPPER,
+          useClass: WeatherMapper,
+        },
+        {
+          provide: WeatherDiTokens.WEATHER_API_PROVIDER,
+          useFactory: (factory: WeatherApiProviderFactory) => factory.create(),
+          inject: [WeatherApiProviderFactory],
         },
       ],
     }).compile();
 
-    provider = moduleRef.get(WeatherApiProvider);
-    const httpClientService = moduleRef.get(HttpClientService);
+    provider = moduleRef.get(WeatherDiTokens.WEATHER_API_PROVIDER);
+    const httpClientService = moduleRef.get(
+      HttpClientDiTokens.HTTP_CLIENT_SERVICE
+    );
     spyHttpGet = jest.spyOn(httpClientService, 'get');
 
     jest.useFakeTimers().setSystemTime(new Date('2025-06-26T10:00:00.000Z'));

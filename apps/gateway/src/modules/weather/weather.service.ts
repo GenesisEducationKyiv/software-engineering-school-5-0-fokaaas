@@ -1,22 +1,31 @@
-import { Injectable } from '@nestjs/common';
-import { WeatherClientService } from '../weather-client/weather-client.service';
-import { WeatherQuery } from './query/weather.query';
-import type { FindByFrequencyListResponse } from '@types';
+import { Inject, Injectable } from '@nestjs/common';
+import { FindByFrequencyListResponse } from '@types';
 import { Cron } from '@nestjs/schedule';
-import { EmailClientService } from '../email-client/email-client.service';
-import { SubscriptionClientService } from '../subscription-client/subscription-client.service';
 import { Frequency } from '../subscription/enum/frequency.enum';
+import { WeatherClientDiTokens } from '../weather-client/constants/di-tokens.const';
+import { EmailClientDiTokens } from '../email-client/constants/di-tokens.const';
+import { SubscriptionClientDiTokens } from '../subscription-client/constants/di-tokens.const';
+import { CurrentWeatherData } from './data/current-weather.data';
+import { WeatherServiceInterface } from './interfaces/weather-service.interface';
+import type { GetWeatherInterface } from '../weather-client/interfaces/get-weather.interface';
+import type { FindSubscriptionsInterface } from '../subscription-client/interfaces/find-subscriptions.interface';
+import type { SendForecastInterface } from '../email-client/interfaces/send-forecast.interface';
 
 @Injectable()
-export class WeatherService {
+export class WeatherService implements WeatherServiceInterface {
   constructor(
-    private readonly weatherClient: WeatherClientService,
-    private readonly emailClient: EmailClientService,
-    private readonly subscriptionClient: SubscriptionClientService
+    @Inject(WeatherClientDiTokens.WEATHER_CLIENT_SERVICE)
+    private readonly weatherClient: GetWeatherInterface,
+
+    @Inject(EmailClientDiTokens.EMAIL_CLIENT_SERVICE)
+    private readonly emailClient: SendForecastInterface,
+
+    @Inject(SubscriptionClientDiTokens.SUBSCRIPTION_CLIENT_SERVICE)
+    private readonly subscriptionClient: FindSubscriptionsInterface
   ) {}
 
-  async getWeather(query: WeatherQuery) {
-    const { current } = await this.weatherClient.get(query);
+  async getWeather(city: string): Promise<CurrentWeatherData> {
+    const { current } = await this.weatherClient.get({ city });
     return {
       temperature: current.temperature,
       humidity: current.humidity,
@@ -25,7 +34,7 @@ export class WeatherService {
   }
 
   @Cron('0 * * * *')
-  async handleHourlyEmails() {
+  async handleHourlyEmails(): Promise<void> {
     const res = await this.subscriptionClient.findByFrequency({
       frequency: Frequency.HOURLY,
     });
@@ -33,7 +42,7 @@ export class WeatherService {
   }
 
   @Cron('0 8 * * *')
-  async handleDailyEmails() {
+  async handleDailyEmails(): Promise<void> {
     const res = await this.subscriptionClient.findByFrequency({
       frequency: Frequency.DAILY,
     });
