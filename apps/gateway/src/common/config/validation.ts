@@ -15,7 +15,7 @@ const whenTestRequired = <T extends Joi.Schema>(schema: T) =>
   });
 
 export const validationSchema = Joi.object({
-  NODE_ENV: Joi.string().valid('dev', 'prod', 'test').required(),
+  NODE_ENV: Joi.string().valid('development', 'production', 'test').required(),
   PORT: Joi.number().default(4558),
   WEATHER_HOST: whenTestForbidden(Joi.string()),
   WEATHER_PORT: whenTestForbidden(Joi.number()),
