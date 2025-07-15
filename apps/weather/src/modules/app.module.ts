@@ -5,6 +5,7 @@ import { WeatherModule } from './weather/weather.module';
 import { FilterModule } from '@utils';
 import { join } from 'node:path';
 import { MetricsModule } from './metrics/metrics.module';
+import { validationSchema } from '../common/config/validation';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { MetricsModule } from './metrics/metrics.module';
       envFilePath: join(__dirname, '..', `.env.${process.env.NODE_ENV}`),
       load: [configuration],
       isGlobal: true,
+      validationSchema,
     }),
     WeatherModule,
     FilterModule,

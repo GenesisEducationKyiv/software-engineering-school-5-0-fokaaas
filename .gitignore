@@ -7,8 +7,8 @@ out-tsc
 
 logs
 
-**/.env.dev
-**/.env.prod
+**/.env.development
+**/.env.production
 
 # dependencies
 **/node_modules
