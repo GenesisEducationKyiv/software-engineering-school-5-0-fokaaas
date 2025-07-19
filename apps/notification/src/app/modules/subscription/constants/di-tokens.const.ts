@@ -1,0 +1,4 @@
+export const SubscriptionDiTokens = {
+  SUBSCRIPTION_PACKAGE: Symbol('SUBSCRIPTION_PACKAGE'),
+  SUBSCRIPTION_CLIENT: Symbol('SUBSCRIPTION_CLIENT'),
+};
