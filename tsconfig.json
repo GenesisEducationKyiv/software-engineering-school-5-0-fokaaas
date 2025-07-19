@@ -16,7 +16,13 @@
       "path": "./apps/subscription"
     },
     {
-      "path": "./libs/utils",
+      "path": "./libs/utils"
+    },
+    {
+      "path": "./apps/notification-e2e"
+    },
+    {
+      "path": "./apps/notification"
     }
   ]
 }
