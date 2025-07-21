@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { join } from 'node:path';
 import configuration from '../common/config/configuration';
 import { validationSchema } from '../common/config/validation';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { validationSchema } from '../common/config/validation';
       validationSchema,
       isGlobal: true,
     }),
+    NotificationModule,
   ],
 })
 export class AppModule {}

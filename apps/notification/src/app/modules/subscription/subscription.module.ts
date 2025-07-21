@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { SubscriptionDiTokens } from './constants/di-tokens.const';
 import { ConfigService } from '@nestjs/config';
-import { GrpcConfig } from '@types';
+import { GrpcConfig } from '@shared-types/grpc/common';
 import { SubscriptionClient } from './subscription.client';
 
 @Module({

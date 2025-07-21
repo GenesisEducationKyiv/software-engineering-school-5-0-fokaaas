@@ -1,21 +1,19 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import type {
-  Empty,
-  IEmailService,
-  SendConfirmationRequest,
-  SendForecastRequest,
-  GrpcToObservable,
-} from '@types';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { EmailClientDiTokens } from './constants/di-tokens.const';
 import { SendConfirmationInterface } from './interfaces/send-confirmation.interface';
-import { SendForecastInterface } from './interfaces/send-forecast.interface';
+import { Empty, GrpcToObservable } from '@shared-types/grpc/common';
+import {
+  EmailServiceInterface,
+  SendConfirmationRequest,
+} from '@shared-types/grpc/email';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class EmailClientService
-  implements SendConfirmationInterface, SendForecastInterface, OnModuleInit
+  implements SendConfirmationInterface, OnModuleInit
 {
-  private clientService: GrpcToObservable<IEmailService>;
+  private clientService: GrpcToObservable<EmailServiceInterface>;
 
   constructor(
     @Inject(EmailClientDiTokens.EMAIL_PACKAGE)
@@ -24,14 +22,12 @@ export class EmailClientService
 
   onModuleInit() {
     this.clientService =
-      this.client.getService<GrpcToObservable<IEmailService>>('EmailService');
+      this.client.getService<GrpcToObservable<EmailServiceInterface>>(
+        'EmailService'
+      );
   }
 
-  async sendConfirmation(request: SendConfirmationRequest): Promise<Empty> {
-    return this.clientService.sendConfirmation(request).toPromise();
-  }
-
-  async sendForecast(request: SendForecastRequest): Promise<Empty> {
-    return this.clientService.sendForecast(request).toPromise();
+  sendConfirmation(request: SendConfirmationRequest): Promise<Empty> {
+    return firstValueFrom(this.clientService.sendConfirmation(request));
   }
 }

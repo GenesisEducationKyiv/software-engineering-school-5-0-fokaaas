@@ -1,20 +1,20 @@
 import { GrpcMethod, GrpcService } from '@nestjs/microservices';
 import type {
   CreateRequest,
-  Empty,
   FindByFrequencyListResponse,
   FrequencyRequest,
-  ISubscriptionController,
+  SubscriptionControllerInterface,
   TokenRequest,
   TokenResponse,
-} from '@types';
+} from '@shared-types/grpc/subscription';
+import { Empty } from '@shared-types/grpc/common';
 import { SubscriptionDiTokens } from './constants/di-tokens.const';
 import { Inject } from '@nestjs/common';
 import type { SubscriptionServiceInterface } from './interfaces/subscription-service.interface';
 import type { SubscriptionMapperInterface } from './interfaces/subscription-mapper.interface';
 
 @GrpcService()
-export class SubscriptionController implements ISubscriptionController {
+export class SubscriptionController implements SubscriptionControllerInterface {
   constructor(
     @Inject(SubscriptionDiTokens.SUBSCRIPTION_SERVICE)
     private readonly subscriptionService: SubscriptionServiceInterface,

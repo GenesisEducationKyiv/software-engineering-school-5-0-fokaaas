@@ -7,4 +7,6 @@ export const validationSchema = Joi.object({
   WEATHER_PORT: Joi.number().required(),
   SUBSCRIPTION_HOST: Joi.string().required(),
   SUBSCRIPTION_PORT: Joi.number().required(),
+  RMQ_HOST: Joi.string().required(),
+  RMQ_PORT: Joi.number().default(5672),
 });

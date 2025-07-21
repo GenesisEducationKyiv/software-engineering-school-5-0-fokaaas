@@ -4,14 +4,14 @@ import type {
   CityExistsResponse,
   GetWeatherRequest,
   GetWeatherResponse,
-  IWeatherController,
-} from '@types';
+  WeatherControllerInterface,
+} from '@shared-types/grpc/weather';
 import { WeatherDiTokens } from './constants/di-tokens.const';
 import { Inject } from '@nestjs/common';
 import type { WeatherServiceInterface } from './interfaces/weather-service.interface';
 
 @GrpcService()
-export class WeatherController implements IWeatherController {
+export class WeatherController implements WeatherControllerInterface {
   constructor(
     @Inject(WeatherDiTokens.WEATHER_SERVICE)
     private readonly service: WeatherServiceInterface

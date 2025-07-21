@@ -1,18 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SubscriptionClientInterface } from './interfaces/subscription-client.interface';
-import {
-  FindByFrequencyListResponse,
-  FrequencyRequest,
-  GrpcToObservable,
-  ISubscriptionService,
-} from '@types';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { SubscriptionDiTokens } from './constants/di-tokens.const';
+import {
+  FindByFrequencyListResponse,
+  FrequencyRequest,
+  SubscriptionServiceInterface,
+} from '@shared-types/grpc/subscription';
+import { GrpcToObservable } from '@shared-types/grpc/common';
 
 @Injectable()
 export class SubscriptionClient implements SubscriptionClientInterface {
-  private clientService: GrpcToObservable<ISubscriptionService>;
+  private clientService: GrpcToObservable<SubscriptionServiceInterface>;
 
   constructor(
     @Inject(SubscriptionDiTokens.SUBSCRIPTION_PACKAGE)
@@ -21,7 +21,7 @@ export class SubscriptionClient implements SubscriptionClientInterface {
 
   onModuleInit() {
     this.clientService = this.client.getService<
-      GrpcToObservable<ISubscriptionService>
+      GrpcToObservable<SubscriptionServiceInterface>
     >('SubscriptionService');
   }
 

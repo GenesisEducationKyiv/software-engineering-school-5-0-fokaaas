@@ -26,11 +26,8 @@
       "development"
     ],
     "paths": {
-      "@proto": [
-        "libs/proto"
-      ],
-      "@types": [
-        "libs/types"
+      "@shared-types/*": [
+        "libs/types/*"
       ],
       "@utils": [
         "libs/utils/src"

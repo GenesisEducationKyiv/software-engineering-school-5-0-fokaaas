@@ -8,4 +8,8 @@ export default () => ({
     host: process.env.SUBSCRIPTION_HOST,
     port: process.env.SUBSCRIPTION_PORT,
   },
+  rmq: {
+    host: process.env.RMQ_HOST,
+    port: process.env.RMQ_PORT,
+  },
 });

@@ -23,9 +23,9 @@ export type GetWeatherResponse = {
   forecast: DayResponse[];
 };
 
-export interface IWeatherService {
+export interface WeatherServiceInterface {
   cityExists(request: CityExistsRequest): Promise<CityExistsResponse>;
   get(request: GetWeatherRequest): Promise<GetWeatherResponse>;
 }
 
-export type IWeatherController = IWeatherService;
+export type WeatherControllerInterface = WeatherServiceInterface;

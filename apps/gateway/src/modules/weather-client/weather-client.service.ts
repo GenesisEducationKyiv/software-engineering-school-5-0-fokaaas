@@ -4,19 +4,20 @@ import type {
   CityExistsResponse,
   GetWeatherRequest,
   GetWeatherResponse,
-  GrpcToObservable,
-  IWeatherService,
-} from '@types';
+  WeatherServiceInterface,
+} from '@shared-types/grpc/weather';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { WeatherClientDiTokens } from './constants/di-tokens.const';
 import { GetWeatherInterface } from './interfaces/get-weather.interface';
 import { WeatherCityExistsInterface } from './interfaces/city-exists.interface';
+import { GrpcToObservable } from '@shared-types/grpc/common';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class WeatherClientService
   implements GetWeatherInterface, WeatherCityExistsInterface, OnModuleInit
 {
-  private clientService: GrpcToObservable<IWeatherService>;
+  private clientService: GrpcToObservable<WeatherServiceInterface>;
 
   constructor(
     @Inject(WeatherClientDiTokens.WEATHER_PACKAGE)
@@ -25,16 +26,16 @@ export class WeatherClientService
 
   onModuleInit() {
     this.clientService =
-      this.client.getService<GrpcToObservable<IWeatherService>>(
+      this.client.getService<GrpcToObservable<WeatherServiceInterface>>(
         'WeatherService'
       );
   }
 
-  async cityExists(request: CityExistsRequest): Promise<CityExistsResponse> {
-    return this.clientService.cityExists(request).toPromise();
+  cityExists(request: CityExistsRequest): Promise<CityExistsResponse> {
+    return firstValueFrom(this.clientService.cityExists(request));
   }
 
-  async get(request: GetWeatherRequest): Promise<GetWeatherResponse> {
-    return this.clientService.get(request).toPromise();
+  get(request: GetWeatherRequest): Promise<GetWeatherResponse> {
+    return firstValueFrom(this.clientService.get(request));
   }
 }

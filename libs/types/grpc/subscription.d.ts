@@ -1,4 +1,4 @@
-import { Empty } from './index';
+import { Empty } from './common';
 
 export type EmailRequest = {
   email: string;
@@ -10,10 +10,6 @@ export type TokenRequest = {
 
 export type FrequencyRequest = {
   frequency: 'HOURLY' | 'DAILY';
-};
-
-export type ExistsResponse = {
-  exists: boolean;
 };
 
 export type TokenResponse = {
@@ -35,7 +31,7 @@ export type CreateRequest = EmailRequest &
     city: string;
   };
 
-export interface ISubscriptionService {
+export interface SubscriptionServiceInterface {
   findByFrequency(
     request: FrequencyRequest
   ): Promise<FindByFrequencyListResponse>;
@@ -44,4 +40,4 @@ export interface ISubscriptionService {
   unsubscribe(request: TokenRequest): Promise<Empty>;
 }
 
-export type ISubscriptionController = ISubscriptionService;
+export type SubscriptionControllerInterface = SubscriptionServiceInterface;

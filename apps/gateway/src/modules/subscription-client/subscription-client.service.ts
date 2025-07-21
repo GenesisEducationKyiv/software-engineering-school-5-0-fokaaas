@@ -3,25 +3,21 @@ import type {
   CreateRequest,
   FindByFrequencyListResponse,
   FrequencyRequest,
-  ISubscriptionService,
+  SubscriptionServiceInterface,
   TokenRequest,
   TokenResponse,
-  GrpcToObservable,
-  Empty,
-} from '@types';
+} from '@shared-types/grpc/subscription';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { SubscriptionClientDiTokens } from './constants/di-tokens.const';
 import { ManageSubscriptionInterface } from './interfaces/manage-subscription.interface';
-import { FindSubscriptionsInterface } from './interfaces/find-subscriptions.interface';
+import { Empty, GrpcToObservable } from '@shared-types/grpc/common';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class SubscriptionClientService
-  implements
-    ManageSubscriptionInterface,
-    FindSubscriptionsInterface,
-    OnModuleInit
+  implements ManageSubscriptionInterface, OnModuleInit
 {
-  private clientService: GrpcToObservable<ISubscriptionService>;
+  private clientService: GrpcToObservable<SubscriptionServiceInterface>;
 
   constructor(
     @Inject(SubscriptionClientDiTokens.SUBSCRIPTION_PACKAGE)
@@ -30,25 +26,19 @@ export class SubscriptionClientService
 
   onModuleInit() {
     this.clientService = this.client.getService<
-      GrpcToObservable<ISubscriptionService>
+      GrpcToObservable<SubscriptionServiceInterface>
     >('SubscriptionService');
   }
 
-  async findByFrequency(
-    request: FrequencyRequest
-  ): Promise<FindByFrequencyListResponse> {
-    return this.clientService.findByFrequency(request).toPromise();
+  create(request: CreateRequest): Promise<TokenResponse> {
+    return firstValueFrom(this.clientService.create(request));
   }
 
-  async create(request: CreateRequest): Promise<TokenResponse> {
-    return this.clientService.create(request).toPromise();
-  }
-
-  async confirm(request: TokenRequest): Promise<Empty> {
-    return this.clientService.confirm(request).toPromise();
+  confirm(request: TokenRequest): Promise<Empty> {
+    return firstValueFrom(this.clientService.confirm(request));
   }
 
   async unsubscribe(request: TokenRequest): Promise<Empty> {
-    return this.clientService.unsubscribe(request).toPromise();
+    return firstValueFrom(this.clientService.unsubscribe(request));
   }
 }

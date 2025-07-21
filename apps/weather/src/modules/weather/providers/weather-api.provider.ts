@@ -8,7 +8,7 @@ import type {
   WeatherApiResponse,
 } from '../interfaces/weather-api-mapper.interface';
 import { WeatherData } from '../data/weather.data';
-import { HttpClientServiceInterface } from '../../http-client/interfaces/http-client-service.interface';
+import type { HttpClientServiceInterface } from '../../http-client/interfaces/http-client-service.interface';
 
 type WeatherApiErrorResponse = {
   error: {

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { WeatherDiTokens } from './constants/di-tokens.const';
 import { ConfigService } from '@nestjs/config';
-import { GrpcConfig } from '@types';
+import { GrpcConfig } from '@shared-types/grpc/common';
 import { WeatherClient } from './weather.client';
 
 @Module({
@@ -33,4 +33,4 @@ import { WeatherClient } from './weather.client';
   ],
   exports: [WeatherDiTokens.WEATHER_CLIENT],
 })
-export class WeatherClientModule {}
+export class WeatherModule {}
