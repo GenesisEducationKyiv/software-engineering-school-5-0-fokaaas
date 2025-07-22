@@ -20,6 +20,25 @@
           "buildTarget": "@weather-api/email:build",
           "runBuildTargetDependencies": false
         }
+      },
+      "test": {
+        "executor": "@nx/jest:jest",
+        "defaultConfiguration": "unit",
+        "options": {
+          "jestConfig": "jest.config.ts"
+        },
+        "configurations": {
+          "integration": {
+            "testMatch": [
+              "<rootDir>/apps/email/**/*.ispec.ts"
+            ]
+          },
+          "unit": {
+            "testMatch": [
+              "<rootDir>/apps/email/**/*.spec.ts"
+            ]
+          }
+        }
       }
     }
   },
@@ -31,6 +50,7 @@
     "nodemailer": "^7.0.3"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.7",
     "@types/nodemailer": "^6.4.17"
   }
 }

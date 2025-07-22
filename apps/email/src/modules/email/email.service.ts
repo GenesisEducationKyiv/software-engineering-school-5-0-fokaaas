@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { ConfirmationData } from './data/confirmation.data';
-import { ForecastData } from './data/forecast.data';
+import type { ForecastData } from './data/forecast.data';
 import { EmailServiceInterface } from './interfaces/email-service.interface';
 
 @Injectable()

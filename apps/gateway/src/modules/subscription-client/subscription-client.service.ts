@@ -1,8 +1,6 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type {
   CreateRequest,
-  FindByFrequencyListResponse,
-  FrequencyRequest,
   SubscriptionServiceInterface,
   TokenRequest,
   TokenResponse,

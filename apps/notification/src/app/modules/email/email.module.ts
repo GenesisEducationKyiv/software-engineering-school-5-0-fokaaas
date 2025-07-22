@@ -4,7 +4,6 @@ import { ConfigService } from '@nestjs/config';
 import { RmqConfig } from '@shared-types/rmq/common';
 import { EmailDiTokens } from './constants/di-tokens.const';
 import { EmailPublisher } from './email.publisher';
-import * as console from 'node:console';
 
 @Module({
   imports: [
