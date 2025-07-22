@@ -6,15 +6,14 @@ FROM node:20.19-alpine3.20 AS builder
 WORKDIR /app
 
 COPY yarn.lock package.json ./
-COPY apps/subscription/package.json ./apps/subscription/package.json
+COPY apps/notification/package.json ./apps/notification/package.json
 
 COPY . ./
-RUN yarn install --frozen-lockfile && \
-    yarn prisma generate --schema ./apps/subscription/prisma/schema.prisma
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
-RUN yarn build:subscription
+RUN yarn build:notification
 
 # =============================
 # Stage 2: Production
@@ -24,14 +23,11 @@ ENV NODE_ENV=production
 
 WORKDIR /app
 
-COPY --from=builder /app/apps/subscription/dist ./
-COPY --from=builder /app/apps/subscription/prisma ./prisma
+COPY --from=builder /app/apps/notification/dist ./
 COPY --from=builder /app/libs/proto ./libs/proto
 
-RUN yarn install --frozen-lockfile --production && \
-    yarn prisma generate
+RUN yarn install --frozen-lockfile --production
 
-EXPOSE 4555
+EXPOSE 4559
 
 CMD ["node", "main.js"]
-
