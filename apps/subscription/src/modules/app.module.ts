@@ -4,6 +4,7 @@ import configuration from '../common/config/configuration';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { FilterModule } from '@utils';
 import { join } from 'node:path';
+import { validationSchema } from '../common/config/validation';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { join } from 'node:path';
       envFilePath: join(__dirname, '..', `.env.${process.env.NODE_ENV}`),
       load: [configuration],
       isGlobal: true,
+      validationSchema,
     }),
     SubscriptionModule,
     FilterModule,

@@ -4,7 +4,7 @@ import { SubscriptionMessages } from './constants/subscription-messages.const';
 import * as request from 'supertest';
 import { SubscriptionModule } from './subscription.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import configuration from '../../config/configuration';
+import configuration from '../../common/config/configuration';
 import { WeatherClientService } from '../weather-client/weather-client.service';
 import { EmailClientService } from '../email-client/email-client.service';
 import { join } from 'node:path';
