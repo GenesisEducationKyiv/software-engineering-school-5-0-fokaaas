@@ -9,9 +9,7 @@ import setupApp from '../../common/utils/setup-app';
 import { MailerService } from '@nestjs-modules/mailer';
 import { FilterModule } from '@utils';
 import { RpcException } from '@nestjs/microservices';
-
-const wait = async () =>
-  await new Promise((resolve) => setTimeout(resolve, 300));
+import { scheduler } from 'node:timers/promises';
 
 describe('EmailConsumer (integration)', () => {
   let app: INestApplication;
@@ -82,7 +80,7 @@ describe('EmailConsumer (integration)', () => {
 
       publish('forecast_email', data);
 
-      await wait();
+      await scheduler.wait(300);
 
       const { email, token, ...context } = data;
 
@@ -131,7 +129,7 @@ describe('EmailConsumer (integration)', () => {
         publish('forecast_email', data);
       }
 
-      await wait();
+      await scheduler.wait(300);
 
       for (const data of messages) {
         const { email, token, ...context } = data;
@@ -169,7 +167,7 @@ describe('EmailConsumer (integration)', () => {
 
       publish('forecast_email', data);
 
-      await wait();
+      await scheduler.wait(300);
 
       const { email, token, ...context } = data;
 
@@ -189,7 +187,7 @@ describe('EmailConsumer (integration)', () => {
 
   it('should ignore unknown message patterns', async () => {
     publish('unknown_event', { any: 'thing' });
-    await wait();
+    await scheduler.wait(300);
     expect(sendMailSpy).not.toHaveBeenCalled();
   });
 
