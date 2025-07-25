@@ -4,6 +4,7 @@ import type { SendForecastData } from '@shared-types/rmq/email';
 import { EmailDiTokens } from './constants/di-tokens.const';
 import type { EmailServiceInterface } from './interfaces/email-service.interface';
 import { RetryInterceptor } from './interceptor/retry.interceptor';
+import { EmailPatterns } from '@shared/common/constants/email-patterns.const';
 
 @Controller()
 export class EmailConsumer {
@@ -12,7 +13,7 @@ export class EmailConsumer {
     private readonly service: EmailServiceInterface
   ) {}
 
-  @EventPattern('forecast_email')
+  @EventPattern(EmailPatterns.FORECAST_EMAIL)
   @UseInterceptors(new RetryInterceptor())
   async handleForecastEmail(@Payload() payload: SendForecastData) {
     await this.service.sendForecast(payload);

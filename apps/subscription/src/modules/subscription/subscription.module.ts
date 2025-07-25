@@ -3,7 +3,7 @@ import { SubscriptionService } from './subscription.service';
 import { SubscriptionRepository } from './subscription.repository';
 import { SubscriptionController } from './subscription.controller';
 import { PrismaService } from '../../database/prisma/prisma.service';
-import { RedisModule } from '@utils';
+import { RedisModule } from '@shared/modules/redis/redis.module';
 import { SubscriptionDiTokens } from './constants/di-tokens.const';
 import { SubscriptionMapper } from './subscription.mapper';
 

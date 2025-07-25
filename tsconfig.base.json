@@ -29,8 +29,8 @@
       "@shared-types/*": [
         "libs/types/*"
       ],
-      "@utils": [
-        "libs/utils/src"
+      "@shared/*": [
+        "libs/utils/src/*"
       ]
     }
   }

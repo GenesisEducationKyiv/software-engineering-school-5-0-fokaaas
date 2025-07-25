@@ -7,16 +7,18 @@ import configuration from '../../common/config/configuration';
 import { validationSchema } from '../../common/config/validation';
 import setupApp from '../../common/utils/setup-app';
 import { MailerService } from '@nestjs-modules/mailer';
-import { FilterModule } from '@utils';
+import { FilterModule } from '@shared/modules/filter/filter.module';
 import { RpcException } from '@nestjs/microservices';
 import { scheduler } from 'node:timers/promises';
+import {
+  EMAIL_QUEUE,
+  EmailPatterns,
+} from '@shared/common/constants/email-patterns.const';
 
 describe('EmailConsumer (integration)', () => {
   let app: INestApplication;
   let channel: amqp.Channel;
   let channelModel: amqp.ChannelModel;
-  const queue = 'email_queue';
-
   let sendMailSpy: jest.SpyInstance;
 
   let publish: (pattern: string, data: object) => void;
@@ -55,13 +57,17 @@ describe('EmailConsumer (integration)', () => {
   });
 
   afterEach(async () => {
-    await channel.purgeQueue(queue);
+    await channel.purgeQueue(EMAIL_QUEUE);
     jest.clearAllMocks();
   });
 
-  describe('forecast_email', () => {
+  describe(EmailPatterns.FORECAST_EMAIL, () => {
     beforeAll(async () => {
-      await channel.bindQueue(queue, 'amq.topic', 'forecast_email');
+      await channel.bindQueue(
+        EMAIL_QUEUE,
+        'amq.topic',
+        EmailPatterns.FORECAST_EMAIL
+      );
     });
 
     it('should consume one forecast_email and call sendForecast', async () => {
@@ -78,7 +84,7 @@ describe('EmailConsumer (integration)', () => {
         forecast: [],
       };
 
-      publish('forecast_email', data);
+      publish(EmailPatterns.FORECAST_EMAIL, data);
 
       await scheduler.wait(300);
 
@@ -126,7 +132,7 @@ describe('EmailConsumer (integration)', () => {
       ];
 
       for (const data of messages) {
-        publish('forecast_email', data);
+        publish(EmailPatterns.FORECAST_EMAIL, data);
       }
 
       await scheduler.wait(300);
@@ -165,7 +171,7 @@ describe('EmailConsumer (integration)', () => {
 
       sendMailSpy.mockRejectedValueOnce(new RpcException('Temporary error'));
 
-      publish('forecast_email', data);
+      publish(EmailPatterns.FORECAST_EMAIL, data);
 
       await scheduler.wait(300);
 

@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { RmqConfig } from '@shared-types/rmq/common';
 import { EmailDiTokens } from './constants/di-tokens.const';
 import { EmailPublisher } from './email.publisher';
+import { EMAIL_QUEUE } from '@shared/common/constants/email-patterns.const';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { EmailPublisher } from './email.publisher';
             transport: Transport.RMQ,
             options: {
               urls: [`amqp://${host}:${port}`],
-              queue: 'email_queue',
+              queue: EMAIL_QUEUE,
               queueOptions: { durable: false },
             },
           };

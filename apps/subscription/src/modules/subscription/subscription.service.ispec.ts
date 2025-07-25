@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { SubscriptionService } from './subscription.service';
 import { PrismaService } from '../../database/prisma/prisma.service';
-import { RedisService } from '@utils';
+import { RedisService } from '@shared/modules/redis/redis.service';
 import { Frequency } from '@prisma/client';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../../common/config/configuration';

@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RmqConfig } from '@shared-types/rmq/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { EMAIL_QUEUE } from '@shared/common/constants/email-patterns.const';
 
 export default function setupApp(app: INestApplication): number {
   const configService = app.get<ConfigService>(ConfigService);
@@ -13,7 +14,7 @@ export default function setupApp(app: INestApplication): number {
     transport: Transport.RMQ,
     options: {
       urls: [`amqp://${rmq.host}:${rmq.port}`],
-      queue: 'email_queue',
+      queue: EMAIL_QUEUE,
       queueOptions: { durable: false },
     },
   });

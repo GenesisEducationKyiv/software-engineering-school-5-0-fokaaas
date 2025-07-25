@@ -3,6 +3,7 @@ import { ClientRMQ } from '@nestjs/microservices';
 import { SendForecastData } from '@shared-types/rmq/email';
 import { EmailDiTokens } from './constants/di-tokens.const';
 import { EmailPublisherInterface } from './interfaces/email-publisher.interface';
+import { EmailPatterns } from '@shared/common/constants/email-patterns.const';
 
 @Injectable()
 export class EmailPublisher implements EmailPublisherInterface {
@@ -12,6 +13,6 @@ export class EmailPublisher implements EmailPublisherInterface {
   ) {}
 
   pubForecastEmail(data: SendForecastData) {
-    this.client.emit('forecast_email', data);
+    this.client.emit(EmailPatterns.FORECAST_EMAIL, data);
   }
 }
