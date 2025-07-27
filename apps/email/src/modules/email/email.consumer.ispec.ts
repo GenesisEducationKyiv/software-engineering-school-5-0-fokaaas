@@ -56,6 +56,13 @@ describe('EmailConsumer (integration)', () => {
     };
   });
 
+  afterAll(async () => {
+    await channel.close();
+    await channelModel.close();
+    await app.close();
+    jest.restoreAllMocks();
+  });
+
   afterEach(async () => {
     await channel.purgeQueue(EMAIL_QUEUE);
     jest.clearAllMocks();
@@ -195,12 +202,5 @@ describe('EmailConsumer (integration)', () => {
     publish('unknown_event', { any: 'thing' });
     await scheduler.wait(300);
     expect(sendMailSpy).not.toHaveBeenCalled();
-  });
-
-  afterAll(async () => {
-    await channel.close();
-    await channelModel.close();
-    await app.close();
-    jest.restoreAllMocks();
   });
 });
