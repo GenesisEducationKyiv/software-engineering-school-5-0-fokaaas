@@ -14,7 +14,7 @@ export class EmailConsumer {
   ) {}
 
   @EventPattern(EmailPatterns.FORECAST_EMAIL)
-  @UseInterceptors(new RetryInterceptor())
+  @UseInterceptors(new RetryInterceptor(1))
   async handleForecastEmail(@Payload() payload: SendForecastData) {
     await this.service.sendForecast(payload);
   }

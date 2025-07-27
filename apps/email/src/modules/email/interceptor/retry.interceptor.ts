@@ -8,7 +8,8 @@ import { retry } from 'rxjs/operators';
 
 @Injectable()
 export class RetryInterceptor implements NestInterceptor {
+  constructor(private readonly count: number) {}
   intercept(_context: ExecutionContext, next: CallHandler) {
-    return next.handle().pipe(retry(1));
+    return next.handle().pipe(retry(this.count));
   }
 }
