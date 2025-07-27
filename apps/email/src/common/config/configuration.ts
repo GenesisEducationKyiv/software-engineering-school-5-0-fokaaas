@@ -6,4 +6,8 @@ export default () => ({
     username: process.env.SMTP_USERNAME,
     password: process.env.SMTP_PASSWORD,
   },
+  rmq: {
+    host: process.env.RMQ_HOST,
+    port: process.env.RMQ_PORT,
+  },
 });

@@ -18,3 +18,10 @@ services:
     container_name: pushgateway
     ports:
       - "9091:9091"
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: testing-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"

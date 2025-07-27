@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { EmailClientService } from './email-client.service';
 import { EmailClientDiTokens } from './constants/di-tokens.const';
+import { GrpcConfig } from '@shared-types/grpc/common';
 
 @Module({
   imports: [
@@ -10,8 +11,7 @@ import { EmailClientDiTokens } from './constants/di-tokens.const';
       {
         name: EmailClientDiTokens.EMAIL_PACKAGE,
         useFactory: (config: ConfigService) => {
-          const host = config.get<string>('email.host');
-          const port = config.get<number>('email.port');
+          const { host, port } = config.getOrThrow<GrpcConfig>('email');
           return {
             transport: Transport.GRPC,
             options: {

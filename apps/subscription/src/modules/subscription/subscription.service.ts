@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { RedisService } from '@utils';
+import { RedisService } from '@shared/modules/redis/redis.service';
 import { randomUUID } from 'node:crypto';
 import { GrpcAlreadyExistsException } from '../../common/exceptions/grpc-already-exists.exception';
 import { GrpcNotFoundException } from '../../common/exceptions/grpc-not-found.exception';

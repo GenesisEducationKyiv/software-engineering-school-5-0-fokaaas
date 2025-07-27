@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { SubscriptionClientService } from './subscription-client.service';
 import { SubscriptionClientDiTokens } from './constants/di-tokens.const';
+import { GrpcConfig } from '@shared-types/grpc/common';
 
 @Module({
   imports: [
@@ -10,8 +11,7 @@ import { SubscriptionClientDiTokens } from './constants/di-tokens.const';
       {
         name: SubscriptionClientDiTokens.SUBSCRIPTION_PACKAGE,
         useFactory: (config: ConfigService) => {
-          const host = config.getOrThrow<string>('subscription.host');
-          const port = config.getOrThrow<number>('subscription.port');
+          const { host, port } = config.getOrThrow<GrpcConfig>('subscription');
           return {
             transport: Transport.GRPC,
             options: {

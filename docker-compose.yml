@@ -42,10 +42,23 @@ services:
     env_file:
       - ~/.env.subscription
 
+  notification:
+    image: stbasarab/notification-micro:latest
+    restart: always
+    container_name: notification
+    depends_on:
+      - rabbitmq
+    networks:
+      - weather-api-net
+    env_file:
+      - ~/.env.notification
+
   email:
     image: stbasarab/email-micro:latest
     restart: always
     container_name: email
+    depends_on:
+      - rabbitmq
     networks:
       - weather-api-net
     env_file:
@@ -67,6 +80,15 @@ services:
   redis:
     image: redis:latest
     container_name: redis
+    networks:
+      - weather-api-net
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "15672:15672"
     networks:
       - weather-api-net
 

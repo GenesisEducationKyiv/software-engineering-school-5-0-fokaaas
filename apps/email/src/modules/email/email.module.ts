@@ -6,9 +6,10 @@ import { EmailController } from './email.controller';
 import { EmailService } from './email.service';
 import { join } from 'path';
 import { EmailDiTokens } from './constants/di-tokens.const';
+import { EmailConsumer } from './email.consumer';
 
 @Module({
-  controllers: [EmailController],
+  controllers: [EmailController, EmailConsumer],
   providers: [
     {
       provide: EmailDiTokens.EMAIL_SERVICE,

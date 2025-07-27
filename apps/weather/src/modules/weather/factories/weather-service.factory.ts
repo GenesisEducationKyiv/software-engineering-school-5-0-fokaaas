@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { WeatherService } from '../weather.service';
-import { RedisService } from '@utils';
+import { RedisService } from '@shared/modules/redis/redis.service';
 import { WeatherCacheProxy } from '../proxies/weather-cache.proxy';
 import { WeatherDiTokens } from '../constants/di-tokens.const';
 import { MetricsDiTokens } from '../../metrics/constants/di-tokens.const';

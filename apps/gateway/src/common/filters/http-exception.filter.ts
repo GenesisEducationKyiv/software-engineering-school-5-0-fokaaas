@@ -5,7 +5,10 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Response } from 'express';
-import type { ExceptionResponse } from '@types';
+
+type ExceptionResponse = {
+  message: string | string[];
+};
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {

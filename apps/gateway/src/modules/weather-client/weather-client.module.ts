@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { WeatherClientService } from './weather-client.service';
 import { WeatherClientDiTokens } from './constants/di-tokens.const';
+import { GrpcConfig } from '@shared-types/grpc/common';
 
 @Module({
   imports: [
@@ -10,8 +11,7 @@ import { WeatherClientDiTokens } from './constants/di-tokens.const';
       {
         name: WeatherClientDiTokens.WEATHER_PACKAGE,
         useFactory: (config: ConfigService) => {
-          const host = config.get<string>('weather.host');
-          const port = config.get<number>('weather.port');
+          const { host, port } = config.getOrThrow<GrpcConfig>('weather');
           return {
             transport: Transport.GRPC,
             options: {

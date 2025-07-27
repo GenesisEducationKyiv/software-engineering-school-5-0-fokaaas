@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
 import { WeatherClientModule } from '../weather-client/weather-client.module';
 import { SubscriptionClientModule } from '../subscription-client/subscription-client.module';
 import { EmailClientModule } from '../email-client/email-client.module';
@@ -8,12 +7,7 @@ import { WeatherService } from './weather.service';
 import { WeatherDiTokens } from './constants/di-tokens.const';
 
 @Module({
-  imports: [
-    ScheduleModule.forRoot(),
-    WeatherClientModule,
-    SubscriptionClientModule,
-    EmailClientModule,
-  ],
+  imports: [WeatherClientModule, SubscriptionClientModule, EmailClientModule],
   controllers: [WeatherController],
   providers: [
     {

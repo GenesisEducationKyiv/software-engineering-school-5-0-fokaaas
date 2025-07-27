@@ -20,15 +20,37 @@
           "buildTarget": "@weather-api/email:build",
           "runBuildTargetDependencies": false
         }
+      },
+      "test": {
+        "executor": "@nx/jest:jest",
+        "defaultConfiguration": "unit",
+        "options": {
+          "jestConfig": "jest.config.ts"
+        },
+        "configurations": {
+          "integration": {
+            "testMatch": [
+              "<rootDir>/apps/email/**/*.ispec.ts"
+            ]
+          },
+          "unit": {
+            "testMatch": [
+              "<rootDir>/apps/email/**/*.spec.ts"
+            ]
+          }
+        }
       }
     }
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
+    "amqp-connection-manager": "^4.1.14",
+    "amqplib": "^0.10.8",
     "handlebars": "^4.7.8",
     "nodemailer": "^7.0.3"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.10.7",
     "@types/nodemailer": "^6.4.17"
   }
 }

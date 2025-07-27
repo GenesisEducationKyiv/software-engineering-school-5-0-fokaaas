@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../common/config/configuration';
 import { EmailModule } from './email/email.module';
-import { FilterModule } from '@utils';
+import { FilterModule } from '@shared/modules/filter/filter.module';
 import { join } from 'node:path';
 import { validationSchema } from '../common/config/validation';
 

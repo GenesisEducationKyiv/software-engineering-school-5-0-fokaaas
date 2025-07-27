@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { WeatherController } from './weather.controller';
 import { WeatherServiceFactory } from './factories/weather-service.factory';
 import { HttpClientModule } from '../http-client/http-client.module';
-import { RedisModule } from '@utils';
+import { RedisModule } from '@shared/modules/redis/redis.module';
 import { MetricsModule } from '../metrics/metrics.module';
 import { WeatherDiTokens } from './constants/di-tokens.const';
 import { WeatherApiProviderFactory } from './factories/weather-api-provider.factory';

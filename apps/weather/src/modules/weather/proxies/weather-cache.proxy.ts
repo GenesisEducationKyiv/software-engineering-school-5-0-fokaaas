@@ -1,4 +1,4 @@
-import { RedisService } from '@utils';
+import { RedisService } from '@shared/modules/redis/redis.service';
 import { WeatherServiceInterface } from '../interfaces/weather-service.interface';
 import { WeatherData } from '../data/weather.data';
 import { ExistsData } from '../data/exists.data';

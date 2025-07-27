@@ -20,7 +20,7 @@ RUN yarn build:subscription
 # Stage 2: Production
 # =============================
 FROM node:20.19-alpine3.20 AS production
-ENV NODE_ENV=prod
+ENV NODE_ENV=production
 
 WORKDIR /app
 
