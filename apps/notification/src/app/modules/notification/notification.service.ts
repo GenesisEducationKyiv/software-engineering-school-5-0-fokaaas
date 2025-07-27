@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { WeatherClientInterface } from '../weather/interfaces/weather-client.interface';
 import { WeatherDiTokens } from '../weather/constants/di-tokens.const';
 import { SubscriptionDiTokens } from '../subscription/constants/di-tokens.const';
@@ -11,6 +11,10 @@ import { FindByFrequencyListResponse } from '@shared-types/grpc/subscription';
 
 @Injectable()
 export class NotificationService {
+  private readonly logger = new Logger(NotificationService.name, {
+    timestamp: true,
+  });
+
   constructor(
     @Inject(SubscriptionDiTokens.SUBSCRIPTION_CLIENT)
     private readonly subscriptionClient: SubscriptionClientInterface,
@@ -40,12 +44,18 @@ export class NotificationService {
 
   private async sendEmails({ subscriptions }: FindByFrequencyListResponse) {
     for (const { email, city, token } of subscriptions) {
-      const forecast = await this.weatherClient.get({ city });
-      this.emailPublisher.pubForecastEmail({
-        email: email,
-        token,
-        ...forecast,
-      });
+      try {
+        const forecast = await this.weatherClient.get({ city });
+        this.emailPublisher.pubForecastEmail({
+          email,
+          token,
+          ...forecast,
+        });
+      } catch (e) {
+        this.logger.error(
+          `Failed to send forecast email to '${email}' for city '${city}': ${e}`
+        );
+      }
     }
   }
 }
