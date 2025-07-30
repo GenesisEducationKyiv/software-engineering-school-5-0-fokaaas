@@ -3,8 +3,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './modules/app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { initTelemetry } from '@shared/modules/telemetry/utils/init-telemetry';
 
 async function bootstrap() {
+  initTelemetry({
+    serviceName: 'subscription',
+    serviceVersion: '1.0.0',
+  });
+
   const appContext = await NestFactory.createApplicationContext(AppModule);
   const configService = appContext.get<ConfigService>(ConfigService);
 
@@ -26,6 +32,7 @@ async function bootstrap() {
   app.useGlobalFilters(filter);
 
   await app.listen();
+
   Logger.log(
     `🔔 Subscription microservice is running on: http://127.0.0.1:${port}`
   );

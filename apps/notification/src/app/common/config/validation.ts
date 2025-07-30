@@ -9,4 +9,5 @@ export const validationSchema = Joi.object({
   SUBSCRIPTION_PORT: Joi.number().required(),
   RMQ_HOST: Joi.string().required(),
   RMQ_PORT: Joi.number().default(5672),
+  OTEL_EXPORTER_OTLP_ENDPOINT: Joi.string().uri(),
 });

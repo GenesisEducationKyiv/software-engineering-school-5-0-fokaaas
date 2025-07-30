@@ -7,4 +7,5 @@ export const validationSchema = Joi.object({
   REDIS_HOST: Joi.string().required(),
   REDIS_PORT: Joi.number().required(),
   REDIS_TTL: Joi.number().required(),
+  OTEL_EXPORTER_OTLP_ENDPOINT: Joi.string().uri(),
 });

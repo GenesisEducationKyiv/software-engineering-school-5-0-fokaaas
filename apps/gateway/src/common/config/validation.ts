@@ -25,4 +25,5 @@ export const validationSchema = Joi.object({
   SUBSCRIPTION_PORT: Joi.number().required(),
   REDIS_HOST: whenTestRequired(Joi.string()),
   REDIS_PORT: whenTestRequired(Joi.number()),
+  OTEL_EXPORTER_OTLP_ENDPOINT: Joi.string().uri(),
 });
