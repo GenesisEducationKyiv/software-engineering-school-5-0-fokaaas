@@ -15,7 +15,7 @@ export class WeatherServiceFactory {
     @Inject(WeatherDiTokens.VISUAL_CROSSING_PROVIDER)
     private readonly visualCrossingProvider: WeatherProviderInterface,
 
-    private readonly redisService: RedisService,
+    private readonly redisService: RedisService
   ) {}
 
   create(): WeatherServiceInterface {
