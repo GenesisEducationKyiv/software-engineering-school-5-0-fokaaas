@@ -4,6 +4,7 @@ import { AppModule } from './app/modules/app.module';
 import { ConfigService } from '@nestjs/config';
 import { initTelemetry } from '@shared/modules/telemetry/utils/init-telemetry';
 import { TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-node';
+import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
 
 async function bootstrap() {
   initTelemetry({
@@ -16,12 +17,13 @@ async function bootstrap() {
 
   const configService = app.get<ConfigService>(ConfigService);
   const port = configService.getOrThrow<number>('port');
+  const logLevel = configService.getOrThrow<string>('logLevel');
+
+  app.useLogger(new TelemetryLogger(logLevel));
 
   await app.listen(port);
 
-  Logger.log(
-    `🔔 Notification microservice is running on: http://127.0.0.1:${port}`
-  );
+  Logger.log({ msg: 'Application started', port });
 }
 
 void bootstrap();

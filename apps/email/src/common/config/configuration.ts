@@ -1,5 +1,6 @@
 export default () => ({
   port: process.env.PORT,
+  logLevel: process.env.LOG_LEVEL,
   frontBaseUrl: process.env.FRONT_BASE_URL,
   smtp: {
     host: process.env.SMTP_HOST,

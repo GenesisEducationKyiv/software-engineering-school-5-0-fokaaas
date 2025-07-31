@@ -15,7 +15,7 @@ async function bootstrap() {
 
   await app.startAllMicroservices();
 
-  Logger.log(`📧 Email microservice is running on: http://127.0.0.1:${port}`);
+  Logger.log({ msg: 'Application started', port });
 }
 
 void bootstrap();

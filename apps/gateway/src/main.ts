@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import setupApp from './common/utils/setup-app';
 import { initTelemetry } from '@shared/modules/telemetry/utils/init-telemetry';
 import { PathBasedSampler } from '@shared/modules/telemetry/samplers/path-based.sampler';
+import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
 
 async function bootstrap() {
   initTelemetry({
@@ -18,11 +19,14 @@ async function bootstrap() {
   setupApp(app);
 
   const configService = app.get<ConfigService>(ConfigService);
+  const logLevel = configService.getOrThrow<string>('logLevel');
   const port = configService.getOrThrow<number>('port');
+
+  app.useLogger(new TelemetryLogger(logLevel));
 
   await app.listen(port);
 
-  Logger.log(`🚀 Gateway is running on: http://127.0.0.1:${port}/api`);
+  Logger.log({ msg: 'Application started', port });
 }
 
 void bootstrap();

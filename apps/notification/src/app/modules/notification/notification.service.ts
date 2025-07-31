@@ -11,9 +11,7 @@ import { FindByFrequencyListResponse } from '@shared-types/grpc/subscription';
 
 @Injectable()
 export class NotificationService {
-  private readonly logger = new Logger(NotificationService.name, {
-    timestamp: true,
-  });
+  private readonly logger = new Logger(NotificationService.name);
 
   constructor(
     @Inject(SubscriptionDiTokens.SUBSCRIPTION_CLIENT)
@@ -28,16 +26,28 @@ export class NotificationService {
 
   @Cron(CronExpression.EVERY_HOUR)
   async handleHourlyEmails(): Promise<void> {
+    const frequency = Frequency.HOURLY;
     const res = await this.subscriptionClient.findByFrequency({
-      frequency: Frequency.HOURLY,
+      frequency,
+    });
+    this.logger.debug({
+      msg: 'Processing hourly emails',
+      frequency,
+      count: res.subscriptions.length,
     });
     await this.sendEmails(res);
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_8AM)
   async handleDailyEmails(): Promise<void> {
+    const frequency = Frequency.DAILY;
     const res = await this.subscriptionClient.findByFrequency({
-      frequency: Frequency.DAILY,
+      frequency,
+    });
+    this.logger.debug({
+      msg: 'Processing daily emails',
+      frequency,
+      count: res.subscriptions.length,
     });
     await this.sendEmails(res);
   }
@@ -52,9 +62,12 @@ export class NotificationService {
           ...forecast,
         });
       } catch (e) {
-        this.logger.error(
-          `Failed to send forecast email to '${email}' for city '${city}': ${e}`
-        );
+        this.logger.error({
+          msg: 'Failed to send email',
+          error: e,
+          email,
+          city,
+        });
       }
     }
   }

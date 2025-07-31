@@ -1,46 +1,53 @@
 import { LoggerService } from '@nestjs/common';
-import { logs, SeverityNumber } from '@opentelemetry/api-logs';
+import { AnyValue, logs, SeverityNumber } from '@opentelemetry/api-logs';
+import { LogLevel } from './enums/log-level.enum';
+
+const severityMap: Record<LogLevel, SeverityNumber> = {
+  [LogLevel.ERROR]: SeverityNumber.ERROR,
+  [LogLevel.WARN]: SeverityNumber.WARN,
+  [LogLevel.INFO]: SeverityNumber.INFO,
+  [LogLevel.DEBUG]: SeverityNumber.DEBUG,
+  [LogLevel.VERBOSE]: SeverityNumber.TRACE,
+};
 
 export class TelemetryLogger implements LoggerService {
-  private logger = logs.getLogger('default');
+  private readonly logger = logs.getLogger('default');
+  private readonly enabledLevels: LogLevel[];
 
-  log(message: string) {
+  constructor(logLevelEnv: string) {
+    this.enabledLevels = logLevelEnv.split(',') as LogLevel[];
+  }
+
+  private emit(level: LogLevel, body: AnyValue, context?: string) {
+    if (!this.enabledLevels.includes(level)) return;
+
+    const severityNumber = severityMap[level];
+
     this.logger.emit({
-      body: message,
-      severityText: 'INFO',
-      severityNumber: SeverityNumber.INFO,
+      body,
+      severityText: level,
+      severityNumber,
+      attributes: { context },
     });
   }
 
-  error(message: string, trace?: string) {
-    this.logger.emit({
-      body: `${message} ${trace || ''}`,
-      severityText: 'ERROR',
-      severityNumber: SeverityNumber.ERROR,
-    });
+  log(body: AnyValue, context?: string) {
+    this.emit(LogLevel.INFO, body, context);
   }
 
-  warn(message: string) {
-    this.logger.emit({
-      body: message,
-      severityText: 'WARN',
-      severityNumber: SeverityNumber.WARN,
-    });
+  error(body: AnyValue, context?: string) {
+    this.emit(LogLevel.ERROR, body, context);
   }
 
-  debug(message: string) {
-    this.logger.emit({
-      body: message,
-      severityText: 'DEBUG',
-      severityNumber: SeverityNumber.DEBUG,
-    });
+  warn(body: AnyValue, context?: string) {
+    this.emit(LogLevel.WARN, body, context);
   }
 
-  verbose(message: string) {
-    this.logger.emit({
-      body: message,
-      severityText: 'VERBOSE',
-      severityNumber: SeverityNumber.TRACE,
-    });
+  debug(body: AnyValue, context?: string) {
+    this.emit(LogLevel.DEBUG, body, context);
+  }
+
+  verbose(body: AnyValue, context?: string) {
+    this.emit(LogLevel.VERBOSE, body, context);
   }
 }
