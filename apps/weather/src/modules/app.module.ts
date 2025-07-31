@@ -2,9 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '../common/config/configuration';
 import { WeatherModule } from './weather/weather.module';
-import { FilterModule } from '@shared/modules/filter/filter.module';
 import { join } from 'node:path';
-import { MetricsModule } from './metrics/metrics.module';
 import { validationSchema } from '../common/config/validation';
 
 @Module({
@@ -16,8 +14,6 @@ import { validationSchema } from '../common/config/validation';
       validationSchema,
     }),
     WeatherModule,
-    FilterModule,
-    MetricsModule,
   ],
 })
 export class AppModule {}

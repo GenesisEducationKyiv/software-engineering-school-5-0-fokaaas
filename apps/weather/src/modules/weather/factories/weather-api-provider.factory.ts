@@ -10,7 +10,7 @@ import { HttpClientDiTokens } from '../../http-client/constants/di-tokens.const'
 import { WeatherDiTokens } from '../constants/di-tokens.const';
 import type { WeatherApiMapperInterface } from '../interfaces/weather-api-mapper.interface';
 import { WeatherProviderInterface } from '../interfaces/weather-provider.interface';
-import { HttpClientServiceInterface } from '../../http-client/interfaces/http-client-service.interface';
+import type { HttpClientServiceInterface } from '../../http-client/interfaces/http-client-service.interface';
 
 @Injectable()
 export class WeatherApiProviderFactory {

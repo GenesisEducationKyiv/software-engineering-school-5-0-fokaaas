@@ -5,6 +5,8 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { initTelemetry } from '@shared/modules/telemetry/utils/init-telemetry';
 import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
+import { GrpcExceptionFilter } from '@shared/common/filters/grpc-exception.filter';
+import { meter } from './common/meter';
 
 async function bootstrap() {
   initTelemetry({
@@ -30,8 +32,7 @@ async function bootstrap() {
     }
   );
 
-  const filter = appContext.get('GRPC_EXCEPTION_FILTER');
-  app.useGlobalFilters(filter);
+  app.useGlobalFilters(new GrpcExceptionFilter(meter));
 
   app.useLogger(new TelemetryLogger(logLevel));
 

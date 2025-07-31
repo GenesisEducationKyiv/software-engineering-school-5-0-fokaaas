@@ -7,6 +7,8 @@ import configuration from './common/config/configuration';
 import { initTelemetry } from '@shared/modules/telemetry/utils/init-telemetry';
 import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
 import { ConfigService } from '@nestjs/config';
+import { GrpcExceptionFilter } from '@shared/common/filters/grpc-exception.filter';
+import { meter } from './common/meter';
 
 async function bootstrap() {
   initTelemetry({
@@ -27,8 +29,7 @@ async function bootstrap() {
     }
   );
 
-  const filter = app.get('GRPC_EXCEPTION_FILTER');
-  app.useGlobalFilters(filter);
+  app.useGlobalFilters(new GrpcExceptionFilter(meter));
 
   const logLevel = app.get(ConfigService).getOrThrow<string>('logLevel');
 

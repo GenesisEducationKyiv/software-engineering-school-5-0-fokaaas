@@ -4,6 +4,8 @@ import { RmqConfig } from '@shared-types/rmq/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { EMAIL_QUEUE } from '@shared/common/constants/email-patterns.const';
 import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
+import { GrpcExceptionFilter } from '@shared/common/filters/grpc-exception.filter';
+import { meter } from '../meter';
 
 export default function setupApp(app: INestApplication): number {
   const configService = app.get<ConfigService>(ConfigService);
@@ -30,8 +32,7 @@ export default function setupApp(app: INestApplication): number {
     },
   });
 
-  const filter = app.get('GRPC_EXCEPTION_FILTER');
-  app.useGlobalFilters(filter);
+  app.useGlobalFilters(new GrpcExceptionFilter(meter));
 
   app.useLogger(new TelemetryLogger(logLevel));
 
