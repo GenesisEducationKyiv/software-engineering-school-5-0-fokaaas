@@ -10,7 +10,9 @@ import { ParentBasedSampler, Sampler } from '@opentelemetry/sdk-trace-node';
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-proto';
 import {
   BatchLogRecordProcessor,
+  ConsoleLogRecordExporter,
   LoggerProvider,
+  SimpleLogRecordProcessor,
 } from '@opentelemetry/sdk-logs';
 import { logs } from '@opentelemetry/api-logs';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
@@ -45,9 +47,14 @@ export class TelemetryService implements TelemetryServiceInterface {
   private setupLogger(resource: Resource): void {
     const exporter = new OTLPLogExporter();
 
+    const consoleExporter = new ConsoleLogRecordExporter();
+
     const loggerProvider = new LoggerProvider({
       resource,
-      processors: [new BatchLogRecordProcessor(exporter)],
+      processors: [
+        new BatchLogRecordProcessor(exporter),
+        new SimpleLogRecordProcessor(consoleExporter),
+      ],
     });
 
     logs.setGlobalLoggerProvider(loggerProvider);
