@@ -28,44 +28,48 @@ export class WeatherCacheProxy implements WeatherServiceInterface {
   }
 
   async get(city: string): Promise<WeatherData> {
-    const start = performance.now();
     const method = 'get';
+    using timer = this.measureResponseTime(method);
 
     const key = city.toLowerCase();
     const cache = await this.redis.getObj<WeatherData>(key);
     if (cache) {
       this.cacheHit.add(1, { method });
-      this.responseTime.record(performance.now() - start, { method });
       return cache;
     }
 
     this.cacheMiss.add(1, { method });
-
     const result = await this.service.get(city);
     await this.redis.setObj(key, result);
-
-    this.responseTime.record(performance.now() - start, { method });
     return result;
   }
 
   async cityExists(city: string): Promise<ExistsData> {
-    const start = performance.now();
     const method = 'cityExists';
+    using timer = this.measureResponseTime(method);
 
     const key = `exists:${city.toLowerCase()}`;
     const cache = await this.redis.getBool(key);
     if (cache) {
       this.cacheHit.add(1, { method });
-      this.responseTime.record(performance.now() - start, { method });
       return { exists: cache };
     }
 
     this.cacheMiss.add(1, { method });
-
     const result = await this.service.cityExists(city);
     await this.redis.setBool(key, result.exists);
-
-    this.responseTime.record(performance.now() - start, { method });
     return result;
+  }
+
+  private measureResponseTime(method: string) {
+    const start = performance.now();
+    const histogram = this.responseTime;
+
+    return {
+      [Symbol.dispose]() {
+        const duration = performance.now() - start;
+        histogram.record(duration, { method });
+      },
+    };
   }
 }
