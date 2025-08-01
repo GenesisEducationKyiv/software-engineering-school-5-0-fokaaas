@@ -7,11 +7,12 @@ import setupApp from './common/utils/setup-app';
 import { initTelemetry } from '@shared/modules/telemetry/utils/init-telemetry';
 import { PathBasedSampler } from '@shared/modules/telemetry/samplers/path-based.sampler';
 import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
+import { version } from '../package.json';
 
 async function bootstrap() {
   initTelemetry({
     serviceName: 'gateway',
-    serviceVersion: '1.0.0',
+    serviceVersion: version,
     sampler: new PathBasedSampler([{ pathPrefix: '/api/weather', ratio: 0.1 }]),
   });
 

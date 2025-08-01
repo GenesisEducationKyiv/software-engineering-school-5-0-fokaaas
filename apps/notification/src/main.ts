@@ -5,11 +5,12 @@ import { ConfigService } from '@nestjs/config';
 import { initTelemetry } from '@shared/modules/telemetry/utils/init-telemetry';
 import { TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-node';
 import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
+import { version } from '../package.json';
 
 async function bootstrap() {
   initTelemetry({
     serviceName: 'notification',
-    serviceVersion: '1.0.0',
+    serviceVersion: version,
     sampler: new TraceIdRatioBasedSampler(0.1),
   });
 

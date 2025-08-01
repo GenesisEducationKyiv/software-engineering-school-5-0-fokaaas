@@ -9,11 +9,12 @@ import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
 import { ConfigService } from '@nestjs/config';
 import { GrpcExceptionFilter } from '@shared/common/filters/grpc-exception.filter';
 import { meter } from './common/meter';
+import { version } from '../package.json';
 
 async function bootstrap() {
   initTelemetry({
     serviceName: 'weather',
-    serviceVersion: '1.0.0',
+    serviceVersion: version,
   });
 
   const { port } = configuration();

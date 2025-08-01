@@ -7,11 +7,12 @@ import { initTelemetry } from '@shared/modules/telemetry/utils/init-telemetry';
 import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
 import { GrpcExceptionFilter } from '@shared/common/filters/grpc-exception.filter';
 import { meter } from './common/meter';
+import { version } from '../package.json';
 
 async function bootstrap() {
   initTelemetry({
     serviceName: 'subscription',
-    serviceVersion: '1.0.0',
+    serviceVersion: version,
   });
 
   const appContext = await NestFactory.createApplicationContext(AppModule);
