@@ -16,6 +16,9 @@ export class WeatherCacheProxy implements WeatherServiceInterface {
   ) {
     this.responseTime = meter.createHistogram('weather_response_time_ms', {
       description: 'Response time for weather service calls',
+      advice: {
+        explicitBucketBoundaries: [0.05, 0.1, 0.3, 0.5, 1, 2, 5],
+      },
     });
 
     this.cacheHit = meter.createCounter('weather_cache_hit_total', {
