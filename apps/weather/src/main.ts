@@ -4,19 +4,12 @@ import { AppModule } from './modules/app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { existsSync, mkdirSync } from 'fs';
 import configuration from './common/config/configuration';
-import { initTelemetry } from '@shared/modules/telemetry/utils/init-telemetry';
 import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
 import { ConfigService } from '@nestjs/config';
 import { GrpcExceptionFilter } from '@shared/common/filters/grpc-exception.filter';
 import { meter } from './common/meter';
-import { version } from '../package.json';
 
 async function bootstrap() {
-  initTelemetry({
-    serviceName: 'weather',
-    serviceVersion: version,
-  });
-
   const { port } = configuration();
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,

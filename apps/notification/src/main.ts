@@ -1,19 +1,11 @@
+import './common/utils/setup-telemetry';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app/modules/app.module';
+import { AppModule } from './modules/app.module';
 import { ConfigService } from '@nestjs/config';
-import { initTelemetry } from '@shared/modules/telemetry/utils/init-telemetry';
-import { TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-node';
 import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
-import { version } from '../package.json';
 
 async function bootstrap() {
-  initTelemetry({
-    serviceName: 'notification',
-    serviceVersion: version,
-    sampler: new TraceIdRatioBasedSampler(0.1),
-  });
-
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get<ConfigService>(ConfigService);
