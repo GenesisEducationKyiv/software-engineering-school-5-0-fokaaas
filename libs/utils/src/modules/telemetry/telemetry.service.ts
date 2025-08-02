@@ -17,7 +17,6 @@ import {
 import { logs } from '@opentelemetry/api-logs';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import { NestInstrumentation } from '@opentelemetry/instrumentation-nestjs-core';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-proto';
 
@@ -77,7 +76,6 @@ export class TelemetryService implements TelemetryServiceInterface {
           '@opentelemetry/instrumentation-grpc': { enabled: true },
           '@opentelemetry/instrumentation-nestjs-core': { enabled: true },
         }),
-        new NestInstrumentation(),
       ],
     });
   }
