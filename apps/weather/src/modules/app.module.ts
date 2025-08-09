@@ -4,6 +4,7 @@ import configuration from '../common/config/configuration';
 import { WeatherModule } from './weather/weather.module';
 import { join } from 'node:path';
 import { validationSchema } from '../common/config/validation';
+import { MetricsModule } from './metrics/metrics.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { validationSchema } from '../common/config/validation';
       isGlobal: true,
       validationSchema,
     }),
+    MetricsModule,
     WeatherModule,
   ],
 })

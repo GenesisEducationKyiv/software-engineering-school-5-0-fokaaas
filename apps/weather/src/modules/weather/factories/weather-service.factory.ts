@@ -5,6 +5,8 @@ import { WeatherCacheProxy } from '../proxies/weather-cache.proxy';
 import { WeatherDiTokens } from '../constants/di-tokens.const';
 import { WeatherServiceInterface } from '../interfaces/weather-service.interface';
 import type { WeatherProviderInterface } from '../interfaces/weather-provider.interface';
+import { MetricsDiTokens } from '../../metrics/constants/di-tokens.const';
+import type { MetricsServiceInterface } from '../../metrics/interfaces/metrics-service.interface';
 
 @Injectable()
 export class WeatherServiceFactory {
@@ -15,6 +17,9 @@ export class WeatherServiceFactory {
     @Inject(WeatherDiTokens.VISUAL_CROSSING_PROVIDER)
     private readonly visualCrossingProvider: WeatherProviderInterface,
 
+    @Inject(MetricsDiTokens.METRICS_SERVICE)
+    private readonly metricsService: MetricsServiceInterface,
+
     private readonly redisService: RedisService
   ) {}
 
@@ -24,6 +29,10 @@ export class WeatherServiceFactory {
       this.visualCrossingProvider,
     ]);
 
-    return new WeatherCacheProxy(weatherService, this.redisService);
+    return new WeatherCacheProxy(
+      weatherService,
+      this.redisService,
+      this.metricsService
+    );
   }
 }
