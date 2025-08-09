@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package weather;
+
+service WeatherService {
+  rpc CityExists (CityExistsRequest) returns (CityExistsResponse) {}
+  rpc Get (GetRequest) returns (GetResponse) {}
+}
+
+message CityExistsRequest {
+  string city = 1;
+}
+
+message CityExistsResponse {
+  bool exists = 1;
+}
+
+message GetRequest {
+  string city = 1;
+}
+
+message GetDayResponse {
+  string date = 1;
+  string temperature = 2;
+  string humidity = 3;
+  string icon = 4;
+  string description = 5;
+}
+
+message GetResponse {
+  GetDayResponse current = 1;
+  repeated GetDayResponse forecast = 2;
+}

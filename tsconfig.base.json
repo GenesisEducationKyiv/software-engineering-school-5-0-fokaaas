@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declarationMap": true,
+    "resolveJsonModule": true,
+    "emitDeclarationOnly": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "baseUrl": "./",
+    "importHelpers": true,
+    "isolatedModules": true,
+    "lib": [
+      "es2022"
+    ],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2022",
+    "customConditions": [
+      "development"
+    ],
+    "paths": {
+      "@shared-types/*": [
+        "libs/types/*"
+      ],
+      "@shared/*": [
+        "libs/utils/src/*"
+      ]
+    }
+  }
+}

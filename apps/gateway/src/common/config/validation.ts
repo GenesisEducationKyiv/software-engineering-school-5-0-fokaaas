@@ -1,0 +1,33 @@
+import Joi from 'joi';
+import { validateLogLevel } from '@shared/common/utils/validate-log-level';
+
+const whenTestForbidden = <T extends Joi.Schema>(schema: T) =>
+  schema.when('NODE_ENV', {
+    is: 'test',
+    then: Joi.forbidden(),
+    otherwise: schema.required(),
+  });
+
+const whenTestRequired = <T extends Joi.Schema>(schema: T) =>
+  schema.when('NODE_ENV', {
+    is: 'test',
+    then: schema.required(),
+    otherwise: schema.forbidden(),
+  });
+
+export const validationSchema = Joi.object({
+  NODE_ENV: Joi.string().valid('development', 'production', 'test').required(),
+  PORT: Joi.number().default(4558),
+  WEATHER_HOST: whenTestForbidden(Joi.string()),
+  WEATHER_PORT: whenTestForbidden(Joi.number()),
+  EMAIL_HOST: whenTestForbidden(Joi.string()),
+  EMAIL_PORT: whenTestForbidden(Joi.number()),
+  SUBSCRIPTION_HOST: Joi.string().required(),
+  SUBSCRIPTION_PORT: Joi.number().required(),
+  REDIS_HOST: whenTestRequired(Joi.string()),
+  REDIS_PORT: whenTestRequired(Joi.number()),
+  OTEL_EXPORTER_OTLP_ENDPOINT: Joi.string().uri(),
+  LOG_LEVEL: Joi.string()
+    .default('ERROR,WARN,INFO')
+    .custom(validateLogLevel, 'Comma-separated log levels'),
+});

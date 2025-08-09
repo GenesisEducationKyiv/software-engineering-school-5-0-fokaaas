@@ -1,0 +1,52 @@
+name: Test
+on: [ push ]
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js and dependencies
+        uses: ./.github/actions/set-up
+
+      - name: Run tests
+        run: yarn test
+
+  integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node and dependencies
+        uses: ./.github/actions/set-up
+
+      - name: Start PostgreSQL & Redis
+        run: |
+          docker compose -f docker-compose.test.yml up -d && sleep 5s
+
+      - name: Start migration
+        run: yarn migrate:test
+
+      - name: Generate Prisma Client
+        run: yarn prisma:generate
+
+      - name: Start seeding
+        run: yarn seed
+
+      - name: Run integration tests
+        run: yarn itest
+
+  arch-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js and dependencies
+        uses: ./.github/actions/set-up
+
+      - name: Run tests
+        run: yarn depcruise

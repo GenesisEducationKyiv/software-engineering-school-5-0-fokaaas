@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package subscription;
+
+import "common.proto";
+
+service SubscriptionService {
+  rpc FindByFrequency (FindByFrequencyRequest) returns (FindByFrequencyListResponse) {}
+  rpc Create (CreateRequest) returns (TokenResponse) {}
+  rpc Confirm (TokenRequest) returns (common.Empty) {}
+  rpc Unsubscribe (TokenRequest) returns (common.Empty) {}
+}
+
+message FindByFrequencyRequest {
+  string frequency = 1;
+}
+
+message FindByFrequencyResponse {
+  string email = 1;
+  string city = 2;
+  string token = 3;
+}
+
+message FindByFrequencyListResponse {
+  repeated FindByFrequencyResponse subscriptions = 1;
+}
+
+
+message TokenRequest {
+  string token = 1;
+}
+
+message TokenResponse {
+  string token = 1;
+}
+
+message CreateRequest {
+  string email = 1;
+  string frequency = 2;
+  string city = 3;
+}
