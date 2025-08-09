@@ -1,3 +1,4 @@
+import './common/utils/setup-telemetry';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './modules/app.module';
@@ -9,7 +10,7 @@ async function bootstrap() {
 
   await app.startAllMicroservices();
 
-  Logger.log(`📧 Email microservice is running on: http://127.0.0.1:${port}`);
+  Logger.log({ msg: 'Application started', port });
 }
 
 void bootstrap();

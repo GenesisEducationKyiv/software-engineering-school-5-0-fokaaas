@@ -8,9 +8,20 @@ import {
 import { Response } from 'express';
 import { ServiceError, status as GrpcStatus } from '@grpc/grpc-js';
 import { Errors } from '../constants/errors.const';
+import type { Counter } from '@opentelemetry/api';
+import { meter } from '../meter';
 
 @Catch()
 export class GrpcExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(GrpcExceptionFilter.name);
+  private readonly errorCounter: Counter;
+
+  constructor() {
+    this.errorCounter = meter.createCounter('internal_error_total', {
+      description: 'Total number of internal errors',
+    });
+  }
+
   catch(exception: Error, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -23,7 +34,9 @@ export class GrpcExceptionFilter implements ExceptionFilter {
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).send({
         message: Errors.INTERNAL_SERVER_ERROR,
       });
-      Logger.error(exception.stack);
+      this.logger.error(exception);
+
+      this.errorCounter.add(1, { method: 'catch' });
     }
   }
 

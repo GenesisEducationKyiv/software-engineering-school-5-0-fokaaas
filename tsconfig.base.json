@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "declarationMap": true,
+    "resolveJsonModule": true,
     "emitDeclarationOnly": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

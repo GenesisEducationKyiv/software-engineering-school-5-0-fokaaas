@@ -7,7 +7,6 @@ import configuration from '../../common/config/configuration';
 import { validationSchema } from '../../common/config/validation';
 import setupApp from '../../common/utils/setup-app';
 import { MailerService } from '@nestjs-modules/mailer';
-import { FilterModule } from '@shared/modules/filter/filter.module';
 import { RpcException } from '@nestjs/microservices';
 import { scheduler } from 'node:timers/promises';
 import {
@@ -31,7 +30,6 @@ describe('EmailConsumer (integration)', () => {
           load: [configuration],
           validationSchema,
         }),
-        FilterModule,
         EmailModule,
       ],
     }).compile();

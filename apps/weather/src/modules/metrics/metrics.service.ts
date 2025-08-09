@@ -1,49 +1,51 @@
 import { Injectable } from '@nestjs/common';
-import { InjectMetric } from '@willsoto/nestjs-prometheus';
-import { Metrics } from './constants/metrics.const';
+import { Counter, Histogram } from '@opentelemetry/api';
+import { meter } from '../../common/meter';
 import {
-  Counter,
-  Histogram,
-  Pushgateway,
-  RegistryContentType,
-} from 'prom-client';
-import { Interval } from '@nestjs/schedule';
-import { MetricsServiceInterface } from './interfaces/metrics-service.interface';
+  Disposable,
+  MetricsServiceInterface,
+} from './interfaces/metrics-service.interface';
 
 @Injectable()
 export class MetricsService implements MetricsServiceInterface {
-  constructor(
-    @InjectMetric(Metrics.CACHE_HIT_TOTAL)
-    private readonly cacheHitTotalCounter: Counter<string>,
+  private readonly responseTime: Histogram;
+  private readonly cacheHit: Counter;
+  private readonly cacheMiss: Counter;
 
-    @InjectMetric(Metrics.CACHE_MISS_TOTAL)
-    private readonly cacheMissTotalCounter: Counter<string>,
+  constructor() {
+    this.responseTime = meter.createHistogram('weather_response_time_ms', {
+      description: 'Response time for weather service calls',
+      advice: {
+        explicitBucketBoundaries: [0.05, 0.1, 0.3, 0.5, 1, 2, 5],
+      },
+    });
 
-    @InjectMetric(Metrics.RESPONSE_TIME_SECONDS)
-    private readonly responseTimeSecondsHistogram: Histogram<string>,
+    this.cacheHit = meter.createCounter('weather_cache_hit_total', {
+      description: 'Number of cache hits',
+    });
 
-    private readonly gateway: Pushgateway<RegistryContentType>
-  ) {}
+    this.cacheMiss = meter.createCounter('weather_cache_miss_total', {
+      description: 'Number of cache misses',
+    });
+  }
 
   incCacheHit(method: string): void {
-    this.cacheHitTotalCounter.inc({ method });
+    this.cacheHit.add(1, { method });
   }
 
   incCacheMiss(method: string): void {
-    this.cacheMissTotalCounter.inc({ method });
+    this.cacheMiss.add(1, { method });
   }
 
-  createResponseTimer(method: string) {
-    const end = this.responseTimeSecondsHistogram.startTimer();
+  measureResponseTime(method: string): Disposable {
+    const start = performance.now();
+    const histogram = this.responseTime;
+
     return {
-      [Symbol.dispose]: () => {
-        end({ method });
+      [Symbol.dispose]() {
+        const duration = performance.now() - start;
+        histogram.record(duration, { method });
       },
     };
-  }
-
-  @Interval(5000)
-  async pushToGatewayInterval() {
-    await this.gateway.pushAdd({ jobName: 'weather-microservice' });
   }
 }

@@ -3,7 +3,6 @@ import { WeatherController } from './weather.controller';
 import { WeatherServiceFactory } from './factories/weather-service.factory';
 import { HttpClientModule } from '../http-client/http-client.module';
 import { RedisModule } from '@shared/modules/redis/redis.module';
-import { MetricsModule } from '../metrics/metrics.module';
 import { WeatherDiTokens } from './constants/di-tokens.const';
 import { WeatherApiProviderFactory } from './factories/weather-api-provider.factory';
 import { VisualCrossingProviderFactory } from './factories/vissual-crossing-provider.factory';
@@ -35,6 +34,6 @@ import { WeatherMapper } from './weather.mapper';
       useClass: WeatherMapper,
     },
   ],
-  imports: [HttpClientModule, RedisModule.register('weather'), MetricsModule],
+  imports: [HttpClientModule, RedisModule.register('weather')],
 })
 export class WeatherModule {}

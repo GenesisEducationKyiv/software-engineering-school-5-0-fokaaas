@@ -1,13 +1,18 @@
+import './common/utils/setup-telemetry';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './modules/app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
+import { GrpcExceptionFilter } from '@shared/common/filters/grpc-exception.filter';
+import { meter } from './common/meter';
 
 async function bootstrap() {
   const appContext = await NestFactory.createApplicationContext(AppModule);
   const configService = appContext.get<ConfigService>(ConfigService);
 
+  const logLevel = configService.getOrThrow<string>('logLevel');
   const port = configService.get<number>('port');
 
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -22,13 +27,13 @@ async function bootstrap() {
     }
   );
 
-  const filter = appContext.get('GRPC_EXCEPTION_FILTER');
-  app.useGlobalFilters(filter);
+  app.useGlobalFilters(new GrpcExceptionFilter(meter));
+
+  app.useLogger(new TelemetryLogger(logLevel));
 
   await app.listen();
-  Logger.log(
-    `🔔 Subscription microservice is running on: http://127.0.0.1:${port}`
-  );
+
+  Logger.log({ msg: 'Application started', port });
 }
 
 void bootstrap();

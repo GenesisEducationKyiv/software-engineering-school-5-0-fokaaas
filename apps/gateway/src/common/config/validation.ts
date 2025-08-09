@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import { validateLogLevel } from '@shared/common/utils/validate-log-level';
 
 const whenTestForbidden = <T extends Joi.Schema>(schema: T) =>
   schema.when('NODE_ENV', {
@@ -25,4 +26,8 @@ export const validationSchema = Joi.object({
   SUBSCRIPTION_PORT: Joi.number().required(),
   REDIS_HOST: whenTestRequired(Joi.string()),
   REDIS_PORT: whenTestRequired(Joi.number()),
+  OTEL_EXPORTER_OTLP_ENDPOINT: Joi.string().uri(),
+  LOG_LEVEL: Joi.string()
+    .default('ERROR,WARN,INFO')
+    .custom(validateLogLevel, 'Comma-separated log levels'),
 });

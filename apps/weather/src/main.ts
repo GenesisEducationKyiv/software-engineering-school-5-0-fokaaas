@@ -4,6 +4,10 @@ import { AppModule } from './modules/app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { existsSync, mkdirSync } from 'fs';
 import configuration from './common/config/configuration';
+import { TelemetryLogger } from '@shared/modules/telemetry/telemetry.logger';
+import { ConfigService } from '@nestjs/config';
+import { GrpcExceptionFilter } from '@shared/common/filters/grpc-exception.filter';
+import { meter } from './common/meter';
 
 async function bootstrap() {
   const { port } = configuration();
@@ -19,8 +23,11 @@ async function bootstrap() {
     }
   );
 
-  const filter = app.get('GRPC_EXCEPTION_FILTER');
-  app.useGlobalFilters(filter);
+  app.useGlobalFilters(new GrpcExceptionFilter(meter));
+
+  const logLevel = app.get(ConfigService).getOrThrow<string>('logLevel');
+
+  app.useLogger(new TelemetryLogger(logLevel));
 
   const logDir = 'logs';
   if (!existsSync(logDir)) {
@@ -29,7 +36,7 @@ async function bootstrap() {
 
   await app.listen();
 
-  Logger.log(`🌧️ Weather microservice is running on: http://127.0.0.1:${port}`);
+  Logger.log({ msg: 'Application started', port });
 }
 
 void bootstrap();
