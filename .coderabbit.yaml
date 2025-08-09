@@ -1,0 +1,241 @@
+# CodeRabbit Configuration for Weather Subscription API
+# This configuration enables AI-powered code reviews for pull requests
+
+# Language and framework configuration
+language: "typescript"
+framework: "nestjs"
+
+# Review configuration
+reviews:
+  # Enable automatic reviews on pull requests
+  auto_review: true
+
+  # Review levels: "basic", "standard", "comprehensive"
+  level: "comprehensive"
+
+  # Enable reviews for draft PRs
+  draft_review: false
+
+  # Skip reviews for specific file patterns
+  skip_files:
+    - "*.md"
+    - "*.txt"
+    - "*.log"
+    - "node_modules/**"
+    - "dist/**"
+    - "coverage/**"
+    - "*.lock"
+    - "yarn.lock"
+    - "package-lock.json"
+
+# Code quality checks
+quality:
+  # Enable security vulnerability detection
+  security_scan: true
+
+  # Enable performance analysis
+  performance_analysis: true
+
+  # Enable best practices suggestions
+  best_practices: true
+
+  # Enable TypeScript specific checks
+  typescript_checks: true
+
+  # Enable NestJS specific patterns
+  nestjs_patterns: true
+
+# Project-specific rules
+rules:
+  # Microservices architecture patterns
+  microservices:
+    - check_service_boundaries
+    - validate_grpc_contracts
+    - review_error_handling
+    - check_dependency_injection
+
+  # TypeScript specific rules
+  typescript:
+    - enforce_strict_mode
+    - check_type_definitions
+    - validate_interfaces
+    - review_async_patterns
+
+  # NestJS specific rules
+  nestjs:
+    - validate_decorators
+    - check_module_structure
+    - review_guards_and_filters
+    - validate_dto_classes
+
+  # Database and caching
+  data:
+    - review_prisma_queries
+    - check_redis_usage
+    - validate_migrations
+    - check_connection_management
+
+  # Testing requirements
+  testing:
+    - require_unit_tests
+    - check_integration_tests
+    - validate_mocking_patterns
+    - review_test_coverage
+
+  # Security rules
+  security:
+    - validate_input_sanitization
+    - check_environment_variables
+    - review_authentication
+    - validate_cors_configuration
+
+  # Performance rules
+  performance:
+    - check_caching_strategies
+    - review_database_queries
+    - validate_error_handling
+    - check_memory_usage
+
+# File patterns for specific review focus
+patterns:
+  # Controllers - focus on API design and validation
+  "**/*.controller.ts":
+    focus:
+      - api_design
+      - input_validation
+      - error_handling
+      - security_practices
+
+  # Services - focus on business logic and performance
+  "**/*.service.ts":
+    focus:
+      - business_logic
+      - error_handling
+      - performance
+      - dependency_management
+
+  # DTOs and validation
+  "**/dto/*.ts":
+  "**/body/*.ts":
+  "**/query/*.ts":
+    focus:
+      - input_validation
+      - type_safety
+      - security
+
+  # Database related files
+  "**/*.repository.ts":
+  "**/prisma/**":
+    focus:
+      - database_performance
+      - query_optimization
+      - data_integrity
+
+  # Configuration files
+  "**/config/*.ts":
+    focus:
+      - security
+      - configuration_management
+      - environment_variables
+
+  # Test files
+  "**/*.spec.ts":
+  "**/*.ispec.ts":
+    focus:
+      - test_quality
+      - coverage
+      - test_patterns
+      - mocking_strategies
+
+# Exclusions
+exclude:
+  # Generated files
+  - "libs/types/grpc/**"
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/coverage/**"
+
+  # Build and configuration files that don't need detailed review
+  - "webpack.config.js"
+  - "tsconfig*.json"
+  - "jest.config.ts"
+  - "eslint.config.mjs"
+
+# Custom prompts for specific areas
+custom_prompts:
+  microservices: |
+    Please review this code with focus on microservices architecture patterns:
+    - Service boundaries and responsibilities
+    - Inter-service communication (gRPC)
+    - Error handling and resilience
+    - Data consistency patterns
+
+  security: |
+    Please review this code for security vulnerabilities:
+    - Input validation and sanitization
+    - Authentication and authorization
+    - Configuration security
+    - Data exposure risks
+
+  performance: |
+    Please review this code for performance considerations:
+    - Database query efficiency
+    - Caching strategies
+    - Memory usage patterns
+    - Async/await usage
+
+# Integration settings
+integrations:
+  # GitHub specific settings
+  github:
+    # Enable status checks
+    status_checks: true
+
+    # Comment style: "conversational", "concise", "detailed"
+    comment_style: "detailed"
+
+    # Enable line-by-line comments
+    line_comments: true
+
+    # Enable summary comments
+    summary_comments: true
+
+    # Auto-approve simple changes (like formatting)
+    auto_approve_simple: false
+
+# Notification preferences
+notifications:
+  # When to send notifications
+  on_review_complete: true
+  on_security_issues: true
+  on_critical_issues: true
+
+  # Channels (if integrated with Slack/Teams)
+  channels:
+    - "#code-reviews"
+    - "#security-alerts"
+
+# Learning and improvement
+learning:
+  # Enable learning from feedback
+  learn_from_feedback: true
+
+  # Adapt to project patterns
+  adapt_to_project: true
+
+  # Consider project-specific conventions
+  follow_project_conventions: true
+
+# Advanced configuration
+advanced:
+  # Maximum review time (minutes)
+  max_review_time: 30
+
+  # Minimum confidence threshold for suggestions
+  confidence_threshold: 0.7
+
+  # Enable experimental features
+  experimental_features: false
+
+  # Custom rules file (if needed)
+  custom_rules_file: ".coderabbit-rules.json"
